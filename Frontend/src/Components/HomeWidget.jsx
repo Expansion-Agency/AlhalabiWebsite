@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./HomeWidget.css"; // Ensure you have the CSS file for styling
+import "./homewidget.css"; // Ensure you have the CSS file for styling
 import { useTranslation } from "../../TranslationContext";
 
 const slides = [
