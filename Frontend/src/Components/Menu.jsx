@@ -40,10 +40,6 @@ function Menu({
         <hr className="border-black/20 mx-5 my-5" />
 
         <div className="account gap-5 flex flex-col items-center justify-center mt-10">
-          <Link onClick={toggleMenuVisibility} to={"/products"}>
-            {t.allProducts}
-          </Link>
-
           <Link onClick={toggleMenuVisibility} to={"/contact-us"}>
             {t.contact}
           </Link>
