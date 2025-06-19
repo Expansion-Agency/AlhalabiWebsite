@@ -54,7 +54,7 @@ const translations = {
     contactdesc:
       "If you require style advice, product information, or even assistance placing an order over the phone, see below for all the ways you can get in touch.",
     getintouch: "Get in Touch",
-    followus: "Follow Us & Contact via",
+    followcontact: "Follow Us & Contact via",
     emailus: "Contact via Email",
     //LOGIN - SIGNUP - RESET
     haveacc: "ALREADY HAVE AN ONLINE ACCOUNT?",
@@ -222,7 +222,7 @@ const translations = {
     contactdesc:
       "إذا كنت بحاجة إلى نصيحة حول الأسلوب، أو معلومات عن المنتج، أو حتى مساعدة في تقديم طلب عبر الهاتف، انظر أدناه لجميع الطرق التي يمكنك من خلالها التواصل.",
     getintouch: "تواصل معنا",
-    followus: "تابعنا و اتصل عبر",
+    followuscontact: "تابعنا و اتصل عبر",
     emailus: "اتصل عبر البريد الإلكتروني",
     //LOGIN - SIGNUP - RESET
     haveacc: "هل لديك حساب على الإنترنت بالفعل؟",
