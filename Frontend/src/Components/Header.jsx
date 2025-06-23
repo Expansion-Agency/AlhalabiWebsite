@@ -35,11 +35,11 @@ function Header({
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-between items-center p-4 relative">
+    <div className="flex justify-between items-center p-4 relative bg-amber-950/5">
       <h1 className="cursor-pointer" onClick={() => navigate("/")}>
         Alhalabi
       </h1>
-      <div className="flex items-center gap-4 text-2xl">
+      <div className="flex items-center gap-4 text-2xl text-amber-950">
         <div className="relative" ref={dropdownRef}>
           <IoEarth onClick={toggleDropdown} className="cursor-pointer" />
           {showDropdown && (

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function Footer() {
   const { t } = useTranslation();
   return (
-    <div className="mt-5 shadow-md min-h-[17vh] bg-[#fdfdfd] pt-5">
+    <div className="mt-5 p-5 shadow-md min-h-[17vh] bg-amber-950/5 pt-5">
       <h1 className="text-black/50">Alhalabi</h1>
 
       <div className="flex flex-col mx-auto items-center justify-center gap-3">
