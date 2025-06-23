@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { IoEarth } from "react-icons/io5";
 import { LuMenu } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 function Header({
   toggleMenuVisibility,
   selectedLanguage,
   handleLanguageChange,
 }) {
+  const { t } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -29,9 +32,13 @@ function Header({
     setShowDropdown(false);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="flex justify-between items-center p-4 relative">
-      <h1>Alhalabi</h1>
+      <h1 className="cursor-pointer" onClick={() => navigate("/")}>
+        Alhalabi
+      </h1>
       <div className="flex items-center gap-4 text-2xl">
         <div className="relative" ref={dropdownRef}>
           <IoEarth onClick={toggleDropdown} className="cursor-pointer" />
@@ -43,7 +50,7 @@ function Header({
                   selectedLanguage === "en" ? "font-semibold bg-gray-100" : ""
                 }`}
               >
-                English
+                {t("en")}
               </div>
               <div
                 onClick={() => selectLanguage("ar")}
@@ -51,7 +58,7 @@ function Header({
                   selectedLanguage === "ar" ? "font-semibold bg-gray-100" : ""
                 }`}
               >
-                Arabic
+                {t("ar")}
               </div>
             </div>
           )}

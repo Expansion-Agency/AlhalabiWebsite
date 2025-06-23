@@ -2,21 +2,25 @@ import { useEffect, useState } from "react";
 import Footer from "./Components/Footer";
 import Header from "./Components/Header";
 import Menu from "./Components/Menu";
-import { useTranslation } from "../TranslationContext";
+import { useTranslation } from "react-i18next";
 
 function Layout({ children }) {
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const { changeLanguage } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    return localStorage.getItem("language") || "en";
+  });
+  const { i18n } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
+    localStorage.setItem("language", newLanguage);
+    i18n.changeLanguage(newLanguage);
     setSelectedLanguage(newLanguage);
-    changeLanguage(newLanguage);
   };
+
   useEffect(() => {
-    setSelectedLanguage(localStorage.getItem("language") || "en");
-  }, []);
+    i18n.changeLanguage(selectedLanguage); // Make sure it's applied on mount
+  }, [i18n, selectedLanguage]);
 
   const toggleMenuVisibility = () => {
     setIsMenuVisible((prev) => !prev);
