@@ -22,13 +22,13 @@ function Contact() {
       </div>
       <div className="mt-10">
         <h2 className="font-bold text-xl mb-3">{t("ourlocation")}</h2>
-        <div className="bg-amber-950/5 rounded-md w-1/2 p-8 text-lg">
+        <div className="bg-amber-950/5 rounded-md lg:w-1/2 p-8 text-lg">
           Alhalabi Cairo/Egypt Phone: +
         </div>
       </div>
       <div className="mt-10">
         <h2 className="font-bold text-xl mb-3">{t("needhelp")}</h2>
-        <div className="bg-amber-950/5 rounded-md w-1/2 p-8 text-lg">
+        <div className="bg-amber-950/5 rounded-md lg:w-1/2 p-8 text-lg">
           <p>{t("help")}</p>
           <p>+</p>
         </div>

@@ -24,9 +24,9 @@ function Products() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-10">
+      <h2 className="text-2xl lg:text-4xl font-bold text-center text-gray-800 mb-10">
         {t("ourproducts")}
-      </h1>
+      </h2>
       {/* Category Buttons */}
       <div className="flex flex-wrap justify-center gap-4 mb-10">
         {categories.map((cat) => (

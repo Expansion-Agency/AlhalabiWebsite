@@ -17,8 +17,8 @@ function HomeCategories() {
 
   return (
     <div className="w-full items-center justify-center flex flex-col">
-      <h2 className="text-4xl font-bold p-5">{t("ourproducts")}</h2>
-      <div className="grid grid-cols-2 gap-2 mt-3">
+      <h2 className="text-xl lg:text-4xl font-bold p-5">{t("ourproducts")}</h2>
+      <div className="grid grid-cols-2 gap-2 lg:mt-3 p-3">
         {categoryCards.map((cat, idx) => {
           const isLastItem = isOdd && idx === categoryCards.length - 1;
           return (
@@ -32,12 +32,12 @@ function HomeCategories() {
               }
             >
               <img
-                className="w-full h-90 object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full lg:h-90 object-cover transition-transform duration-300 group-hover:scale-105"
                 src={cat.image}
                 alt={cat.name}
               />
               <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition" />
-              <p className="absolute top-3/4 left-1/4 transform -translate-x-1/2 translate-y-1/4 text-white text-xl z-10">
+              <p className="absolute top-3/4 left-1/4 transform -translate-x-1/3 translate-y-1/3 lg:-translate-x-1/2 lg:translate-y-1/4 text-white lg:text-xl z-10">
                 {cat.name}
               </p>
             </div>

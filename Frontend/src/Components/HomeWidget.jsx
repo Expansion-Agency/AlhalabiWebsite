@@ -13,13 +13,23 @@ const slides = [
     image: "/assets/IMG_1067.JPG", // Replace with your second image
     title: "Smart Solutions",
   },
+  {
+    id: 3,
+    image: "/assets/IMG_1078.JPG",
+    title: "Secure Products",
+  },
+  {
+    id: 4,
+    image: "/assets/IMG_1067.JPG", // Replace with your second image
+    title: "Smart Solutions",
+  },
 ];
-const extendedSlides = slides.length > 1 ? [...slides, slides[0]] : slides;
+const extendedSlides = slides;
 
 function HomeWidget() {
   const { t, direction } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isTransitioning] = useState(true);
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -29,41 +39,12 @@ function HomeWidget() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (slides.length > 1 && currentSlide === slides.length) {
-      // Wait until the transition ends
-      const timeout = setTimeout(() => {
-        setIsTransitioning(false);
-        setCurrentSlide(0);
-      }, 1000); // Should match your CSS transition duration (1s)
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentSlide]);
-
   const goToNextSlide = () => {
-    if (slides.length <= 1) return;
-    setIsTransitioning(true);
-    setCurrentSlide((prev) => prev + 1);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const goToPrevSlide = () => {
-    if (slides.length <= 1) return;
-
-    setIsTransitioning(true);
-
-    if (currentSlide === 0) {
-      // Jump to cloned slide at end instantly (no animation)
-      setIsTransitioning(false);
-      setCurrentSlide(slides.length);
-      // After jump, go back one slide
-      setTimeout(() => {
-        setIsTransitioning(true);
-        setCurrentSlide(slides.length - 1);
-      }, 50);
-    } else {
-      setCurrentSlide((prev) => prev - 1);
-    }
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   return (

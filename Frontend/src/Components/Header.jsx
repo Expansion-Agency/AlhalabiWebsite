@@ -43,7 +43,10 @@ function Header({
         <div className="relative" ref={dropdownRef}>
           <IoEarth onClick={toggleDropdown} className="cursor-pointer" />
           {showDropdown && (
-            <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded shadow-md text-sm z-20 min-w-[120px]">
+            <div
+              className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md text-sm z-20 min-w-[120px]"
+              style={{ insetInlineEnd: 0 }}
+            >
               <div
                 onClick={() => selectLanguage("en")}
                 className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${

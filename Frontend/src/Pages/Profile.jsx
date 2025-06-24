@@ -13,9 +13,9 @@ function Profile({ selectedLanguage }) {
         <h2>username</h2>
       </div>
       <hr className="border border-black/50" />
-      <div className="bottom flex">
+      <div className="bottom flex flex-col lg:flex-row">
         <div
-          className={`menu flex flex-col w-1/5 ${
+          className={`menu flex lg:flex-col lg:w-1/5 ${
             dir === "ltr" ? "border-r-2" : "border-l-2"
           } border-black/50`}
         >
@@ -46,7 +46,7 @@ function Profile({ selectedLanguage }) {
         </div>
         {activeTab === "personal" && (
           <div className="personalinfo flex flex-col gap-6 justify-between m-5 py-5 px-10 w-auto bg-amber-950/10 rounded-2xl shadow-md">
-            <div className="flex gap-40 justify-center">
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-40 justify-center">
               <div className="flex flex-col">
                 <p className="font-bold">{t("email")}</p>
                 <p className="text-center">username@gmail.com</p>
@@ -78,7 +78,7 @@ function Profile({ selectedLanguage }) {
           <div className="address flex flex-col gap-6 justify-between m-5 py-5 px-10 w-auto bg-amber-950/10 rounded-2xl shadow-md">
             <h2 className="text-2xl text-center font-bold">{t("address")}</h2>
 
-            <div className="flex gap-40 justify-center">
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-40 justify-center">
               <div className="flex flex-col">
                 <p className="font-bold">{t("email")}</p>
                 <p className="text-center">username@gmail.com</p>
@@ -109,7 +109,7 @@ function Profile({ selectedLanguage }) {
         {activeTab === "orders" && (
           <div className="address flex flex-col gap-6 justify-between m-5 py-5 px-10 w-auto bg-amber-950/10 rounded-2xl shadow-md">
             <h2 className="text-2xl text-center font-bold">{t("orders")}</h2>
-            <div className="flex gap-40 justify-center">
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-40 justify-center">
               <div className="flex flex-col">
                 <p className="font-bold">Email</p>
                 <p className="text-center">username@gmail.com</p>

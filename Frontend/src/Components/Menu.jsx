@@ -18,7 +18,7 @@ function Menu({
         <div onClick={toggleMenuVisibility} className="fixed inset-0"></div>
       )}
       <div
-        className={`fixed top-0 h-full bg-white shadow-lg flex flex-col z-50 w-1/4 ${
+        className={`fixed top-0 h-full bg-white shadow-lg flex flex-col z-50 w-3/4 lg:w-1/4 ${
           dir === "ltr"
             ? isMenuVisible
               ? "translate-x-0 right-0 transition-transform duration-300 transform"

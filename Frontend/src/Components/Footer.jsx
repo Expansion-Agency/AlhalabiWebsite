@@ -6,8 +6,7 @@ function Footer() {
   const { t } = useTranslation();
   return (
     <div className="mt-5 p-5 shadow-md min-h-[17vh] bg-amber-950/5 pt-5">
-      <h1 className="text-black/50">Alhalabi</h1>
-
+      <h1 className="text-black/50 mb-5">Alhalabi</h1>
       <div className="flex flex-col mx-auto items-center justify-center gap-3">
         <h2 className="font-bold text-black/80">Quick Links</h2>
         <Link to="/about-us" className="text-black/50">
