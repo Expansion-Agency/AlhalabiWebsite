@@ -48,35 +48,51 @@ function HomeWidget() {
   };
 
   return (
-    <div className="slider-container max-h-fit">
-      <div
-        ref={sliderRef}
-        className="slider max-h-1/2 lg:max-h-screen"
-        style={{
-          transform: `translateX(-${currentSlide * 100}%)`,
-          transition: isTransitioning ? "transform 1s ease-in-out" : "none",
-        }}
-      >
-        {extendedSlides.map((slide, index) => (
-          <div className="slide" key={`${slide.id}-${index}`}>
-            <img
-              className="lg:max-h-screen w-full object-cover"
-              src={slide.image}
-              alt={slide.title}
-            />
-            <div className="slide-caption">
-              <h2>{slide.title}</h2>
+    <div className="relative w-full overflow-hidden">
+      <div className="slider-container max-h-fit">
+        <div
+          ref={sliderRef}
+          className="slider max-h-1/2 lg:max-h-screen"
+          style={{
+            transform: `translateX(-${currentSlide * 100}%)`,
+            transition: isTransitioning ? "transform 1s ease-in-out" : "none",
+          }}
+        >
+          {extendedSlides.map((slide, index) => (
+            <div className="slide" key={`${slide.id}-${index}`}>
+              <img
+                className="lg:max-h-screen w-full object-cover"
+                src={slide.image}
+                alt={slide.title}
+              />
+              <div className="slide-caption">
+                <h2>{slide.title}</h2>
+              </div>
             </div>
-          </div>
+          ))}
+        </div>
+        {/* Arrows */}
+        <button className="nav-button prev" onClick={goToPrevSlide}>
+          &#10094;
+        </button>
+        <button className="nav-button next" onClick={goToNextSlide}>
+          &#10095;
+        </button>
+      </div>
+      <div className="flex justify-center gap-3 absolute bottom-8 w-full z-20">
+        {slides.map((_, index) => (
+          <button
+            type="button"
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              currentSlide === index
+                ? "bg-white/40 scale-110 shadow-md"
+                : "bg-gray-600 opacity-30 hover:opacity-100"
+            }`}
+          />
         ))}
       </div>
-      {/* Arrows */}
-      <button className="nav-button prev" onClick={goToPrevSlide}>
-        &#10094;
-      </button>
-      <button className="nav-button next" onClick={goToNextSlide}>
-        &#10095;
-      </button>
     </div>
   );
 }
