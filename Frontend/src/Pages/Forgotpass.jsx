@@ -64,9 +64,8 @@ function Forgotpass() {
         <h1 className="text-center text-2xl! lg:text-3xl! font-bold !mb-4">
           {t("forgotpass")}
         </h1>
-        <h2 className="text-center mb-8">
-          {t("forgotcont")}
-        </h2>
+
+        <h2 className="text-center mb-8">{t("forgotcont")}</h2>
         <form>
           <label className="block font-bold !mb-2" htmlFor="email">
             {t("email")}

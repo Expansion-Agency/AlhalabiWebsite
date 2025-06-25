@@ -16,7 +16,7 @@ function HomeCategories() {
   const isOdd = categoryCards.length % 2 !== 0;
 
   return (
-    <div className="w-full items-center justify-center flex flex-col">
+    <div className="w-full items-center justify-center flex flex-col my-7">
       <h2 className="text-xl lg:text-4xl font-bold p-5">{t("ourproducts")}</h2>
       <div className="grid grid-cols-2 gap-2 lg:mt-3 p-3">
         {categoryCards.map((cat, idx) => {
