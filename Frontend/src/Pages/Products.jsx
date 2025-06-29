@@ -33,10 +33,10 @@ function Products() {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full border transition ${
+            className={`px-4 py-2 rounded-full border transition cursor-pointer ${
               selectedCategory === cat
-                ? "bg-blue-600 text-red-600 border-blue-600"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
+                ? "bg-amber-800 text-white border-amber-800"
+                : "bg-white text-gray-700 border-amber-950/10 hover:bg-orange-50/50"
             }`}
           >
             {cat}

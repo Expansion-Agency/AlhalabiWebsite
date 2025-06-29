@@ -10,38 +10,40 @@ function Menu({
   handleLanguageChange,
 }) {
   const { t } = useTranslation();
-  const dir = selectedLanguage === "ar" ? "rtl" : "ltr";
 
   return (
     <>
       {isMenuVisible && (
-        <div onClick={toggleMenuVisibility} className="fixed inset-0"></div>
+        <div
+          onClick={toggleMenuVisibility}
+          className="fixed inset-0 bg-black/20 z-40"
+        ></div>
       )}
       <div
-        className={`fixed top-0 h-full bg-white shadow-lg flex flex-col z-50 w-3/4 lg:w-1/4 ${
-          dir === "ltr"
-            ? isMenuVisible
-              ? "translate-x-0 right-0 transition-transform duration-300 transform"
-              : "translate-x-full right-0"
-            : isMenuVisible
-            ? "translate-x-0 left-0 transition-transform duration-300 transform"
-            : "-translate-x-full left-0"
+        className={`fixed top-0 w-full bg-white shadow-lg flex flex-col z-50 text-amber-950 py-5 ${
+          isMenuVisible
+            ? "translate-y-0 transition-transform duration-300 transform ease-in-out"
+            : "-translate-y-full"
         }`}
       >
-        <IoCloseOutline
-          size={40}
-          onClick={toggleMenuVisibility}
-          className="mt-10 ms-3 stroke-1 cursor-pointer"
-        />
+        <div className="flex items-center text-2xl gap-5 mt-5 mx-3">
+          <IoCloseOutline
+            size={40}
+            onClick={toggleMenuVisibility}
+            className="stroke-1 cursor-pointer"
+          />
+          <h2>ALHALABI</h2>
+        </div>
+
         <hr className="border-black/20 mx-5 my-5" />
-        <div className="services ms-6 mt-5">
+        <div className="services ms-6">
           <Link onClick={toggleMenuVisibility} to={"/products"}>
             {t("allprod")}
           </Link>
         </div>
         <hr className="border-black/20 mx-5 my-5" />
 
-        <div className="account gap-5 flex flex-col items-center justify-center mt-10">
+        <div className="account gap-5 flex flex-col items-center justify-center my-5">
           <Link onClick={toggleMenuVisibility} to={"/contact-us"}>
             {t("contact")}
           </Link>
@@ -51,19 +53,6 @@ function Menu({
           <Link onClick={toggleMenuVisibility} to={"/login"}>
             {t("account")}
           </Link>
-          <div>
-            <p className=" text-black/50">{t("chngLang")}:</p>
-            <select
-              className="mx-auto mt-1 flex cursor-pointer"
-              name="language"
-              id=""
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-            >
-              <option value="en">{t("en")}</option>
-              <option value="ar">{t("ar")}</option>
-            </select>
-          </div>
         </div>
       </div>
     </>

@@ -6,7 +6,7 @@ function About() {
   return (
     <>
       <img className="w-full h-130" src="/assets/industrial.jpg" alt="" />
-      <div className="flex flex-col my-10 mx-15">
+      <div className="flex flex-col my-10 mx-20">
         <div className="flex flex-col mt-10 lg:w-1/2">
           <h2 className="font-bold mb-5 text-2xl lg:text-3xl">{t("about")}</h2>
           <h2 className="font-bold mb-2">{t("aboutqoute")}</h2>

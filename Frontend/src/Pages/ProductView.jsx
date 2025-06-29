@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import ProductReviews from "../Components/ProductReviews";
 
 function ProductView() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState([]);
+
+  const handleAddReview = (newReview) => {
+    setReviews((prev) => [newReview, ...prev]);
+  };
 
   if (!state?.product) {
     return (
@@ -22,20 +28,23 @@ function ProductView() {
   const { product } = state;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="bg-white rounded shadow-md p-6">
-        <img
-          src={product.image}
-          alt={product.title}
-          className="w-full h-100 object-contain mb-8"
-        />
-        <h1 className="text-2xl font-bold mb-5">{product.title}</h1>
-        <p className="text-sm text-gray-600 mb-2">
-          Category: <strong>{product.category}</strong>
-        </p>
-        <p className="text-gray-700">{product.description}</p>
+    <>
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        <div className="bg-white rounded shadow-md p-6">
+          <img
+            src={product.image}
+            alt={product.title}
+            className="w-full h-100 object-contain mb-8"
+          />
+          <h1 className="text-2xl font-bold mb-5">{product.title}</h1>
+          <p className="text-sm text-gray-600 mb-2">
+            Category: <strong>{product.category}</strong>
+          </p>
+          <p className="text-gray-700">{product.description}</p>
+        </div>
       </div>
-    </div>
+      <ProductReviews reviews={reviews} onAddReview={handleAddReview} />
+    </>
   );
 }
 
