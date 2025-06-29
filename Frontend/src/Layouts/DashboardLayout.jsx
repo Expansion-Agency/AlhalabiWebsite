@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
-import Footer from "./Components/Footer";
-import Header from "./Components/Header";
-import Menu from "./Components/Menu";
+// src/Layouts/DashboardLayout.jsx
+
+import { useState, useEffect } from "react";
+import DashboardHeader from "../Dashboard/Components/Header";
+import DashboardMenu from "../Dashboard/Components/Menu";
 import { useTranslation } from "react-i18next";
 
-function Layout({ children }) {
+function DashboardLayout({ children }) {
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
   });
+
   const { i18n } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -19,7 +21,7 @@ function Layout({ children }) {
   };
 
   useEffect(() => {
-    i18n.changeLanguage(selectedLanguage); // Make sure it's applied on mount
+    i18n.changeLanguage(selectedLanguage);
   }, [i18n, selectedLanguage]);
 
   const toggleMenuVisibility = () => {
@@ -28,26 +30,16 @@ function Layout({ children }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div
-        className={`transition-all duration-300 ${
-          isMenuVisible
-            ? "blur-xs brightness-65 pointer-events-none select-none"
-            : ""
-        }`}
-      >
-        <Header
+      <div className={`transition-all duration-300 `}>
+        <DashboardHeader
           toggleMenuVisibility={toggleMenuVisibility}
           selectedLanguage={selectedLanguage}
           handleLanguageChange={handleLanguageChange}
         />
         <main className="flex-grow">{children}</main>
-        <Footer
-          selectedLanguage={selectedLanguage}
-          handleLanguageChange={handleLanguageChange}
-        />
       </div>
 
-      <Menu
+      <DashboardMenu
         isMenuVisible={isMenuVisible}
         toggleMenuVisibility={toggleMenuVisibility}
         selectedLanguage={selectedLanguage}
@@ -57,4 +49,4 @@ function Layout({ children }) {
   );
 }
 
-export default Layout;
+export default DashboardLayout;

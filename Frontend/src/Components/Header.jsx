@@ -14,7 +14,8 @@ function Header({
   const { t } = useTranslation();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showServDropdown, setShowServDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const langDropdownRef = useRef(null);
+  const servDropdownRef = useRef(null);
 
   const toggleLangDropdown = () => setShowLangDropdown((prev) => !prev);
   const toggleServDropdown = () => setShowServDropdown((prev) => !prev);
@@ -22,8 +23,16 @@ function Header({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        langDropdownRef.current &&
+        !langDropdownRef.current.contains(event.target)
+      ) {
         setShowLangDropdown(false);
+      }
+      if (
+        servDropdownRef.current &&
+        !servDropdownRef.current.contains(event.target)
+      ) {
         setShowServDropdown(false);
       }
     };
@@ -58,7 +67,7 @@ function Header({
         <div
           onClick={toggleServDropdown}
           className="relative flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"
-          ref={dropdownRef}
+          ref={servDropdownRef}
         >
           <p>Services</p>
           {showServDropdown && (
@@ -67,14 +76,20 @@ function Header({
               style={{ insetInlineEnd: 0 }}
             >
               <div
-                onClick={() => navigate("/Machines")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/Machines");
+                }}
                 className={`px-4 py-2 cursor-pointer hover:bg-gray-100 active:font-semibold active:bg-gray-100
                 }`}
               >
                 Machines
               </div>
               <div
-                onClick={() => navigate("/spare-parts")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/spare-parts");
+                }}
                 className={`px-4 py-2 cursor-pointer hover:bg-gray-100 active:font-semibold active:bg-gray-100
                 }`}
               >
@@ -94,7 +109,7 @@ function Header({
         <div
           onClick={toggleLangDropdown}
           className="relative flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"
-          ref={dropdownRef}
+          ref={langDropdownRef}
         >
           <IoEarth className="" />
           {showLangDropdown && (
@@ -103,7 +118,10 @@ function Header({
               style={{ insetInlineEnd: 0 }}
             >
               <div
-                onClick={() => selectLanguage("en")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectLanguage("en");
+                }}
                 className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
                   selectedLanguage === "en" ? "font-semibold bg-gray-100" : ""
                 }`}
@@ -111,7 +129,10 @@ function Header({
                 {t("en")}
               </div>
               <div
-                onClick={() => selectLanguage("ar")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectLanguage("ar");
+                }}
                 className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
                   selectedLanguage === "ar" ? "font-semibold bg-gray-100" : ""
                 }`}

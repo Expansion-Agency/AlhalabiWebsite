@@ -4,7 +4,7 @@ import HomeWidget from "./Components/HomeWidget";
 import Footer from "./Components/Footer";
 import Menu from "./Components/Menu";
 import Home from "./Pages/Home";
-import Layout from "./Layout";
+import Layout from "./Layouts/Layout";
 import { Route, Routes } from "react-router-dom";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
@@ -16,6 +16,8 @@ import Signup from "./Pages/Signup";
 import Resetpass from "./Pages/Resetpass";
 import Forgotpass from "./Pages/Forgotpass";
 import Profile from "./Pages/Profile";
+import DashboardHome from "./Dashboard/DashboardHome";
+import DashboardLayout from "./Layouts/DashboardLayout";
 
 function App() {
   const { i18n } = useTranslation();
@@ -78,6 +80,14 @@ function App() {
             <Layout>
               <Profile />
             </Layout>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <DashboardLayout>
+              <DashboardHome />
+            </DashboardLayout>
           }
         />
       </Routes>
