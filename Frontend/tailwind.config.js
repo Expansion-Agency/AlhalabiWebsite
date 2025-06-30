@@ -19,6 +19,9 @@ module.exports = {
       animation: {
         "infinite-scroll": "infinite-scroll 20s linear infinite",
       },
+      colors: {
+        customAmber: "#fdeacc",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

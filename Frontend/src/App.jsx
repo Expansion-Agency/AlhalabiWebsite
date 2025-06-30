@@ -18,6 +18,10 @@ import Forgotpass from "./Pages/Forgotpass";
 import Profile from "./Pages/Profile";
 import DashboardHome from "./Dashboard/DashboardHome";
 import DashboardLayout from "./Layouts/DashboardLayout";
+import DashboardAdmin from "./Dashboard/DashboardAdmin";
+import DashboardProducts from "./Dashboard/DashboardProducts";
+import DashboardCategories from "./Dashboard/DashboardCategories";
+import DashboardReviews from "./Dashboard/DashboardReviews";
 
 function App() {
   const { i18n } = useTranslation();
@@ -87,6 +91,38 @@ function App() {
           element={
             <DashboardLayout>
               <DashboardHome />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/admins"
+          element={
+            <DashboardLayout>
+              <DashboardAdmin />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/products"
+          element={
+            <DashboardLayout>
+              <DashboardProducts />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/categories"
+          element={
+            <DashboardLayout>
+              <DashboardCategories />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/reviews"
+          element={
+            <DashboardLayout>
+              <DashboardReviews />
             </DashboardLayout>
           }
         />
