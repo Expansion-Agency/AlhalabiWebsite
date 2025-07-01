@@ -28,12 +28,12 @@ function Products() {
         {t("ourproducts")}
       </h2>
       {/* Category Buttons */}
-      <div className="flex flex-wrap justify-center gap-4 mb-10">
+      <div className="flex flex-wrap justify-center gap-2 lg:gap-4 mb-5 lg:mb-10">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full border transition cursor-pointer ${
+            className={`text-sm lg:text-base px-2 lg:px-4 py-2 rounded-full border transition cursor-pointer ${
               selectedCategory === cat
                 ? "bg-amber-800 text-white border-amber-800"
                 : "bg-white text-gray-700 border-amber-950/10 hover:bg-orange-50/50"
@@ -43,7 +43,7 @@ function Products() {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 lg:gap-8">
         {filteredProducts.map((product) => (
           <div
             className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300 cursor-pointer"
@@ -55,12 +55,12 @@ function Products() {
             <img
               src={product.image}
               alt={product.title}
-              className="mx-auto w-fit h-60 object-cover"
+              className="mx-auto w-fit h-30 lg:h-60 object-cover"
             />
-            <h3 className="text-lg font-semibold text-gray-700 mb-2 px-3">
+            <h3 className="lg:text-lg font-semibold text-gray-700 mt-2 mb-2 px-3">
               {product.title}
             </h3>
-            <p className="text-sm text-gray-600 p-3">{product.description}</p>
+            <p className="text-xs lg:text-sm text-gray-600 p-3">{product.description}</p>
           </div>
         ))}
       </div>

@@ -13,7 +13,7 @@ function Profile({ selectedLanguage }) {
     <div className="flex flex-col">
       <div className="top p-5">
         <h2 className="text-2xl text-amber-950/70">
-          <b className="text-amber-950/90">Hello</b> Username
+          <b className="text-amber-950/90">{t("hello")},</b> Username
         </h2>
       </div>
       <hr className="border border-black/10" />
@@ -37,7 +37,7 @@ function Profile({ selectedLanguage }) {
               active:bg-amber-950/90 hover:text-white
             `}
           >
-            Log out <IoIosLogOut  size={20}/>
+            {t("logout")} <IoIosLogOut size={20} />
           </p>
         </div>
         {activeTab === "personal" && (

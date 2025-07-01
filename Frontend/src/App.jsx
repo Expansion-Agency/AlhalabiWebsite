@@ -22,6 +22,7 @@ import DashboardAdmin from "./Dashboard/DashboardAdmin";
 import DashboardProducts from "./Dashboard/DashboardProducts";
 import DashboardCategories from "./Dashboard/DashboardCategories";
 import DashboardReviews from "./Dashboard/DashboardReviews";
+import DashboardUsers from "./Dashboard/DashboardUsers";
 
 function App() {
   const { i18n } = useTranslation();
@@ -99,6 +100,14 @@ function App() {
           element={
             <DashboardLayout>
               <DashboardAdmin />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/users"
+          element={
+            <DashboardLayout>
+              <DashboardUsers />
             </DashboardLayout>
           }
         />

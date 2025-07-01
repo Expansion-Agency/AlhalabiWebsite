@@ -8,7 +8,7 @@ function Forgotpass() {
   const [email, setEmail] = useState("");
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-screen text-amber-950">
       {/* Mobile Design: Background Image */}
       <div className="absolute !top-0 left-0 w-full !h-1/2 sm:h-1/2 lg:hidden">
         <img
@@ -40,7 +40,7 @@ function Forgotpass() {
             />
             <button
               type="submit"
-              className="!bg-red-700 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
             >
               {t("submit")}
             </button>
@@ -48,7 +48,7 @@ function Forgotpass() {
           <div className="navto w-full flex gap-4 mt-1">
             <h5>{t("haveacc")}</h5>
             <p
-              className="text-red-500 cursor-pointer font-bold"
+              className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/login");
@@ -60,7 +60,7 @@ function Forgotpass() {
         </div>
       </div>
       {/* Mobile Design: Sign-in Form */}
-      <div className="relative !mt-auto bg-white rounded-t-4xl shadow-lg !p-10 sm:p-10! !w-full !mx-auto lg:hidden">
+      <div className="text-sm relative !mt-auto bg-white rounded-t-4xl shadow-lg !p-10 sm:p-10! !w-full !mx-auto lg:hidden">
         <h1 className="text-center text-2xl! lg:text-3xl! font-bold !mb-4">
           {t("forgotpass")}
         </h1>
@@ -79,7 +79,7 @@ function Forgotpass() {
           />
           <button
             type="submit"
-            className="bg-red-700! text-white font-bold !py-3 rounded-lg w-full"
+            className="bg-red-950 text-white font-bold py-3 rounded-lg w-full"
           >
             {t("submit")}
           </button>
@@ -88,7 +88,7 @@ function Forgotpass() {
         <div className="navto w-full flex gap-4 !mt-1">
           <h5>{t("haveacc")}</h5>
           <p
-            className="!text-red-500 cursor-pointer font-bold"
+            className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
             onClick={(e) => {
               e.preventDefault();
               navigate("/login");

@@ -40,7 +40,7 @@ const productCounts = categories
 
 export default function ProductsPerCategoryChart() {
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="items-center pb-0">
         <CardTitle>Products per Category</CardTitle>
         <CardDescription>

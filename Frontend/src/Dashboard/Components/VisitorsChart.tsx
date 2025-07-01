@@ -6,7 +6,6 @@ import { CartesianGrid, Dot, Line, LineChart } from "recharts";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -57,7 +56,7 @@ const chartConfig = {
 
 export function ChartLineDotsColors() {
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader>
         <CardTitle>Visitors - Dots Colors</CardTitle>
         {/*         <CardDescription>January - June 2024</CardDescription>

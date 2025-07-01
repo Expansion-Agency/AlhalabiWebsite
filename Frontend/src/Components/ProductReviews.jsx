@@ -1,9 +1,11 @@
 // ProductReviews.jsx
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReactStars from "react-stars";
 
 function ProductReviews({ reviews, onAddReview }) {
+  const { t } = useTranslation();
   const [newReview, setNewReview] = useState("");
   const [newRating, setNewRating] = useState(0);
 
@@ -23,9 +25,9 @@ function ProductReviews({ reviews, onAddReview }) {
 
   return (
     <div className="reviews-section mt-8 mx-10 p-6 bg-white rounded shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+      <h2 className="text-2xl font-semibold mb-4">{t("reviews")}</h2>
       {/* Existing Reviews */}
-      {reviews.length === 0 && <p>No reviews yet.</p>}
+      {reviews.length === 0 && <p>{t("noReviews")}</p>}
       {reviews.map((rev) => (
         <div
           key={rev.id}
@@ -37,8 +39,8 @@ function ProductReviews({ reviews, onAddReview }) {
           </div>
           <ReactStars
             count={5}
-            value={rating}
-            onChange={setRating}
+            value={rev.rating}
+            edit={false}
             size={24}
             color2={"#ffd700"}
           />
@@ -47,16 +49,16 @@ function ProductReviews({ reviews, onAddReview }) {
 
       {/* New Review Form */}
       <form onSubmit={handleSubmit} className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Write a Review</h3>
+        <h3 className="text-lg font-semibold mb-2">{t("writeReview")}</h3>
         <textarea
           className="lg:w-1/2 w-full p-2 border border-gray-300 rounded mb-3"
           rows={4}
           value={newReview}
           onChange={(e) => setNewReview(e.target.value)}
-          placeholder="Share your thoughts..."
+          placeholder={t("sharethoughts")}
         />
         <div className="mb-3">
-          <span className="mr-2">Your Rating:</span>
+          <span className="mr-2">{t("yourRating")}:</span>
           <ReactStars
             count={5}
             value={newRating}
@@ -69,7 +71,7 @@ function ProductReviews({ reviews, onAddReview }) {
           type="submit"
           className="bg-red-600/80 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
         >
-          Submit Review
+          {t("submitReview")}
         </button>
       </form>
     </div>

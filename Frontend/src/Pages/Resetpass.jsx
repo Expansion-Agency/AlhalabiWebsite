@@ -9,7 +9,7 @@ function Resetpass() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-screen text-amber-950">
       {/* Mobile Design: Background Image */}
       <div className="absolute !top-0 left-0 w-full !h-1/2 sm:h-1/2 lg:hidden">
         <img
@@ -31,30 +31,30 @@ function Resetpass() {
           <h2>{t("resetcont")}</h2>
           <form className="w-full mt-10">
             <label className="block font-bold mb-2" htmlFor="password">
-              {t("password")}
+              {t("newpass")}
             </label>
             <input
               className="bg-transparent !border !border-black/50 rounded-md mb-3 p-3 w-full"
               type="password"
               name="password"
-              placeholder="Enter your new password"
+              placeholder={t("newpass")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <label className="block font-bold mb-2" htmlFor="password">
-              {t("password")}
+              {t("newpass")}
             </label>
             <input
               className="bg-transparent !border !border-black/50 rounded-md mb-5 p-3 w-full"
               type="password"
               name="password"
-              placeholder="Confirm your new password"
+              placeholder={t("confirmpass")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <button
               type="submit"
-              className="!bg-red-700 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
             >
               {t("submit")}
             </button>
@@ -62,23 +62,24 @@ function Resetpass() {
         </div>
       </div>
       {/* Mobile Design: Sign-in Form */}
-      <div className="relative !mt-auto bg-white rounded-t-4xl shadow-lg !p-10 sm:p-10! !w-full !mx-auto lg:hidden">
+      <div className="text-sm relative !mt-auto bg-white rounded-t-4xl shadow-lg !p-10 sm:p-10! !w-full !mx-auto lg:hidden">
         <h2 className="text-center text-2xl lg:text-3xl font-bold mb-4">
           {t("resetpass")}
         </h2>
         <h2 className="text-center mb-8">{t("resetcont")}</h2>
         <form>
           <label className="block font-bold mb-2" htmlFor="email">
-            {t("password")}
+            {t("newpass")}
           </label>
           <input
             className="input bg-transparent border border-black/50 rounded-md mb-3 p-3 w-full"
             type="password"
             name="password"
             value={password}
+            placeholder={t("newpass")}
           />
           <label className="block font-bold mb-2" htmlFor="password">
-            {t("password")}
+            {t("newpass")}
           </label>
           <input
             className="input bg-transparent border border-black/50 rounded-md mb-5 p-3 w-full"
@@ -86,11 +87,12 @@ function Resetpass() {
             name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder={t("confirmpass")}
           />
 
           <button
             type="submit"
-            className="bg-red-700! text-white font-bold py-3 rounded-lg w-full"
+            className="bg-red-950 text-white font-bold py-3 rounded-lg w-full"
           >
             {t("submit")}
           </button>

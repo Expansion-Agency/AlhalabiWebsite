@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+import LanguageDropdown from "@/components/LanguageDropdown";
 
 function Login({ userType }) {
   const navigate = useNavigate();
@@ -10,8 +11,24 @@ function Login({ userType }) {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
 
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    return localStorage.getItem("language") || "en";
+  });
+  const { i18n } = useTranslation();
+
+  const handleLanguageChange = (event) => {
+    const newLanguage = event.target.value;
+    localStorage.setItem("language", newLanguage);
+    i18n.changeLanguage(newLanguage);
+    setSelectedLanguage(newLanguage);
+  };
+
+  useEffect(() => {
+    i18n.changeLanguage(selectedLanguage); // Make sure it's applied on mount
+  }, [i18n, selectedLanguage]);
+
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-screen text-amber-950">
       {/* Mobile Design: Background Image */}
       <div className="absolute !top-0 left-0 w-full !h-1/2 sm:h-1/2 lg:hidden">
         <img
@@ -53,21 +70,21 @@ function Login({ userType }) {
             />
             <Link
               to={"/forgot-password"}
-              className="block text-xs !mb-5 text-right hover:text-red-500"
+              className="block text-xs mb-5 text-right hover:text-red-700"
             >
               {t("forgotpass")}
             </Link>
             <button
               type="submit"
-              className="!bg-red-700 text-white font-bold !py-3 rounded-lg w-full cursor-pointer"
+              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
             >
               {t("login")}
             </button>
           </form>
-          <div className="navto w-full flex gap-4 !mt-1">
+          <div className="navto w-full flex gap-4 mt-1">
             <h5>{t("noacc")}</h5>
             <p
-              className="!text-red-500 cursor-pointer font-bold"
+              className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/signup");
@@ -76,10 +93,16 @@ function Login({ userType }) {
               {t("register")}
             </p>
           </div>
+          <div className="mt-10 w-full flex justify-end">
+            <LanguageDropdown
+              selectedLanguage={selectedLanguage}
+              handleLanguageChange={handleLanguageChange}
+            />
+          </div>
         </div>
       </div>
       {/* Mobile Design: Sign-in Form */}
-      <div className="relative mt-auto bg-white rounded-t-4xl shadow-lg p-10 sm:p-10 w-full mx-auto lg:hidden">
+      <div className="text-sm text-amber-950 relative mt-auto bg-white rounded-t-4xl shadow-lg p-10 sm:p-10 w-full mx-auto lg:hidden">
         <h2 className="text-center text-2xl lg:text-3xl font-bold mb-8 mt-2">
           {t("login")}
         </h2>
@@ -106,13 +129,13 @@ function Login({ userType }) {
           />
           <Link
             to={"/forgot-password"}
-            className="block text-xs !mb-5 text-right hover:text-red-500"
+            className="block text-xs !mb-5 text-right hover:text-red-600"
           >
             {t("forgotpass")}
           </Link>
           <button
             type="submit"
-            className="bg-red-700! text-white font-bold !py-3 rounded-lg w-full"
+            className="bg-red-950 text-white font-bold !py-3 rounded-lg w-full"
           >
             {t("login")}
           </button>
@@ -121,7 +144,7 @@ function Login({ userType }) {
         <div className="navto w-full flex gap-4 !mt-1">
           <h5>{t("noacc")}</h5>
           <p
-            className="!text-red-500 cursor-pointer font-bold"
+            className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
             onClick={(e) => {
               e.preventDefault();
               navigate("/signup");
@@ -129,6 +152,12 @@ function Login({ userType }) {
           >
             {t("register")}
           </p>
+        </div>
+        <div className="mt-6 w-full flex justify-end">
+          <LanguageDropdown
+            selectedLanguage={selectedLanguage}
+            handleLanguageChange={handleLanguageChange}
+          />
         </div>
       </div>
     </div>

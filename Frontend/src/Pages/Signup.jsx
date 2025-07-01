@@ -17,7 +17,7 @@ function Signup({ userType }) {
   });
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-screen text-amber-950">
       {/* Mobile Design: Background Image */}
       <div className="absolute !top-0 left-0 w-full !h-1/2 sm:h-1/2 lg:hidden">
         <img
@@ -65,7 +65,7 @@ function Signup({ userType }) {
               type="password"
               name="password"
               value={formData.password}
-              placeholder="At least 6 characters"
+              placeholder={t("passplaceholder")}
             />
             <label className="block font-bold !mb-2" htmlFor="phone">
               {t("number")}
@@ -79,7 +79,7 @@ function Signup({ userType }) {
             />
             <button
               type="submit"
-              className="!bg-red-700 text-white font-bold !py-3 rounded-lg w-full cursor-pointer"
+              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
             >
               {t("register")}
             </button>
@@ -88,7 +88,7 @@ function Signup({ userType }) {
             <p className="text-sm">
               {t("haveacc")}{" "}
               <span
-                className="text-red-500 cursor-pointer font-bold"
+                className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
                 onClick={() => navigate("/login")}
               >
                 {t("login")}
@@ -98,7 +98,7 @@ function Signup({ userType }) {
         </div>
       </div>
       {/* Mobile Design: Sign-in Form */}
-      <div className="relative !mt-auto bg-white rounded-t-4xl shadow-lg !p-10 sm:p-10! !w-full !mx-auto lg:hidden">
+      <div className="relative text-sm !mt-auto bg-white rounded-t-4xl shadow-lg !p-10 sm:p-10! !w-full !mx-auto lg:hidden">
         <h2 className="text-center text-2xl lg:text-3xl font-bold mb-8">
           {t("register")}
         </h2>
@@ -111,6 +111,7 @@ function Signup({ userType }) {
             type="text"
             name="username"
             value={formData.username}
+            placeholder={t("username")}
           />
           <label className="block font-bold !mb-2" htmlFor="email">
             {t("email")}
@@ -121,6 +122,7 @@ function Signup({ userType }) {
             name="email"
             value={formData.email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="email@example.com"
           />
           <label className="block font-bold !mb-2" htmlFor="password">
             {t("password")}
@@ -130,28 +132,30 @@ function Signup({ userType }) {
             type="password"
             name="password"
             value={formData.password}
+            placeholder={t("passplaceholder")}
           />
           <label className="block font-bold !mb-2" htmlFor="email">
             {t("number")}
           </label>
           <input
-            className="input bg-transparent !border !border-black/50 rounded-md !mb-5 !p-3 w-full"
+            className="input bg-transparent border !border-black/50 rounded-md !mb-5 !p-3 w-full"
             type="tel"
             name="phone"
             value={formData.phone}
+            placeholder="(e.g. 0123456789)"
           />
           <button
             type="submit"
-            className="bg-red-700! text-white font-bold !py-3 rounded-lg w-full"
+            className="bg-red-950 text-white font-bold py-3 rounded-lg w-full"
           >
             {t("register")}
           </button>
         </form>
-        <div className="forgotpass w-full !mt-4"></div>
-        <div className="navto w-full flex gap-4 !mt-1">
+        <div className="forgotpass w-full mt-4"></div>
+        <div className="navto w-full flex gap-4 mt-1">
           <h5>{t("haveacc")}</h5>
           <p
-            className="!text-red-500 cursor-pointer font-bold"
+            className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
             onClick={(e) => {
               e.preventDefault();
               navigate("/login");
