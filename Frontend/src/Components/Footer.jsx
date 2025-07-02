@@ -24,13 +24,11 @@ function Footer() {
           </Link>
         </div>
         <div className="flex flex-col h-36 gap-3">
-          <h2 className="font-bold text-black/80 tracking-wider">Service</h2>
-          <Link to="/machines" className="text-black/50">
-            Machines
-          </Link>
-          <Link to="/spare-parts" className="text-black/50">
-            Spare Parts
-          </Link>
+          <h2 className="font-bold text-black/80 tracking-wider">
+            {t("products")}
+          </h2>
+          <Link className="text-black/50">{t("machines")}</Link>
+          <Link className="text-black/50">{t("spareParts")}</Link>
         </div>
       </div>
       <div className="flex flex-col justify-between p-5">

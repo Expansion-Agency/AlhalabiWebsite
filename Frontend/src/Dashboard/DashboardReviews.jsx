@@ -1,5 +1,7 @@
 import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import { animate, motion, useMotionValue, useTransform } from "motion/react";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -29,13 +31,21 @@ function DashboardReviews() {
   ];
   const totalReviews = reviews.length;
   const acceptedReviews = reviews.filter((rev) => rev.accepted).length;
+  const count = useMotionValue(0);
+  const rounded = useTransform(() => Math.round(count.get()));
+
+  useEffect(() => {
+    const controls = animate(count, totalReviews, { duration: 1 });
+    return () => controls.stop();
+  }, [totalReviews]);
+
   return (
     <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
       <CardHeader className="flex justify-between items-center pb-0">
         <div className="flex flex-col">
           <CardTitle>{t("totalReviews")}</CardTitle>
           <CardDescription className="text-4xl font-bold">
-            {totalReviews}
+            <motion.span>{rounded}</motion.span>
           </CardDescription>
         </div>
       </CardHeader>

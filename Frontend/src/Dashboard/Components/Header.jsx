@@ -12,13 +12,13 @@ function Header({ toggleMenuVisibility }) {
       className="flex bg-amber-950/10 p-4 items-center justify-between z-50 relative"
     >
       <h2 className="font-bold text-xl">{t("dashAlhalabi")}</h2>
-      <div className="flex items-center gap-4">
-        <Link to="/" className="text-sm hover:underline">
+      <div className="flex items-center gap-2 lg:gap-4">
+        <Link to="/" className="text-xs lg:text-sm hover:underline ">
           {t("backtowebsite")}
         </Link>
         <button
           onClick={() => navigate("/login")}
-          className="bg-amber-950 text-white text-sm px-4 py-2 rounded cursor-pointer hover:bg-amber-950/30 transition-colors duration-200"
+          className="bg-amber-950 text-white whitespace-nowrap text-xs lg:text-sm px-2 lg:px-4 py-2 rounded cursor-pointer hover:bg-amber-950/30 transition-colors duration-200"
         >
           {t("logout")}
         </button>
