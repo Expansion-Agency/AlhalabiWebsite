@@ -1,4 +1,4 @@
-// src/components/LanguageDropdown.jsx
+// src/Components/LanguageDropdown.jsx
 
 import React, { useState, useRef, useEffect } from "react";
 import { IoEarth } from "react-icons/io5";
