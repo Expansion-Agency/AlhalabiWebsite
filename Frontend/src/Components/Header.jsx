@@ -5,7 +5,7 @@ import { LuMenu } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosContact } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
-import LanguageDropdown from "@/components/LanguageDropdown";
+import LanguageDropdown from "@/Components/LanguageDropdown";
 
 function Header({
   toggleMenuVisibility,
