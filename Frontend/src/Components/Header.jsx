@@ -73,6 +73,7 @@ function Header({
         </Link>
       </div>
       <div className="flex items-center gap-4 text-sm text-amber-950/60">
+        <button onClick={() => navigate("/dashboard")}>لوحة التحكم</button>
         <LanguageDropdown
           selectedLanguage={selectedLanguage}
           handleLanguageChange={handleLanguageChange}
