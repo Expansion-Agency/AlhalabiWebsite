@@ -11,7 +11,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../Components/ui/card";
+} from "../../Components/ui/card";
 
 import { allProducts, categories } from "../../productsData";
 
