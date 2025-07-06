@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink } from "react-router-dom";
-import LanguageDropdown from "@/components/LanguageDropdown";
+import LanguageDropdown from "../../Components/LanguageDropdown";
 
 function Menu({
   isMenuVisible,

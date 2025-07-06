@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../Components/ui/card";
 import { t } from "i18next";
 
 function DashboardReviews() {

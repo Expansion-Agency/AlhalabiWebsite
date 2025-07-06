@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../Components/ui/card";
 import { useTranslation } from "react-i18next";
 
 export default function TotalUsersCard() {

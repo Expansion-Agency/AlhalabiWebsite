@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import LanguageDropdown from "@/components/LanguageDropdown";
+import LanguageDropdown from "../Components/LanguageDropdown";
 
 function Login({ userType }) {
   const navigate = useNavigate();
