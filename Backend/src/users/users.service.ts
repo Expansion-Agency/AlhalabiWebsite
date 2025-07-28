@@ -2,12 +2,12 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import prisma from 'src/shared/prisma/client';
-import { CreateUserDto } from './dto/createUser.dto';
-import { Users } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
-import { UpdateUserDto } from './dto/updateUser.dto';
+} from "@nestjs/common";
+import prisma from "src/shared/prisma/client";
+import { CreateUserDto } from "./dto/createUser.dto";
+import { Users } from "@prisma/client";
+import * as bcrypt from "bcrypt";
+import { UpdateUserDto } from "./dto/updateUser.dto";
 
 @Injectable()
 export class UsersService {
@@ -16,7 +16,7 @@ export class UsersService {
     const isOtpVerified = await this.isVerified(user.email);
     if (!isOtpVerified) {
       throw new BadRequestException(
-        'Email is not verified. Please verify OTP.',
+        "Email is not verified. Please verify OTP."
       );
     }
     const existingUser = await prisma.users.findFirst({
@@ -31,13 +31,13 @@ export class UsersService {
 
     if (existingUser) {
       if (existingUser.email === user.email) {
-        throw new BadRequestException('Email already exists');
+        throw new BadRequestException("Email already exists");
       }
       if (existingUser.username === user.username) {
-        throw new BadRequestException('Username already exists');
+        throw new BadRequestException("Username already exists");
       }
       if (existingUser.phone === user.phone) {
-        throw new BadRequestException('Phone number already exists');
+        throw new BadRequestException("Phone number already exists");
       }
     }
 
@@ -46,9 +46,6 @@ export class UsersService {
     return await prisma.users.create({
       data: {
         ...user,
-        carts: {
-          create: {},
-        },
       },
     });
   }
@@ -56,7 +53,7 @@ export class UsersService {
   async update(id: number, user: UpdateUserDto): Promise<any> {
     const userToUpdate = await prisma.users.findUnique({ where: { id } });
     if (!userToUpdate) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     return await prisma.users.update({
@@ -75,7 +72,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('user does not exist');
+      throw new NotFoundException("user does not exist");
     }
 
     await prisma.users.update({
@@ -111,32 +108,12 @@ export class UsersService {
   async findUserById(id: number) {
     return await prisma.users.findUnique({
       where: { id },
-      include: {
-        UserAddresses: {
-          include: {
-            Addresses: {
-              include: {
-                City: {
-                  include: {
-                    Countries: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        orders: true,
-      },
     });
   }
 
   async findUserProfileById(id: number) {
     const user = await prisma.users.findUnique({
       where: { id },
-      include: {
-        carts: true,
-        orders: true,
-      },
     });
     return user;
   }
@@ -148,7 +125,7 @@ export class UsersService {
     const otpCodes = await prisma.otpCodes.findFirst({
       where: {
         input,
-        userType: 'USER',
+        userType: "USER",
         isVerified: true,
       },
     });

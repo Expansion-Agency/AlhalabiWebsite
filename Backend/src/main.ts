@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ["error", "warn", "log", "debug", "verbose"],
   });
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3002;
 
   app.enableCors({
     origin: [
@@ -49,6 +49,6 @@ async function bootstrap() {
 }
 bootstrap()
   .then(() =>
-    console.log(`Application is running on: http://localhost:${3000}`)
+    console.log(`Application is running on: http://localhost:${3002}`)
   )
   .catch((error) => console.error("Error during application startup:", error));

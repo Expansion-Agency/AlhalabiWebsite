@@ -3,7 +3,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
-import { CategoryModule } from "./category/category.module";
+import { CategoryModule } from "./categories/category.module";
 import { ProductImagesModule } from "./product-images/product-images.module";
 import { MailModule } from "./mail/mail.module";
 import { ProductsController } from "./products/products.controller";
