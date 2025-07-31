@@ -26,7 +26,6 @@ import DashboardUsers from "./Dashboard/DashboardUsers";
 
 function App() {
   const { i18n } = useTranslation();
-
   useEffect(() => {
     const lang = i18n.language || "en";
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";

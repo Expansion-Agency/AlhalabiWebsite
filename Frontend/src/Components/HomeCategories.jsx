@@ -1,18 +1,27 @@
 import React from "react";
-import { allProducts, categories } from "../productsData";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
 
 function HomeCategories() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const categoryCards = Array.from(
-    new Map(
-      allProducts
-        .filter((p) => p.category) // Just in case
-        .map((p) => [p.category, { name: p.category, image: p.image }])
-    ).values()
-  );
+  const API_URL = import.meta.env.VITE_API_URL;
+  const [categoryCards, setCategoryCards] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/category`)
+      .then((res) => {
+        setCategoryCards(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch categories:", err);
+      });
+  }, [API_URL]);
+
   const isOdd = categoryCards.length % 2 !== 0;
 
   return (
