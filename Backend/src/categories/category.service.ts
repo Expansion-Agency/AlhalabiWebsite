@@ -4,19 +4,20 @@ import {
   InternalServerErrorException,
   NotFoundException,
   UploadedFile,
-} from '@nestjs/common';
-import prisma from 'src/shared/prisma/client';
-import { CreateCategoryDto } from './dto/createCategory.dto';
-import Client from 'ftp';
+} from "@nestjs/common";
+import prisma from "src/shared/prisma/client";
+import { CreateCategoryDto } from "./dto/createCategory.dto";
+import Client from "ftp";
+import { Multer } from "multer";
 
 @Injectable()
 export class CategoryService {
   async create(
     categoryDto: CreateCategoryDto,
-    @UploadedFile() imageFile: Express.Multer.File,
+    @UploadedFile() imageFile: Express.Multer.File
   ) {
     if (!imageFile) {
-      throw new BadRequestException('No file uploaded');
+      throw new BadRequestException("No file uploaded");
     }
 
     const ftpClient = new Client();
@@ -30,7 +31,7 @@ export class CategoryService {
 
     try {
       await new Promise((resolve, reject) => {
-        ftpClient.on('ready', () => {
+        ftpClient.on("ready", () => {
           ftpClient.put(imageFile.buffer, remoteFilePath, (err) => {
             if (err) {
               reject(err);
@@ -41,7 +42,7 @@ export class CategoryService {
           });
         });
 
-        ftpClient.on('error', (err) => {
+        ftpClient.on("error", (err) => {
           reject(err);
         });
 
@@ -60,7 +61,7 @@ export class CategoryService {
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(
-        'Failed to upload file to FTP server',
+        "Failed to upload file to FTP server"
       );
     }
   }
@@ -88,7 +89,7 @@ export class CategoryService {
     });
 
     if (!category) {
-      throw new NotFoundException('Category not found');
+      throw new NotFoundException("Category not found");
     }
 
     return category;
@@ -105,7 +106,7 @@ export class CategoryService {
     });
 
     if (!category) {
-      throw new NotFoundException('Category not found');
+      throw new NotFoundException("Category not found");
     }
 
     return category;
@@ -122,7 +123,7 @@ export class CategoryService {
     });
 
     if (!category) {
-      throw new NotFoundException('Category not found');
+      throw new NotFoundException("Category not found");
     }
 
     return category;

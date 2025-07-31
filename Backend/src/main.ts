@@ -15,8 +15,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "https://alhalabi-website.vercel.app/", // production frontend on Vercel
-      /* 'https://www.charmi.shop', */
-      "http://localhost:3001", // local dev
+      "http://localhost:5173", // local dev
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "userType"],
@@ -36,7 +35,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Alhalabi API")
     .setDescription("The Alhalabi API description")
-    .addServer("https://api.alhalabi.shop")
+    .addServer("https://linen-loris-259739.hostingersite.com")
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();
@@ -45,7 +44,7 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
 
-  await app.listen(port);
+  await app.listen(port, "0.0.0.0");
 }
 bootstrap()
   .then(() =>

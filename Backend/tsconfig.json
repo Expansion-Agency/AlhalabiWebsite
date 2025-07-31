@@ -4,6 +4,7 @@
     "paths": {
       "src/*": ["./src/*"]
     },
+    "types": ["jest", "node"],
     "target": "ES2017",
     "module": "commonjs",
     "moduleResolution": "node",
