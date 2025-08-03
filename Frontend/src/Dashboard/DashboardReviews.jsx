@@ -13,6 +13,8 @@ import {
 import { t } from "i18next";
 
 function DashboardReviews() {
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const reviews = [
     {
       id: 1,

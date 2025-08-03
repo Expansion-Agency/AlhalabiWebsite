@@ -1,20 +1,72 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 function Signup({ userType }) {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     phone: "",
   });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    document.activeElement.blur();
+    setLoading(true);
+    setError("");
+
+    try {
+      localStorage.setItem("signupData", JSON.stringify(formData));
+
+      if (
+        !formData.email ||
+        !formData.password ||
+        !formData.username ||
+        !formData.phone
+      ) {
+        setError("Please fill in all fields");
+        setLoading(false);
+        return;
+      }
+
+      await axios.post(
+        `${API_URL}/auth/sendotp`,
+        { input: formData.email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            userType: "USER",
+          },
+        }
+      );
+
+      // Navigate to OTP verification page with email
+      navigate(`/otp?input=${encodeURIComponent(formData.email)}&from=signup`);
+    } catch (err) {
+      console.error("OTP send error:", err.response?.data || err.message);
+      setError(
+        err.response?.data?.message || "Failed to send OTP. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative flex flex-col h-screen text-amber-950">
@@ -36,7 +88,7 @@ function Signup({ userType }) {
         </div>
         <div className="absolute z-10 bg-white flex flex-col items-center justify-center w-2/5 h-screen p-20">
           <h2 className="text-3xl font-bold mb-10">{t("register")}</h2>
-          <form className="w-full">
+          <form className="w-full" onSubmit={handleSubmit}>
             <label className="block font-bold !mb-2" htmlFor="username">
               {t("username")}
             </label>
@@ -46,6 +98,7 @@ function Signup({ userType }) {
               name="username"
               value={formData.username}
               placeholder={t("username")}
+              onChange={handleChange}
             />
             <label className="block font-bold !mb-2" htmlFor="email">
               {t("email")}
@@ -56,6 +109,7 @@ function Signup({ userType }) {
               name="email"
               value={formData.email}
               placeholder="email@example.com"
+              onChange={handleChange}
             />
             <label className="block font-bold !mb-2" htmlFor="password">
               {t("password")}
@@ -66,6 +120,7 @@ function Signup({ userType }) {
               name="password"
               value={formData.password}
               placeholder={t("passplaceholder")}
+              onChange={handleChange}
             />
             <label className="block font-bold !mb-2" htmlFor="phone">
               {t("number")}
@@ -76,6 +131,7 @@ function Signup({ userType }) {
               name="phone"
               value={formData.phone}
               placeholder="(e.g. 0123456789)"
+              onChange={handleChange}
             />
             <button
               type="submit"
@@ -102,7 +158,7 @@ function Signup({ userType }) {
         <h2 className="text-center text-2xl lg:text-3xl font-bold mb-8">
           {t("register")}
         </h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <label className="block font-bold !mb-2" htmlFor="email">
             {t("username")}
           </label>
@@ -112,6 +168,7 @@ function Signup({ userType }) {
             name="username"
             value={formData.username}
             placeholder={t("username")}
+            onChange={handleChange}
           />
           <label className="block font-bold !mb-2" htmlFor="email">
             {t("email")}
@@ -121,8 +178,8 @@ function Signup({ userType }) {
             type="email"
             name="email"
             value={formData.email}
-            onChange={(e) => setEmail(e.target.value)}
             placeholder="email@example.com"
+            onChange={handleChange}
           />
           <label className="block font-bold !mb-2" htmlFor="password">
             {t("password")}
@@ -133,6 +190,7 @@ function Signup({ userType }) {
             name="password"
             value={formData.password}
             placeholder={t("passplaceholder")}
+            onChange={handleChange}
           />
           <label className="block font-bold !mb-2" htmlFor="email">
             {t("number")}
@@ -143,6 +201,7 @@ function Signup({ userType }) {
             name="phone"
             value={formData.phone}
             placeholder="(e.g. 0123456789)"
+            onChange={handleChange}
           />
           <button
             type="submit"

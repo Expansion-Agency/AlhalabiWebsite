@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import Reviews from "../Components/Reviews";
 import ParallaxText from "../Components/ParallaxText";
 
-function Home() {
+function Home({ category, setCategory, fetchCategories }) {
   const { t, i18n } = useTranslation();
   return (
     <>
@@ -19,7 +19,11 @@ function Home() {
           {t("Introcont")}
         </p>
       </div>
-      <HomeCategories />
+      <HomeCategories
+        category={category}
+        setCategory={setCategory}
+        fetchCategories={fetchCategories}
+      />
       <Reviews />
     </>
   );

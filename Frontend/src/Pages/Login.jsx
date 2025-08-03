@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
+import axios from "axios";
 
 function Login({ userType }) {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Login({ userType }) {
   const [error, setError] = useState("");
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
@@ -24,8 +26,59 @@ function Login({ userType }) {
   };
 
   useEffect(() => {
-    i18n.changeLanguage(selectedLanguage); // Make sure it's applied on mount
+    i18n.changeLanguage(selectedLanguage);
   }, [i18n, selectedLanguage]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/login`,
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            accept: "*/*",
+            userType: userType,
+          },
+        }
+      );
+
+      const token = response.data.data.accessToken;
+
+      localStorage.setItem("token", response.data.data.accessToken);
+      localStorage.setItem("userType", userType);
+
+      if (userType !== "ADMIN") {
+        const profileResponse = await axios.get(`${API_URL}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const userId = profileResponse.data.data.id;
+        localStorage.setItem("userId", userId);
+      }
+
+      if (userType === "ADMIN") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Login Error:", err);
+
+      if (err.response) {
+        setError(err.response.data.message || "Invalid credentials");
+      } else if (err.request) {
+        setError("No response from server. Check your connection.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    }
+  };
 
   return (
     <div className="relative flex flex-col h-screen text-amber-950">
@@ -75,6 +128,7 @@ function Login({ userType }) {
               {t("forgotpass")}
             </Link>
             <button
+              onClick={handleLogin}
               type="submit"
               className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
             >
@@ -134,6 +188,7 @@ function Login({ userType }) {
             {t("forgotpass")}
           </Link>
           <button
+            onClick={handleLogin}
             type="submit"
             className="bg-red-950 text-white font-bold !py-3 rounded-lg w-full"
           >

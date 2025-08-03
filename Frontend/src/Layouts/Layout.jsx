@@ -1,10 +1,14 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 import Menu from "../Components/Menu";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 function Layout({ children }) {
+  const API_URL = import.meta.env.VITE_API_URL;
+  const [category, setCategory] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
   });
@@ -25,6 +29,18 @@ function Layout({ children }) {
   const toggleMenuVisibility = () => {
     setIsMenuVisible((prev) => !prev);
   };
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/category`);
+      setCategory(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -40,7 +56,13 @@ function Layout({ children }) {
           selectedLanguage={selectedLanguage}
           handleLanguageChange={handleLanguageChange}
         />
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow">
+          {React.cloneElement(children, {
+            category,
+            setCategory,
+            fetchCategories,
+          })}
+        </main>
         <Footer
           selectedLanguage={selectedLanguage}
           handleLanguageChange={handleLanguageChange}

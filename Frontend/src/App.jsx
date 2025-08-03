@@ -74,7 +74,9 @@ function App() {
             </Layout>
           }
         />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login userType="USER" />} />
+        <Route path="/admin-login" element={<Login userType="ADMIN" />} />
+
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<Forgotpass />} />
         <Route path="/reset-password" element={<Resetpass />} />

@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 
 function DashboardHome() {
   const { t } = useTranslation();
+    const API_URL = import.meta.env.VITE_API_URL;
+
   return (
     <div className="flex flex-col p-10">
       <h2 className="text-xl font-bold mb-4">

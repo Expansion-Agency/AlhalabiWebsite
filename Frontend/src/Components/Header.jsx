@@ -86,7 +86,14 @@ function Header({
           <p className="text-sm">{t("contact")}</p>
         </div>
         <div
-          onClick={() => navigate("/profile")}
+          onClick={() => {
+            const token = localStorage.getItem("token");
+            if (token) {
+              navigate("/profile");
+            } else {
+              navigate("/login");
+            }
+          }}
           className="hidden lg:flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"
         >
           <FaUserCircle size={18} />

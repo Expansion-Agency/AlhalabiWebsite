@@ -5,24 +5,18 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 
-function HomeCategories() {
+function HomeCategories({ category, setCategory, fetchCategories }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const API_URL = import.meta.env.VITE_API_URL;
   const [categoryCards, setCategoryCards] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/category`)
-      .then((res) => {
-        setCategoryCards(res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch categories:", err);
-      });
-  }, [API_URL]);
+    setCategoryCards(category);
+  }, [category]);
 
   const isOdd = categoryCards.length % 2 !== 0;
+
+  console.log("category in HomeCategories:", category);
 
   return (
     <div className="w-full items-center justify-center flex flex-col my-7">
@@ -37,17 +31,19 @@ function HomeCategories() {
                 isLastItem ? "col-span-2 justify-self-center w-1/2" : ""
               }`}
               onClick={() =>
-                navigate("/products", { state: { category: cat.name } })
+                navigate("/products", {
+                  state: { category: cat.nameEn, categoryId: cat.id },
+                })
               }
             >
               <img
                 className="w-full lg:h-90 object-cover transition-transform duration-300 group-hover:scale-105"
-                src={cat.image}
-                alt={cat.name}
+                src={cat.imagePath}
+                alt={cat.nameEn}
               />
               <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition" />
               <p className="absolute top-3/4 left-1/4 transform -translate-x-1/3 translate-y-1/3 lg:-translate-x-1/2 lg:translate-y-1/4 text-white lg:text-xl z-10">
-                {cat.name}
+                {cat.nameEn}
               </p>
             </div>
           );
