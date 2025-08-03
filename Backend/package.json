@@ -30,6 +30,7 @@
     "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.5.0",
     "@types/bcrypt": "^5.0.2",
+    "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
     "crypto": "^1.0.1",
     "ftp": "^0.3.10",
