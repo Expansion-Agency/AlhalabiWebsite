@@ -114,7 +114,14 @@ function Products() {
             className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300 cursor-pointer"
             key={product.id}
             onClick={() =>
-              navigate(`/product/${product.id}`, { state: { product } })
+              navigate(`/product/${product.id}`, {
+                state: {
+                  product,
+                  category: categories.find(
+                    (cat) => cat.id === product.categoryId
+                  ),
+                },
+              })
             }
           >
             <img

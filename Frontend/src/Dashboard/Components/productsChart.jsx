@@ -3,6 +3,8 @@
 import React from "react";
 import { Pie, PieChart, Cell, Tooltip, Legend } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import {
   Card,
@@ -12,8 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../Components/ui/card";
-
-import { allProducts, categories } from "../../productsData";
 
 function getColorForCategory(category) {
   const colorMap = {
@@ -27,24 +27,65 @@ function getColorForCategory(category) {
   return colorMap[category] || "#cbd5e1";
 }
 
-const productCounts = categories
-  .filter((category) => category !== "All")
-  .map((category) => {
-    const count = allProducts.filter((p) => p.category === category).length;
-    return {
-      category,
-      count,
-      fill: getColorForCategory(category),
-    };
-  });
+export default function ProductsPerCategoryChart({
+  category,
+  setCategory,
+  fetchCategories,
+}) {
+  const API_URL = import.meta.env.VITE_API_URL;
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
 
-export default function ProductsPerCategoryChart() {
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/products`);
+      if (response.data && Array.isArray(response.data)) {
+        const productsWithImages = response.data.map((product) => {
+          const productImages = product.productImages || [];
+          const defaultImage = productImages.find((image) => image.isDefault);
+          const imageUrl = defaultImage
+            ? `${defaultImage.imagePath}`
+            : "/path/to/default/image.jpg";
+
+          console.log("Product img:", imageUrl);
+
+          return {
+            ...product,
+            imageUrl: imageUrl,
+          };
+        });
+        console.log("Final Products with images:", productsWithImages);
+        setProducts(productsWithImages);
+      } else {
+        console.error(
+          "No products found or incorrect data format:",
+          response.data
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+  const productCounts = category
+    .filter((cat) => cat !== "All")
+    .map((cat) => {
+      const count = products.filter((p) => p.categoryId === cat.id).length;
+      return {
+        name: cat.nameEn,
+        count,
+        fill: getColorForCategory(cat.nameEn),
+      };
+    });
+
   return (
     <Card className="w-full max-w-sm shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="items-center pb-0">
         <CardTitle>Products per Category</CardTitle>
         <CardDescription>
-          Distribution of {allProducts.length} products
+          Distribution of {products.length} products
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center items-center text-sm">

@@ -12,6 +12,7 @@ function ProductView() {
   const [loading, setLoading] = useState(true);
   const API_URL = import.meta.env.VITE_API_URL;
   const { productId } = useParams();
+  const [category, setCategory] = useState({ nameEn: "Unknown Category" });
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -20,12 +21,17 @@ function ProductView() {
         const data = res.data;
         setProduct(data);
         setImages(data.productImages || []);
+        // Fetch categories and match
+        const catRes = await axios.get(`${API_URL}/category`);
+        const matched = catRes.data.find((cat) => cat.id === data.categoryId);
+        setCategory(matched || { nameEn: "Unknown Category" });
         setLoading(false);
       } catch (err) {
         console.error("Error fetching product", err);
         setLoading(false);
       }
     };
+    console.log("Product ID:", productId);
 
     fetchProduct();
   }, [productId]);
@@ -53,6 +59,7 @@ function ProductView() {
       </div>
     );
   }
+  console.log("Product ID:", productId);
 
   return (
     <>
@@ -67,7 +74,7 @@ function ProductView() {
           )}
           <h1 className="text-2xl font-bold mb-5">{product.nameEn}</h1>
           <p className="text-sm text-gray-600 mb-2">
-            Category: <strong>{product.category}</strong>
+            Category: <strong>{category.nameEn}</strong>
           </p>
           <p className="text-gray-700">{product.descriptionEn}</p>
         </div>

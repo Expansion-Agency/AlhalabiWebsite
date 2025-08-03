@@ -4,9 +4,9 @@ import Component from "./Components/productsChart";
 import TotalUsersCard from "./Components/UsersCard";
 import { useTranslation } from "react-i18next";
 
-function DashboardHome() {
+function DashboardHome({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();
-    const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   return (
     <div className="flex flex-col p-10">
@@ -16,7 +16,11 @@ function DashboardHome() {
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex flex-col gap-4">
           <TotalUsersCard />
-          <Component />
+          <Component
+            category={category}
+            setCategory={setCategory}
+            fetchCategories={fetchCategories}
+          />
         </div>
         <ChartLineDotsColors />
       </div>
