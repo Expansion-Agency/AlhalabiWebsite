@@ -59,7 +59,7 @@ function ProductView() {
       </div>
     );
   }
-  console.log("Product ID:", productId);
+  console.log("Product data:", product);
 
   return (
     <>
@@ -67,7 +67,7 @@ function ProductView() {
         <div className="bg-white rounded shadow-md p-6">
           {images.length > 0 && (
             <img
-              src={images[0].url || images[0]} // adjust based on your API structure
+              src={images[0].imagePath || images[0]} // adjust based on your API structure
               alt={product.nameEn}
               className="w-full h-100 object-contain mb-8"
             />
