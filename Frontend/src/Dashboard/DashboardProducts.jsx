@@ -90,10 +90,10 @@ function DashboardProducts({ category, fetchCategories }) {
           nameAr: newProduct.nameAr,
           descriptionEn: newProduct.descriptionEn,
           descriptionAr: newProduct.descriptionAr,
-          priceEgp: newProduct.priceEgp,
-          priceUsd: newProduct.priceUsd,
-          quantity: newProduct.quantity,
-          categoryId: newProduct.categoryId,
+          priceEgp: Number(newProduct.priceEgp),
+          priceUsd: Number(newProduct.priceUsd),
+          quantity: Number(newProduct.quantity),
+          categoryId: Number(newProduct.categoryId),
         },
         {
           headers: {
@@ -159,10 +159,10 @@ function DashboardProducts({ category, fetchCategories }) {
       nameAr: product.nameAr,
       descriptionEn: product.descriptionEn,
       descriptionAr: product.descriptionAr,
-      priceEgp: product.priceEgp,
-      priceUsd: product.priceUsd,
-      quantity: product.quantity,
-      categoryId: product.categoryId || null,
+      priceEgp: Number(product.priceEgp),
+      priceUsd: Number(product.priceUsd),
+      quantity: Number(product.quantity),
+      categoryId: Number(product.categoryId) || null,
     });
     setTimeout(() => {
       editModalRef.current?.scrollIntoView({ behavior: "smooth" });
