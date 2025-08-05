@@ -27,11 +27,13 @@ export class ProductsService {
     });
 
     const product = await prisma.products.findUnique({
+       
       include: {
         productImages: true,
       },
       where: {
         id: id,
+        
       },
     });
     return product;

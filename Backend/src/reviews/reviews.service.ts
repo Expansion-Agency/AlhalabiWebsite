@@ -26,8 +26,11 @@ export class ReviewsService {
 
 async create(review: CreateReviewDto) {
   await prisma.reviews.create({
-  data: {
-...review,  },
+ data: {
+    comment: review.comment,
+    rating: review.rating,
+    productId:review.productId,
+  }
 });
 
 }
@@ -35,14 +38,9 @@ async create(review: CreateReviewDto) {
 async update(id: number, review: UpdateReviewDto) {
   return await prisma.reviews.update({
     where: { id },
-    data: {
-      rating: review.rating,
-      comment: review.comment,
-      product: review.productId ? {
-        connect: { id: review.productId }
-      } : undefined,
-    },
-  });
+     data: {
+...review,  },
+});
 }
 
 

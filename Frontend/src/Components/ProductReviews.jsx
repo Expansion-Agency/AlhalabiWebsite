@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import ReactStars from "react-stars";
 
-function ProductReviews({ reviews, onAddReview }) {
+function ProductReviews({ reviews, onAddReview,productId }) {
   const { t } = useTranslation();
   const [newReview, setNewReview] = useState("");
   const [newRating, setNewRating] = useState(0);
@@ -17,6 +17,7 @@ function ProductReviews({ reviews, onAddReview }) {
         user: "Anonymous", // Replace with logged-in user name if you have auth
         comment: newReview,
         rating: newRating,
+        productId:36,
       });
       setNewReview("");
       setNewRating(0);
