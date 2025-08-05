@@ -16,7 +16,13 @@ model Users {
   phone         String          @unique
   deletedAt     DateTime?
   isVerified    Boolean         @default(false)
+<<<<<<< Updated upstream
   reviews       Reviews[]
+=======
+
+  // Add this line for the opposite relation
+  reviews       Reviews[]       // A user can have many reviews
+>>>>>>> Stashed changes
 }
 
 model OtpCodes {
@@ -47,7 +53,11 @@ model Products {
   viewCount Int    @default(0)
 
   @@index([categoryId], map: "Products_categoryId_fkey")
+<<<<<<< Updated upstream
   reviews       Reviews[]
+=======
+   reviews       Reviews[]       // A user can have many reviews
+>>>>>>> Stashed changes
 }
 
 model productImages {
@@ -71,7 +81,22 @@ model Category {
   deletedAt DateTime?
   products  Products[]
 }
+model Reviews {
+  id        Int      @id @default(autoincrement())
+  rating    Int      // rating, typically between 1 to 5 stars
+  comment   String?  // review comment (optional)
+  createdAt DateTime @default(now())  // review creation date
+  updatedAt DateTime @updatedAt      // last update timestamp
+  productId Int      // foreign key for the product being reviewed
+  userId    Int?     // foreign key for the user who wrote the review (nullable)
 
+  // Relations
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      Users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([productId], map: "Reviews_productId_fkey")
+  @@index([userId], map: "Reviews_userId_fkey")
+}
 model Admins {
   id        Int        @id @default(autoincrement())
   email     String     @unique

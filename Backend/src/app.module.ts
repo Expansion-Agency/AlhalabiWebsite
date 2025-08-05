@@ -11,6 +11,7 @@ import { ProductsService } from "./products/products.service";
 import { ProductsModule } from "./products/products.module";
 import { ConfigModule } from "@nestjs/config";
 import { AdminsModule } from "./admins/admins.module";
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AdminsModule } from "./admins/admins.module";
     MailModule,
     ProductsModule,
     AdminsModule,
+    ReviewsModule,
   ],
   controllers: [AppController, ProductsController],
   providers: [AppService, ProductsService],

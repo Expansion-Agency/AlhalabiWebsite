@@ -2,7 +2,7 @@ import React from "react";
 import HomeWidget from "../Components/HomeWidget";
 import HomeCategories from "../Components/HomeCategories";
 import { useTranslation } from "react-i18next";
-import Reviews from "../Components/Reviews";
+// import Reviews from "../Components/Reviews";
 import ParallaxText from "../Components/ParallaxText";
 
 function Home({ category, setCategory, fetchCategories }) {

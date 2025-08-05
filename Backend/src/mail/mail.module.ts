@@ -29,7 +29,7 @@ import { join } from "path";
           from: config.get<string>("MAIL_FROM"),
         },
         template: {
-          dir: join(__dirname, "templates"),
+          dir: join(__dirname,"templates"),
           adapter: new PugAdapter(),
           options: {
             strict: true,

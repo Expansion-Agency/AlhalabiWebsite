@@ -53,7 +53,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   //  Use 0.0.0.0 to work on Hostinger/public server
-  await app.listen(port, "0.0.0.0");
+  await app.listen(3002, "0.0.0.0");
 }
 bootstrap()
   .then(() => console.log(`Application is running on: http://localhost:${3002}`))

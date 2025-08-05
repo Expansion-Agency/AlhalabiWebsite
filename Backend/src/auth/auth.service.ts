@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import prisma from 'src/shared/prisma/client';
+import prisma from '../shared/prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/shared/enums/role.enum';
