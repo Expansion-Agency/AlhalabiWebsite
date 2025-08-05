@@ -11,7 +11,7 @@ function ProductReviews({ reviews, onAddReview }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (newReview.trim() && newRating > 0) {
+    if (newReview.trim() || newRating > 0) {
       onAddReview({
         id: Date.now(),
         user: "Anonymous", // Replace with logged-in user name if you have auth
