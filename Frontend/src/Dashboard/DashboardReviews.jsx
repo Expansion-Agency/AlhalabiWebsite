@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect } from "react";
@@ -11,26 +11,11 @@ import {
   CardTitle,
 } from "../Components/ui/card";
 import { t } from "i18next";
+import axios from "axios";
 
 function DashboardReviews() {
   const API_URL = import.meta.env.VITE_API_URL;
-
-  const reviews = [
-    {
-      id: 1,
-      user: "John Doe",
-      comment: "This product is amazing and works as advertised!",
-      rating: 5,
-      accepted: true,
-    },
-    {
-      id: 2,
-      user: "Jane Smith",
-      comment: "Good quality, but delivery was slow.",
-      rating: 4,
-      accepted: false,
-    },
-  ];
+  const [reviews, setReviews] = useState([]);
   const totalReviews = reviews.length;
   const acceptedReviews = reviews.filter((rev) => rev.accepted).length;
   const count = useMotionValue(0);
@@ -40,6 +25,34 @@ function DashboardReviews() {
     const controls = animate(count, totalReviews, { duration: 1 });
     return () => controls.stop();
   }, [totalReviews]);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/reviews`);
+      if (!response.data || !Array.isArray(response.data)) {
+        console.error("Invalid reviews data format", response.data);
+        return null;
+      }
+      setReviews(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const deleteReview = async (reviewId) => {
+    try {
+      await axios.delete(`${API_URL}/reviews/${reviewId}`);
+      setReviews((prevReviews) =>
+        prevReviews.filter((rev) => rev.id !== reviewId)
+      );
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
 
   return (
     <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
@@ -51,31 +64,23 @@ function DashboardReviews() {
           </CardDescription>
         </div>
       </CardHeader>
-
-      <CardContent className="flex items-center flex-1 pb-0">
+      <CardContent className="flex items-centers flex-1 pb-0">
         <div className="w-full overflow-x-auto">
           <table className="w-full table-auto text-sm lg:text-base">
             <thead className="shadow-md rounded-xl ">
               <tr>
-                <th className="text-start p-2">{t("status")}</th>
+                <th className="text-start p-2">product id</th>
                 <th className="text-start p-2">{t("username")}</th>
-                <th className="text-start p-2">{t("reviews")}</th>
+                <th className="text-start p-2">{t("Comments")}</th>
                 <th className="text-start p-2">{t("rate")}</th>
                 <th className="text-start p-2">{t("actions")}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {reviews.map((rev) => (
                 <tr key={rev.id}>
-                  <td>
-                    {rev.accepted && (
-                      <FaCheckCircle
-                        className="text-green-500 text-xl"
-                        title="Accepted"
-                      />
-                    )}
-                  </td>
-                  <td className="text-start p-2">{rev.user}</td>
+                  <td className="text-start p-2">{rev.productId}</td>
+                  <td className="text-start p-2">{rev.user?.name || ""}</td>
                   <td className="text-start p-2">{rev.comment}</td>
                   <td className="text-start p-2">
                     <span className="text-yellow-500">
@@ -84,8 +89,11 @@ function DashboardReviews() {
                     </span>
                   </td>
                   <td className="text-start p-2">
-                    <button className="cursor-pointer bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
-                      {t("accept")}
+                    <button
+                      className="cursor-pointer bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ml-2"
+                      onClick={() => deleteReview(rev.id)}
+                    >
+                      {t("delete")}
                     </button>
                   </td>
                 </tr>
@@ -97,9 +105,6 @@ function DashboardReviews() {
       <CardFooter className="flex-col gap-2 text-xs lg:text-sm">
         <div className="leading-none text-muted-foreground">
           {t("totalReviews")}: {totalReviews}
-        </div>
-        <div className="leading-none text-green-600 font-semibold">
-          {t("acceptedReviews")}: {acceptedReviews}
         </div>
       </CardFooter>
     </Card>

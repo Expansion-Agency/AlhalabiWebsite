@@ -106,7 +106,7 @@ function OtpPage() {
           // Clear stored data
           localStorage.removeItem("signupData");
           alert("User created successfully! Please log in.");
-          navigate("/user-login");
+          navigate("/login");
         } catch (signupError) {
           // ✅ If user already exists, just redirect to login
           if (
@@ -114,7 +114,7 @@ function OtpPage() {
           ) {
             console.log("User already exists, skipping signup.");
             localStorage.removeItem("signupData");
-            navigate("/user-login");
+            navigate("/login");
           } else {
             alert(
               signupError.response?.data?.message ||
