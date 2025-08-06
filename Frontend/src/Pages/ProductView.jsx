@@ -28,14 +28,13 @@ function ProductView() {
         const matched = catRes.data.find((cat) => cat.id === data.categoryId);
         setCategory(matched || { nameEn: "Unknown Category" });
 
-        // Fetch reviews from your DB
+        // Fetch reviews
         const revRes = await axios.get(`${API_URL}/reviews`);
         const fetchedReviews = Array.isArray(revRes.data)
           ? revRes.data
           : revRes.data?.reviews || revRes.data?.data || [];
 
         setReviews(fetchedReviews);
-        console.log(fetchedReviews);
         setLoading(false);
       } catch (err) {
         console.error("Error loading product or reviews", err);
@@ -46,7 +45,6 @@ function ProductView() {
     fetchData();
   }, [productId]);
 
-  // Optional: Add new review to state without re-fetch
 
   const handleAddReview = async (newReviewData) => {
     try {
@@ -100,7 +98,7 @@ function ProductView() {
         <div className="bg-white rounded shadow-md p-6">
           {images.length > 0 && (
             <img
-              src={images[0].imagePath || images[0]} // adjust based on your API structure
+              src={images[0].imagePath || images[0]}
               alt={product.nameEn}
               className="w-full h-100 object-contain mb-8"
             />

@@ -37,7 +37,9 @@ function Reviews() {
           key={review.id}
           className="shadow-lg p-2 lg:p-4 rounded-lg bg-white flex flex-col gap-1 hover:shadow-xl transition"
         >
-          <h3 className="font-semibold lg:text-lg">{review.user ? review.user : "Anonymous"}</h3>
+          <h3 className="font-semibold lg:text-lg">
+            {review.user ? review.user : "Anonymous"}
+          </h3>
           <p className="text-gray-700 text-sm lg:text-base">{review.comment}</p>
           <ReactStars
             count={5}
