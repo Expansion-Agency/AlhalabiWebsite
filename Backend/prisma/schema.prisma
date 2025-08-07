@@ -23,7 +23,7 @@ model Users {
 
 model OtpCodes {
   id         Int      @id @default(autoincrement())
-  hashedCode String?
+  hashedCode String
   input      String
   expiresAt  DateTime
   isVerified Boolean  @default(false)
