@@ -122,7 +122,7 @@ function ProductView() {
           : revRes.data?.reviews || revRes.data?.data || [];
 
         setReviews(fetchedReviews);
-console.log(fetchedReviews);
+// console.log(fetchedReviews);
         setLoading(false);
       } catch (err) {
         console.error("Error loading product or reviews", err);
@@ -164,7 +164,7 @@ console.log(fetchedReviews);
       </div>
     );
   }
-  console.log("Product ID:", productId);
+  // console.log("Product ID:", productId);
 
   return (
     <>

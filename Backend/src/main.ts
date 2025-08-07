@@ -42,7 +42,8 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Alhalabi API")
     .setDescription("The Alhalabi API description")
-    .addServer("https://linen-loris-259739.hostingersite.com") // ← Hostinger domain
+    // .addServer("https://linen-loris-259739.hostingersite.com") // ← Hostinger domain
+    .addServer("http://168.231.76.141:3002")
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();

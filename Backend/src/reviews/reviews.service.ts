@@ -29,7 +29,7 @@ async create(review: CreateReviewDto) {
  data: {
     comment: review.comment,
     rating: review.rating,
-    productId:review.productId,
+    productId:Number(review.productId),
   }
 });
 
