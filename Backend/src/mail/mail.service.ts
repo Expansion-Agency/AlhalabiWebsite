@@ -15,7 +15,7 @@ export class MailService {
       from: this.from,
       to: email,
       subject: "Email Verification",
-      template: "./verification",
+      template: "verification",
       context: {
         code,
       },

@@ -13,6 +13,8 @@ import { Payload } from 'src/types';
 import { Users, Admins } from '@prisma/client';
 import Verification from 'src/shared/utils/verfication/Verification';
 import { ResetPasswordDTO } from './dto/resetPassword.dto';
+import {  InternalServerErrorException } from '@nestjs/common';
+
 
 @Injectable()
 export class AuthService {
@@ -68,9 +70,23 @@ export class AuthService {
     }
   }
 
-  async sendVerficationOtp(input: string, userType: string) {
+
+// ...
+
+async sendVerficationOtp(input: string, userType: string) {
+  try {
+    if (!input || !userType) {
+      throw new BadRequestException('Email/Phone and userType are required');
+    }
+
     await this.verficationProvider.sendVerificationCode(input, userType);
+    return { message: 'OTP sent successfully' };
+  } catch (error) {
+    console.error('OTP send error:', error);
+    throw new InternalServerErrorException('Failed to send OTP');
   }
+}
+
 
   async isOtpValid(input: string, userType: string, otp: string) {
     const isValid = await this.verficationProvider.verify(input, otp, userType);

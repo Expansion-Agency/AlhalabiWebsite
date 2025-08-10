@@ -35,6 +35,7 @@ function ProductView() {
           : revRes.data?.reviews || revRes.data?.data || [];
 
         setReviews(fetchedReviews);
+// console.log(fetchedReviews);
         setLoading(false);
       } catch (err) {
         console.error("Error loading product or reviews", err);
@@ -75,22 +76,7 @@ function ProductView() {
       </div>
     );
   }
-  const handleUpdateReview = async (id) => {
-    try {
-      await axios.patch(`${API_URL}/reviews/${id}`, {
-        comment: editedComment,
-        rating: editedRating,
-      });
-
-      // Optimistically update local reviews
-      onAddReview && onAddReview({}); // optionally re-fetch or update parent state
-      setEditingId(null);
-    } catch (err) {
-      console.error("Failed to update review", err);
-    }
-  };
-
-  console.log("Product ID:", productId);
+  // console.log("Product ID:", productId);
 
   return (
     <>
