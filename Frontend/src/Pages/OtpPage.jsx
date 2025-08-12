@@ -180,6 +180,7 @@
 // src/Pages/OtpPage.jsx
 import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function OtpPage() {
   const [searchParams] = useSearchParams();
@@ -189,23 +190,82 @@ function OtpPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your OTP verification logic here, e.g., call backend API
-    if (otp === "1234") {
-      // Example success condition
-      alert("OTP verified successfully!");
+    setError("");
+    try {
+      // 1. Verify OTP
+      await axios.post(
+        "http://168.231.76.141:3002/auth/verifyotp",
+        { input, otp },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            userType: "USER",
+          },
+        }
+      );
+
+      // 2. Register user after OTP is verified
+      const signupData = JSON.parse(localStorage.getItem("signupData"));
+      await axios.post(
+        "http://168.231.76.141:3002/auth/signUp",
+        signupData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            userType: "USER",
+          },
+        }
+      );
+
+      alert("Registration successful! You can now log in.");
       navigate("/login");
-    } else {
-      setError("Invalid OTP code");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Invalid OTP or registration failed."
+      );
+    }
+  };
+
+  const sendOtp = async (email) => {
+    try {
+      await axios.post(
+        "http://168.231.76.141:3002/auth/sendotp",
+        { input: email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            userType: "USER",
+          },
+        }
+      );
+      alert("OTP has been sent to your email!");
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Failed to send OTP. Please try again."
+      );
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "2rem auto",
+        padding: "1rem",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+      }}
+    >
       <h2>OTP Verification</h2>
-      <p>Please enter the OTP sent to: <strong>{input}</strong></p>
-      <p>Request from: <em>{from}</em></p>
+      <p>
+        Please enter the OTP sent to: <strong>{input}</strong>
+      </p>
+      <p>
+        Request from: <em>{from}</em>
+      </p>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -213,15 +273,32 @@ function OtpPage() {
           placeholder="Enter OTP"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
-          style={{ padding: "0.5rem", width: "100%", marginBottom: "1rem" }}
+          style={{
+            padding: "0.5rem",
+            width: "100%",
+            marginBottom: "1rem",
+          }}
         />
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" style={{ padding: "0.5rem 1rem" }}>
+        <button
+          type="submit"
+          style={{ padding: "0.5rem 1rem" }}
+        >
           Verify OTP
         </button>
       </form>
+
+      <button
+        type="button"
+        style={{ marginTop: "1rem" }}
+        onClick={() => sendOtp(input)}
+      >
+        Resend OTP
+      </button>
     </div>
   );
 }
 
 export default OtpPage;
+
+// Call this when the user submits their email during signup

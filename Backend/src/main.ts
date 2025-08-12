@@ -19,6 +19,7 @@ async function bootstrap() {
     origin: [
       "https://alhalabi-website.vercel.app", // Production frontend
       "http://localhost:5173",               // Local dev frontend
+      "http://168.231.76.141",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "userType"],
@@ -42,8 +43,8 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Alhalabi API")
     .setDescription("The Alhalabi API description")
-    // .addServer("https://linen-loris-259739.hostingersite.com") // ← Hostinger domain
-    .addServer("http://168.231.76.141:3002")
+    .addServer("https://linen-loris-259739.hostingersite.com")
+    .addServer("http://168.231.76.141:8080")
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();
@@ -54,8 +55,10 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   //  Use 0.0.0.0 to work on Hostinger/public server
-  await app.listen(3002, "0.0.0.0");
+  await app.listen(port, "0.0.0.0");
+  console.log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap()
-  .then(() => console.log(`Application is running on: http://localhost:${3002}`))
-  .catch((error) => console.error("Error during application startup:", error));
+
+bootstrap().catch((error) =>
+  console.error("Error during application startup:", error)
+);

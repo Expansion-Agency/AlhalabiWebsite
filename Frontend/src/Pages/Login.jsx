@@ -34,9 +34,14 @@ function Login({ userType }) {
     setError("");
 
     try {
+      console.log("Sending to API:", {
+  email,
+  password,
+  userType
+});
       const response = await axios.post(
         `${API_URL}/auth/login`,
-        { email, password },
+        { email, password},
         {
           headers: {
             "Content-Type": "application/json",
