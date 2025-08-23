@@ -7,7 +7,7 @@ import { join } from "path";
 
 async function bootstrap() {
   console.log("DATABASE_URL:", process.env.DATABASE_URL);
-  
+
   const app = await NestFactory.create(AppModule, {
     logger: ["error", "warn", "log", "debug", "verbose"],
   });
@@ -18,8 +18,10 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "https://alhalabi-website.vercel.app", // Production frontend
-      "http://localhost:5173",               // Local dev frontend
+      "http://localhost:5173", // Local dev frontend
       "http://168.231.76.141",
+      "alhalapi.com",
+      "elhalapi.com",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "userType"],
@@ -43,8 +45,8 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Alhalabi API")
     .setDescription("The Alhalabi API description")
-    .addServer("https://linen-loris-259739.hostingersite.com")
-    .addServer("http://168.231.76.141:8080")
+    .addServer("https://alhalapi.com")
+    .addServer("https://www.alhalapi.com")
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();
