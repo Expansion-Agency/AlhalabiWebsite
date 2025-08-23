@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { IoCloseOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Menu({
   isMenuVisible,
@@ -10,6 +10,7 @@ function Menu({
   handleLanguageChange,
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -50,7 +51,26 @@ function Menu({
           <Link onClick={toggleMenuVisibility} to={"/about-us"}>
             {t("about")}
           </Link>
-          <Link onClick={toggleMenuVisibility} to={"/login"}>
+          <Link
+            to="#"
+            onClick={(e) => {
+              e.preventDefault();
+              const token = localStorage.getItem("token");
+              const userType = localStorage.getItem("userType");
+
+              if (!token) {
+                navigate("/login");
+                return;
+              }
+              if (userType === "ADMIN") {
+                navigate("/dashboard");
+              } else {
+                navigate("/profile");
+              }
+
+              toggleMenuVisibility();
+            }}
+          >
             {t("account")}
           </Link>
         </div>

@@ -16,11 +16,13 @@ function Profile({ selectedLanguage }) {
   /* const userType = localStorage.getItem("userType"); // Should be either "USER" or "ADMIN"
   const endpoint = userType === "ADMIN" ? "admins" : "users"; */
   useEffect(() => {
+    console.log("Token in localStorage:", token);
+
     axios
-      .get(`${API_URL}/profile`, {
+      .get(`${API_URL}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setUser(res.data))
+      .then((res) => setUser(res.data.data))
       .catch((err) => console.error("Failed to fetch user profile:", err));
   }, []);
   const handleLogout = () => {

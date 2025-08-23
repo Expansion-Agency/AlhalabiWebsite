@@ -17,12 +17,7 @@ function Header({
 
   return (
     <div className="flex justify-between items-center p-4 relative bg-amber-950/5">
-      <h1
-        className="cursor-pointer text-amber-950 ms-5 lg:ms-10"
-        onClick={() => navigate("/")}
-      >
-        {t("alhalabi")}
-      </h1>
+      <img className="w-40" src="assets/logo.png" alt="" />
       <div className="hidden lg:flex items-center gap-10 text-amber-950/90 text-lg">
         <Link
           to="/about-us"
@@ -88,10 +83,17 @@ function Header({
         <div
           onClick={() => {
             const token = localStorage.getItem("token");
-            if (token) {
-              navigate("/profile");
-            } else {
+            const userType = localStorage.getItem("userType");
+
+            if (!token) {
               navigate("/login");
+              return;
+            }
+
+            if (userType === "ADMIN") {
+              navigate("/dashboard");
+            } else {
+              navigate("/profile");
             }
           }}
           className="hidden lg:flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"

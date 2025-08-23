@@ -4,6 +4,7 @@ import HomeCategories from "../Components/HomeCategories";
 import { useTranslation } from "react-i18next";
 // import Reviews from "../Components/Reviews";
 import ParallaxText from "../Components/ParallaxText";
+import Reviews from "../Components/Reviews";
 
 function Home({ category, setCategory, fetchCategories }) {
   const { t, i18n } = useTranslation();
@@ -24,7 +25,7 @@ function Home({ category, setCategory, fetchCategories }) {
         setCategory={setCategory}
         fetchCategories={fetchCategories}
       />
-      {/* <Reviews /> */}
+      <Reviews />
     </>
   );
 }

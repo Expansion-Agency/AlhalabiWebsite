@@ -195,7 +195,7 @@ function OtpPage() {
     setError("");
     try {
       // 1. Verify OTP
-      await axios.post(
+      const response = await axios.post(
         "http://168.231.76.141:3002/auth/verifyotp",
         { input, otp },
         {
@@ -205,26 +205,33 @@ function OtpPage() {
           },
         }
       );
+      sessionStorage.setItem("otp", otp);
+      // Assuming the response contains user data and a token
+      const { user, token } = response.data;
 
-      // 2. Register user after OTP is verified
-      const signupData = JSON.parse(localStorage.getItem("signupData"));
-      await axios.post(
-        "http://168.231.76.141:3002/auth/signUp",
-        signupData,
-        {
+      // Store user info in localStorage
+      localStorage.setItem("user", JSON.stringify(user)); // Save user details
+      localStorage.setItem("token", token); // Save authentication token
+
+      alert("OTP Verified Successfully!");
+      const storedData = JSON.parse(localStorage.getItem("signupData"));
+      if (storedData && from === "signup") {
+        // Step 2: Sign up the user
+        const signupData = JSON.parse(localStorage.getItem("signupData"));
+        await axios.post("http://168.231.76.141:3002/auth/signUp", signupData, {
           headers: {
             "Content-Type": "application/json",
             userType: "USER",
           },
-        }
-      );
-
-      alert("Registration successful! You can now log in.");
-      navigate("/login");
+        });
+        alert("Registration successful! You can now log in.");
+        navigate("/login");
+      } else if (from === "forgot-password") {
+        // Step 2: Redirect to reset password page
+        navigate(`/reset-password?email=${encodeURIComponent(input)}`);
+      }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Invalid OTP or registration failed."
-      );
+      setError(err.response?.data?.message || "Invalid OTP or process failed.");
     }
   };
 
@@ -243,8 +250,7 @@ function OtpPage() {
       alert("OTP has been sent to your email!");
     } catch (error) {
       alert(
-        error.response?.data?.message ||
-          "Failed to send OTP. Please try again."
+        error.response?.data?.message || "Failed to send OTP. Please try again."
       );
     }
   };
@@ -280,10 +286,7 @@ function OtpPage() {
           }}
         />
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button
-          type="submit"
-          style={{ padding: "0.5rem 1rem" }}
-        >
+        <button type="submit" style={{ padding: "0.5rem 1rem" }}>
           Verify OTP
         </button>
       </form>

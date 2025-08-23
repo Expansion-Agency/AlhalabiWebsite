@@ -20,7 +20,6 @@ i18n
     interpolation: {
       escapeValue: false,
     },
-    saveMissing: true, // Use this during development only
   });
 
 export default i18n;

@@ -1,11 +1,44 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 function Forgotpass() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+
+  const handleInput = async () => {
+    setError(""); // Reset errors
+
+    if (!email.trim()) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      const requestBody = { input: email };
+
+      const response = await axios.post(`${API_URL}/auth/forget`, requestBody, {
+        headers: {
+          "Content-Type": "application/json",
+          userType: "USER", // must match backend exactly
+        },
+      });
+      console.log("response", response);
+      console.log("email", email);
+      localStorage.setItem("email", email);
+      navigate(`/otp?input=${encodeURIComponent(email)}&from=forgot-password`);
+    } catch (err) {
+      let errorMessage = err.response?.data?.message || "Failed to send OTP";
+      if (Array.isArray(errorMessage)) {
+        errorMessage = errorMessage[0];
+      }
+      setError(errorMessage);
+    }
+  };
 
   return (
     <div className="relative flex flex-col h-screen text-amber-950">
@@ -37,8 +70,13 @@ function Forgotpass() {
               type="email"
               name="email"
               value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleInput();
+              }}
               type="submit"
               className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
             >
@@ -78,6 +116,10 @@ function Forgotpass() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleInput();
+            }}
             type="submit"
             className="bg-red-950 text-white font-bold py-3 rounded-lg w-full"
           >

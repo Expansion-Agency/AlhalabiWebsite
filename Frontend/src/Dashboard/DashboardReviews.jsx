@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect } from "react";
@@ -11,28 +11,14 @@ import {
   CardTitle,
 } from "../Components/ui/card";
 import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 function DashboardReviews() {
   const API_URL = import.meta.env.VITE_API_URL;
-
-  const reviews = [
-    {
-      id: 1,
-      user: "John Doe",
-      comment: "This product is amazing and works as advertised!",
-      rating: 5,
-      accepted: true,
-    },
-    {
-      id: 2,
-      user: "Jane Smith",
-      comment: "Good quality, but delivery was slow.",
-      rating: 4,
-      accepted: false,
-    },
-  ];
+  const { t } = useTranslation();
+  const [reviews, setReviews] = useState([]);
   const totalReviews = reviews.length;
-  const acceptedReviews = reviews.filter((rev) => rev.accepted).length;
   const count = useMotionValue(0);
   const rounded = useTransform(() => Math.round(count.get()));
 
@@ -40,6 +26,34 @@ function DashboardReviews() {
     const controls = animate(count, totalReviews, { duration: 1 });
     return () => controls.stop();
   }, [totalReviews]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/reviews`);
+        setReviews(response.data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const handleDelete = async (reviewId) => {
+    const confirmDelete = window.confirm(`Are you sure?`);
+    if (!confirmDelete) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${API_URL}/reviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setReviews(reviews.filter((review) => review.id !== reviewId));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
 
   return (
     <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
@@ -75,7 +89,7 @@ function DashboardReviews() {
                       />
                     )}
                   </td>
-                  <td className="text-start p-2">{rev.user}</td>
+                  <td className="text-start p-2">{rev.user || "anoymous"}</td>
                   <td className="text-start p-2">{rev.comment}</td>
                   <td className="text-start p-2">
                     <span className="text-yellow-500">
@@ -84,8 +98,14 @@ function DashboardReviews() {
                     </span>
                   </td>
                   <td className="text-start p-2">
-                    <button className="cursor-pointer bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
-                      {t("accept")}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(rev.id);
+                      }}
+                      className="cursor-pointer bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -97,9 +117,6 @@ function DashboardReviews() {
       <CardFooter className="flex-col gap-2 text-xs lg:text-sm">
         <div className="leading-none text-muted-foreground">
           {t("totalReviews")}: {totalReviews}
-        </div>
-        <div className="leading-none text-green-600 font-semibold">
-          {t("acceptedReviews")}: {acceptedReviews}
         </div>
       </CardFooter>
     </Card>

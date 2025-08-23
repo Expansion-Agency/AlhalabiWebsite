@@ -12,6 +12,12 @@ import { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import {
+  animate,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 function DashboardProducts({ category, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
@@ -19,6 +25,20 @@ function DashboardProducts({ category, fetchCategories }) {
   const [editingProduct, setEditingProduct] = useState(null);
   const [showCreateProduct, setShowCreateProduct] = useState(false);
   const editModalRef = useRef(null);
+  const totalProducts = products.length;
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useMotionValueEvent(rounded, "change", (v) => {
+    setDisplayValue(v);
+  });
+
+  useEffect(() => {
+    const controls = animate(count, totalProducts, { duration: 1 });
+    return () => controls.stop();
+  }, [totalProducts]);
+
   const [newProduct, setNewProduct] = useState({
     nameEn: "",
     nameAr: "",
@@ -207,7 +227,9 @@ function DashboardProducts({ category, fetchCategories }) {
         <CardHeader className="flex justify-between items-center pb-0">
           <div className="flex flex-col">
             <CardTitle>{t("totalProducts")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">2</CardDescription>
+            <CardDescription className="text-4xl font-bold">
+              {displayValue}
+            </CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <button

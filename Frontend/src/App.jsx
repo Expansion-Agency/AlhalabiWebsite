@@ -227,7 +227,6 @@ function App() {
 
         {/* New OTP Route */}
         <Route path="/otp" element={<OtpPage />} />
-
         <Route path="/login" element={<Login userType="USER" />} />
         <Route path="/admin-login" element={<Login userType="ADMIN" />} />
         <Route path="/signup" element={<Signup />} />
