@@ -17,7 +17,13 @@ function Header({
 
   return (
     <div className="flex justify-between items-center p-4 relative bg-amber-950/5">
-      <img className="w-40" src="assets/logo.png" alt="" />
+      <Link to="/">
+        <img
+          className="w-25 md:w-40"
+          src="assets/logo.png"
+          alt="logo"
+        />
+      </Link>
       <div className="hidden lg:flex items-center gap-10 text-amber-950/90 text-lg">
         <Link
           to="/about-us"

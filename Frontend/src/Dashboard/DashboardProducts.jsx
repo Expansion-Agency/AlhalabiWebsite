@@ -69,11 +69,17 @@ function DashboardProducts({ category, fetchCategories }) {
       if (response.data && Array.isArray(response.data)) {
         const productsWithImages = response.data.map((product) => {
           const productImages = product.productImages || [];
-          const defaultImage = productImages.find((image) => image.isDefault);
-          const imageUrl = defaultImage
-            ? `${defaultImage.imagePath}`
-            : "/path/to/default/image.jpg";
+          let imageUrl = product.imageUrl; // 👈 keep API's imageUrl if available
 
+          if (!imageUrl && productImages.length > 0) {
+            const defaultImage =
+              productImages.find((img) => img.isDefault) || productImages[0];
+            imageUrl = `${defaultImage.imagePath}`; // prepend API_URL if needed
+          }
+
+          if (!imageUrl) {
+            imageUrl = "/default.png"; // fallback
+          }
           console.log("Product img:", imageUrl);
 
           return {
@@ -94,6 +100,7 @@ function DashboardProducts({ category, fetchCategories }) {
       console.error("Error fetching products:", error);
     }
   };
+
   const handleCreateProduct = async (event) => {
     event.preventDefault();
     try {
@@ -138,7 +145,6 @@ function DashboardProducts({ category, fetchCategories }) {
         });
       }
       fetchProducts();
-
       setNewProduct({
         nameEn: "",
         nameAr: "",
@@ -221,6 +227,7 @@ function DashboardProducts({ category, fetchCategories }) {
       console.error("Error updating product:", error);
     }
   };
+
   return (
     <>
       <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
@@ -246,14 +253,14 @@ function DashboardProducts({ category, fetchCategories }) {
               <thead className="shadow-md rounded-xl">
                 <tr>
                   <th className="text-start p-2">{t("productId")}</th>
-                  <th className="text-start p-2">{t("productName")}</th>
-                  <th className="text-start p-2">Name in Arabic</th>
-                  <th className="text-start p-2">Description in Arabic</th>
-                  <th className="text-start p-2">Description in English</th>
-                  <th className="text-start p-2">{t("price")}</th>
-                  <th className="text-start p-2">{t("price")}</th>
-                  <th className="text-start p-2">quantity</th>
-                  <th className="text-start p-2">Image</th>
+                  <th className="text-start p-2">{t("enName")}</th>
+                  <th className="text-start p-2">{t("arName")}</th>
+                  <th className="text-start p-2">{t("arDesc")}</th>
+                  <th className="text-start p-2">{t("enDesc")}</th>
+                  <th className="text-start p-2">{t("price")} egb</th>
+                  <th className="text-start p-2">{t("price")} $</th>
+                  <th className="text-start p-2">{t("quantity")}</th>
+                  <th className="text-start p-2">{t("img")}</th>
                   <th className="text-start p-2">{t("category")}</th>
                   <th className="text-start p-2">{t("actions")}</th>
                 </tr>
