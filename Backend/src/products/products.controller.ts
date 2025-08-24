@@ -8,19 +8,19 @@ import {
   Put,
   UseGuards,
   UsePipes,
-} from '@nestjs/common';
-import { createProductDto, createProductSchema } from './dto/createProduct.dto';
-import { ProductsService } from './products.service';
-import { updateProductDto, updateProductSchema } from './dto/updateProduct.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { JoiValidationPipe } from 'src/shared/utils/joiValidations';
-import { RolesGuard } from 'src/shared/guards/roles.guard';
-import { Role } from 'src/shared/enums/role.enum';
-import { Roles } from 'src/shared/decorators/roles.decorator';
+} from "@nestjs/common";
+import { createProductDto, createProductSchema } from "./dto/createProduct.dto";
+import { ProductsService } from "./products.service";
+import { updateProductDto, updateProductSchema } from "./dto/updateProduct.dto";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AuthGuard } from "src/auth/guards/auth.guard";
+import { JoiValidationPipe } from "src/shared/utils/joiValidations";
+import { RolesGuard } from "src/shared/guards/roles.guard";
+import { Role } from "src/shared/enums/role.enum";
+import { Roles } from "src/shared/decorators/roles.decorator";
 
-@ApiTags('products')
-@Controller('products')
+@ApiTags("products")
+@Controller("products")
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -35,42 +35,42 @@ export class ProductsController {
   }
 
   @ApiBody({
-    schema: { type: 'object', properties: { id: { type: 'number' } } },
+    schema: { type: "object", properties: { id: { type: "number" } } },
   })
-  @ApiOperation({ summary: 'Get product by id' })
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @ApiOperation({ summary: "Get product by id" })
+  @Get(":id")
+  async findOne(@Param("id") id: string) {
     return await this.productsService.findOne(+id);
   }
 
-  @ApiOperation({ summary: 'Get all products' })
+  @ApiOperation({ summary: "Get all products" })
   @ApiBearerAuth()
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiBody({ type: updateProductDto })
-  @Put(':id')
+  @Put(":id")
   async update(
-    @Param('id') id: string,
-    @Body(new JoiValidationPipe(updateProductSchema)) product: updateProductDto,
+    @Param("id") id: string,
+    @Body(new JoiValidationPipe(updateProductSchema)) product: updateProductDto
   ) {
     return await this.productsService.update(+id, product);
   }
 
   @ApiBody({
-    schema: { type: 'object', properties: { id: { type: 'number' } } },
+    schema: { type: "object", properties: { id: { type: "number" } } },
   })
-  @ApiOperation({ summary: 'Delete product by id' })
+  @ApiOperation({ summary: "Delete product by id" })
   @ApiBearerAuth()
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
+  @Delete(":id")
+  async delete(@Param("id") id: string) {
     return await this.productsService.delete(+id);
   }
 
-  @ApiOperation({ summary: 'Get all products' })
+  @ApiOperation({ summary: "Get all products" })
   @Get()
   async findAll() {
     return await this.productsService.findAll();

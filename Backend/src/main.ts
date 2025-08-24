@@ -20,8 +20,8 @@ async function bootstrap() {
       "https://alhalabi-website.vercel.app", // Production frontend
       "http://localhost:5173", // Local dev frontend
       "http://168.231.76.141",
-      "alhalapi.com",
-      "elhalapi.com",
+      "https://alhalapi.com",
+      "https://elhalapi.com",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "userType"],
@@ -47,6 +47,7 @@ async function bootstrap() {
     .setDescription("The Alhalabi API description")
     .addServer("https://alhalapi.com")
     .addServer("https://www.alhalapi.com")
+    .addServer(`http://localhost:5173`)
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();
