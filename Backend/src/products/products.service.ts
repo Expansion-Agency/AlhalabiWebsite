@@ -17,6 +17,10 @@ export class ProductsService {
   }
 
   async findOne(id: number) {
+    if (!id) {
+      throw new Error("Product id is required");
+    }
+
     await prisma.products.update({
       where: { id },
       data: {
@@ -27,13 +31,11 @@ export class ProductsService {
     });
 
     const product = await prisma.products.findUnique({
-       
       include: {
         productImages: true,
       },
       where: {
         id: id,
-        
       },
     });
     return product;

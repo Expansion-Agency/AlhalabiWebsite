@@ -40,7 +40,7 @@ export class ProductsController {
   @ApiOperation({ summary: "Get product by id" })
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    return await this.productsService.findOne(+id);
+    return await this.productsService.findOne(Number(id));
   }
 
   @ApiOperation({ summary: "Get all products" })
