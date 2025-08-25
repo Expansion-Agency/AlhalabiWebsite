@@ -19,9 +19,10 @@ async function bootstrap() {
     origin: [
       "https://alhalabi-website.vercel.app", // Production frontend
       "http://localhost:5173", // Local dev frontend
-      "http://168.231.76.141",
       "https://alhalapi.com",
+      "https://www.alhalapi.com",
       "https://elhalapi.com",
+      "https://www.elhalapi.com",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "userType"],
@@ -35,7 +36,6 @@ async function bootstrap() {
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-  // Serve static product images if needed
   const modelDir =
     process.env.MODEL_STORAGE_PATH ||
     join(__dirname, "..", "public", "products");
@@ -45,8 +45,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Alhalabi API")
     .setDescription("The Alhalabi API description")
-    .addServer("https://alhalapi.com")
-    .addServer("https://www.alhalapi.com")
+    .addServer("https://api.alhalapi.com")
     .addServer(`http://localhost:5173`)
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
