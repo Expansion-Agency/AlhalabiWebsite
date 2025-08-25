@@ -34,17 +34,13 @@ export class ProductsController {
     return await this.productsService.create(product);
   }
 
-  @ApiBody({
-    schema: { type: "object", properties: { id: { type: "number" } } },
-  })
   @ApiOperation({ summary: "Get product by id" })
   @Get(":id")
   async findOne(@Param("id") id: string) {
     return await this.productsService.findOne(Number(id));
   }
 
-  @ApiOperation({ summary: "Get all products" })
-  @ApiBearerAuth()
+  @ApiOperation({ summary: "Update product by id" })
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.Admin)
@@ -54,20 +50,16 @@ export class ProductsController {
     @Param("id") id: string,
     @Body(new JoiValidationPipe(updateProductSchema)) product: updateProductDto
   ) {
-    return await this.productsService.update(+id, product);
+    return await this.productsService.update(Number(id), product);
   }
 
-  @ApiBody({
-    schema: { type: "object", properties: { id: { type: "number" } } },
-  })
   @ApiOperation({ summary: "Delete product by id" })
-  @ApiBearerAuth()
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @Delete(":id")
   async delete(@Param("id") id: string) {
-    return await this.productsService.delete(+id);
+    return await this.productsService.delete(Number(id));
   }
 
   @ApiOperation({ summary: "Get all products" })
