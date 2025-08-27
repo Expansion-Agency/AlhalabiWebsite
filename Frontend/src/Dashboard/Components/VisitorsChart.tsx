@@ -1,7 +1,6 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Dot, Line, LineChart } from "recharts";
 
 import {
   Card,
@@ -16,6 +15,28 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../../Components/ui/chart";
+import React, { Suspense } from "react";
+import type { LineChart } from "recharts";
+
+type LineChartProps = React.ComponentProps<typeof LineChart>;
+
+const LazyLineChart = React.lazy(() =>
+  import("recharts").then((mod) => ({
+    default: (props: LineChartProps) => <mod.LineChart {...props} />,
+  }))
+);
+
+const LazyLine = React.lazy(() =>
+  import("recharts").then((mod) => ({ default: mod.Line }))
+);
+
+const LazyCartesianGrid = React.lazy(() =>
+  import("recharts").then((mod) => ({ default: mod.CartesianGrid }))
+);
+
+const LazyDot = React.lazy(() =>
+  import("recharts").then((mod) => ({ default: mod.Dot }))
+);
 
 export const description = "A line chart with dots and colors";
 
@@ -64,45 +85,51 @@ export function ChartLineDotsColors() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 10,
-              left: 14,
-              right: 14,
-            }}
+          <Suspense
+            fallback={
+              <div className="p-4 text-muted-foreground">Loading chart...</div>
+            }
           >
-            <CartesianGrid vertical={false} />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  indicator="line"
-                  nameKey="visitors"
-                  hideLabel
-                />
-              }
-            />
-            <Line
-              dataKey="visitors"
-              type="natural"
-              stroke="var(--color-visitors)"
-              strokeWidth={2}
-              dot={({ payload, ...props }) => {
-                return (
-                  <Dot
-                    key={payload.browser}
-                    r={5}
-                    cx={props.cx}
-                    cy={props.cy}
-                    fill={payload.fill}
-                    stroke={payload.fill}
-                  />
-                );
+            <LazyLineChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                top: 10,
+                left: 14,
+                right: 14,
               }}
-            />
-          </LineChart>
+            >
+              <LazyCartesianGrid vertical={false} />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    indicator="line"
+                    nameKey="visitors"
+                    hideLabel
+                  />
+                }
+              />
+              <LazyLine
+                dataKey="visitors"
+                type="natural"
+                stroke="var(--color-visitors)"
+                strokeWidth={2}
+                dot={({ payload, ...props }) => {
+                  return (
+                    <LazyDot
+                      key={payload.browser}
+                      r={5}
+                      cx={props.cx}
+                      cy={props.cy}
+                      fill={payload.fill}
+                      stroke={payload.fill}
+                    />
+                  );
+                }}
+              />
+            </LazyLineChart>
+          </Suspense>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
