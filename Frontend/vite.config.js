@@ -6,25 +6,19 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 // Vite configuration
 export default defineConfig({
-  // Base path configuration (for subdirectory deployment)
-  base: '/', // Change '/myapp/' to the path where your app is hosted (if it's at the root, use '/')
-
+  base: '/', 
   plugins: [
-    // React plugin for JSX/TSX support
     react(),
 
-    // Visualizer plugin to analyze the bundle size
-    visualizer({ open: true }), // opens the report in the browser after build
+    visualizer({ open: true }), 
   ],
 
   resolve: {
-    // Alias configuration for simplified imports
     alias: {
-      "@": path.resolve(__dirname, "./src"), // '@' alias maps to the 'src' directory
+      "@": path.resolve(__dirname, "./src"), 
     },
   },
 
-  // Tailwind CSS plugin configuration (if using Tailwind in your project)
   css: {
     postcss: {
       plugins: [tailwindcss()],
