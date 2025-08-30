@@ -2,26 +2,16 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import { visualizer } from "rollup-plugin-visualizer";
 
-// Vite configuration
+// https://vite.dev/config/
 export default defineConfig({
-  base: '/', 
-  plugins: [
-    react(),
-
-    visualizer({ open: true }), 
-  ],
-
+  build: {
+    outDir: 'dist', // Ensure this matches Vercel's expected build output directory
+  },
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"), 
-    },
-  },
-
-  css: {
-    postcss: {
-      plugins: [tailwindcss()],
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });
