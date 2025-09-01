@@ -5,13 +5,8 @@
     { "src": "build/**", "use": "@vercel/static" }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "dist/main.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/build/index.html"
-    }
+    { "src": "/products(.*)", "dest": "dist/main.js" },
+    { "src": "/categories(.*)", "dest": "dist/main.js" },
+    { "src": "/(.*)", "dest": "/build/index.html" }
   ]
 }
