@@ -1,12 +1,1 @@
-{
-  "version": 2,
-  "builds": [
-    { "src": "dist/main.js", "use": "@vercel/node" },
-    { "src": "build/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/products(.*)", "dest": "dist/main.js" },
-    { "src": "/categories(.*)", "dest": "dist/main.js" },
-    { "src": "/(.*)", "dest": "/build/index.html" }
-  ]
-}
+
