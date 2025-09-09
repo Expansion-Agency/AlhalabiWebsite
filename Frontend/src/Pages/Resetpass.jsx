@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 function Resetpass() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ function Resetpass() {
     const otp = sessionStorage.getItem("otp"); // ✅ Retrieve OTP stored in sessionStorage
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/reset`, {
+      const response = await axios.post(`${API_URL}/auth/reset`, {
         email,
         newPassword: password,
         otp,
@@ -51,7 +52,7 @@ function Resetpass() {
       sessionStorage.removeItem("otp");
 
       setError("Password updated successfully! Redirecting to login...");
-      setTimeout(() => navigate("/user-login"), 2000);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       console.error("Password Reset Error:", err);
       setError(err.response?.data?.message || "Failed to reset password.");
@@ -101,8 +102,8 @@ function Resetpass() {
                 type="password"
                 name="password"
                 placeholder={t("confirmpass")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <span
                 className="password-icon"
@@ -111,6 +112,10 @@ function Resetpass() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
               <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleResetPassword();
+                }}
                 type="submit"
                 className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
               >
@@ -135,6 +140,7 @@ function Resetpass() {
             type="password"
             name="password"
             value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder={t("newpass")}
           />
           <label className="block font-bold mb-2" htmlFor="password">
@@ -144,12 +150,16 @@ function Resetpass() {
             className="input bg-transparent border border-black/50 rounded-md mb-5 p-3 w-full"
             type="password"
             name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder={t("confirmpass")}
           />
 
           <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleResetPassword();
+            }}
             type="submit"
             className="bg-red-950 text-white font-bold py-3 rounded-lg w-full"
           >

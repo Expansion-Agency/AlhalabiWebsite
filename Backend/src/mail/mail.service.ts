@@ -31,7 +31,7 @@ export class MailService {
       from: this.from,
       to: email,
       subject: "Forget Password",
-      template: "./forgetPassword/forgetPassword",
+      template: "forgetPassword",
       context: {
         code,
         expire: expireTime,

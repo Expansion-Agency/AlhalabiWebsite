@@ -17,25 +17,24 @@ export class ProductsService {
   }
 
   async findOne(id: number) {
-    await prisma.products.update({
-      where: { id },
-      data: {
-        viewCount: {
-          increment: 1,
-        },
-      },
-    });
+    if (!id) {
+      throw new Error("Product id is required");
+    }
 
     const product = await prisma.products.findUnique({
-       
-      include: {
-        productImages: true,
-      },
-      where: {
-        id: id,
-        
-      },
+      where: { id },
+      include: { productImages: true },
     });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    await prisma.products.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+    });
+
     return product;
   }
 

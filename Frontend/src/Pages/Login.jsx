@@ -34,6 +34,11 @@ function Login({ userType }) {
     setError("");
 
     try {
+      console.log("Sending to API:", {
+        email,
+        password,
+        userType,
+      });
       const response = await axios.post(
         `${API_URL}/auth/login`,
         { email, password },
@@ -45,6 +50,7 @@ function Login({ userType }) {
           },
         }
       );
+      console.log("Access Token:", response.data.data.accessToken);
 
       const token = response.data.data.accessToken;
 

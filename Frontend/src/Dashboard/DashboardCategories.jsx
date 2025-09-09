@@ -12,6 +12,12 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { useRef } from "react";
+import {
+  animate,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 function DashboardCategories({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
@@ -28,6 +34,19 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     nameAr: "",
   });
   const editModalRef = useRef(null);
+  const totalCategories = category.length;
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useMotionValueEvent(rounded, "change", (v) => {
+    setDisplayValue(v);
+  });
+
+  useEffect(() => {
+    const controls = animate(count, totalCategories, { duration: 1 });
+    return () => controls.stop();
+  }, [totalCategories]);
 
   // Create a new category
   const handleCreateCategory = async () => {
@@ -44,7 +63,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
       const response = await axios.post(`${API_URL}/category`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       });
       setCategory([...category, response.data]);
@@ -126,7 +145,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         <CardHeader className="flex justify-between items-center pb-0">
           <div className="flex flex-col">
             <CardTitle>{t("totalCategories")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">2</CardDescription>
+            <CardDescription className="text-4xl font-bold">
+              {displayValue}
+            </CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <button

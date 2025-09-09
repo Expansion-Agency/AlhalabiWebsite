@@ -34,7 +34,7 @@ export default function TotalUsersCard() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="leading-none text-muted-foreground">
-          Showing total users for the last 6 months
+          {t("showTotalUsers")}
         </div>
       </CardFooter>
     </Card>

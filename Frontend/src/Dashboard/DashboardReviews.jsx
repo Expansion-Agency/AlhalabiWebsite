@@ -11,13 +11,14 @@ import {
   CardTitle,
 } from "../Components/ui/card";
 import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 function DashboardReviews() {
   const API_URL = import.meta.env.VITE_API_URL;
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const totalReviews = reviews.length;
-  const acceptedReviews = reviews.filter((rev) => rev.accepted).length;
   const count = useMotionValue(0);
   const rounded = useTransform(() => Math.round(count.get()));
 
@@ -25,32 +26,31 @@ function DashboardReviews() {
     const controls = animate(count, totalReviews, { duration: 1 });
     return () => controls.stop();
   }, [totalReviews]);
-
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/reviews`);
-      if (!response.data || !Array.isArray(response.data)) {
-        console.error("Invalid reviews data format", response.data);
-        return null;
-      }
-      setReviews(response.data);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/reviews`);
+        setReviews(response.data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
     fetchReviews();
   }, []);
 
-  const deleteReview = async (reviewId) => {
+  const handleDelete = async (reviewId) => {
+    const confirmDelete = window.confirm(`Are you sure?`);
+    if (!confirmDelete) return;
     try {
-      await axios.delete(`${API_URL}/reviews/${reviewId}`);
-      setReviews((prevReviews) =>
-        prevReviews.filter((rev) => rev.id !== reviewId)
-      );
+      const token = localStorage.getItem("token");
+      await axios.delete(`${API_URL}/reviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setReviews(reviews.filter((review) => review.id !== reviewId));
     } catch (error) {
-      console.error("Error deleting review:", error);
+      console.error("Error deleting product:", error);
     }
   };
 
@@ -79,8 +79,15 @@ function DashboardReviews() {
             <tbody className="divide-y divide-gray-200">
               {reviews.map((rev) => (
                 <tr key={rev.id}>
-                  <td className="text-start p-2">{rev.productId}</td>
-                  <td className="text-start p-2">{rev.user?.name || ""}</td>
+                  <td>
+                    {rev.accepted && (
+                      <FaCheckCircle
+                        className="text-green-500 text-xl"
+                        title="Accepted"
+                      />
+                    )}
+                  </td>
+                  <td className="text-start p-2">{rev.user || "anoymous"}</td>
                   <td className="text-start p-2">{rev.comment}</td>
                   <td className="text-start p-2">
                     <span className="text-yellow-500">
@@ -90,10 +97,13 @@ function DashboardReviews() {
                   </td>
                   <td className="text-start p-2">
                     <button
-                      className="cursor-pointer bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ml-2"
-                      onClick={() => deleteReview(rev.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(rev.id);
+                      }}
+                      className="cursor-pointer bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
                     >
-                      {t("delete")}
+                      Delete
                     </button>
                   </td>
                 </tr>
