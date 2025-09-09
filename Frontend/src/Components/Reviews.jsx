@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ReactStars from "react-stars";
+
 function Reviews() {
   const API_URL = import.meta.env.VITE_API_URL;
   const { t } = useTranslation();
@@ -16,7 +17,6 @@ function Reviews() {
         console.error("Error fetching reviews:", error);
       }
     };
-
     fetchReviews();
   }, []);
 
@@ -46,4 +46,5 @@ function Reviews() {
     </div>
   );
 }
+
 export default Reviews;

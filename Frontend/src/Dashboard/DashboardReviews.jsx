@@ -26,7 +26,6 @@ function DashboardReviews() {
     const controls = animate(count, totalReviews, { duration: 1 });
     return () => controls.stop();
   }, [totalReviews]);
-
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -65,20 +64,19 @@ function DashboardReviews() {
           </CardDescription>
         </div>
       </CardHeader>
-
-      <CardContent className="flex items-center flex-1 pb-0">
+      <CardContent className="flex items-centers flex-1 pb-0">
         <div className="w-full overflow-x-auto">
           <table className="w-full table-auto text-sm lg:text-base">
             <thead className="shadow-md rounded-xl ">
               <tr>
-                <th className="text-start p-2">{t("status")}</th>
+                <th className="text-start p-2">product id</th>
                 <th className="text-start p-2">{t("username")}</th>
-                <th className="text-start p-2">{t("reviews")}</th>
+                <th className="text-start p-2">{t("Comments")}</th>
                 <th className="text-start p-2">{t("rate")}</th>
                 <th className="text-start p-2">{t("actions")}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {reviews.map((rev) => (
                 <tr key={rev.id}>
                   <td>

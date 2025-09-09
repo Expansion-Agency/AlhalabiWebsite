@@ -24,25 +24,24 @@ export class ReviewsService {
     });
   }
 
-async create(review: CreateReviewDto) {
-  await prisma.reviews.create({
- data: {
-    comment: review.comment,
-    rating: review.rating,
-    productId:Number(review.productId),
+  async create(review: CreateReviewDto) {
+    await prisma.reviews.create({
+      data: {
+        comment: review.comment,
+        rating: review.rating,
+        productId: Number(review.productId),
+      },
+    });
   }
-});
 
-}
-
-async update(id: number, review: UpdateReviewDto) {
-  return await prisma.reviews.update({
-    where: { id },
-     data: {
-...review,  },
-});
-}
-
+  async update(id: number, review: UpdateReviewDto) {
+    return await prisma.reviews.update({
+      where: { id },
+      data: {
+        ...review,
+      },
+    });
+  }
 
   async delete(id: number) {
     return await prisma.reviews.delete({

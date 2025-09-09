@@ -83,8 +83,6 @@ model Reviews {
   userId    Int?
   product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
   user      Users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-
 }
 
 model Admins {
