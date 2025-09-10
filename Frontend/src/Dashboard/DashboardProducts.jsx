@@ -12,6 +12,12 @@ import { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import {
+  animate,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 function DashboardProducts({ category, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
@@ -19,6 +25,20 @@ function DashboardProducts({ category, fetchCategories }) {
   const [editingProduct, setEditingProduct] = useState(null);
   const [showCreateProduct, setShowCreateProduct] = useState(false);
   const editModalRef = useRef(null);
+  const totalProducts = products.length;
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useMotionValueEvent(rounded, "change", (v) => {
+    setDisplayValue(v);
+  });
+
+  useEffect(() => {
+    const controls = animate(count, totalProducts, { duration: 1 });
+    return () => controls.stop();
+  }, [totalProducts]);
+
   const [newProduct, setNewProduct] = useState({
     nameEn: "",
     nameAr: "",
@@ -49,11 +69,17 @@ function DashboardProducts({ category, fetchCategories }) {
       if (response.data && Array.isArray(response.data)) {
         const productsWithImages = response.data.map((product) => {
           const productImages = product.productImages || [];
-          const defaultImage = productImages.find((image) => image.isDefault);
-          const imageUrl = defaultImage
-            ? `${defaultImage.imagePath}`
-            : "/path/to/default/image.jpg";
+          let imageUrl = product.imageUrl; // 👈 keep API's imageUrl if available
 
+          if (!imageUrl && productImages.length > 0) {
+            const defaultImage =
+              productImages.find((img) => img.isDefault) || productImages[0];
+            imageUrl = `${defaultImage.imagePath}`; // prepend API_URL if needed
+          }
+
+          if (!imageUrl) {
+            imageUrl = "/default.png"; // fallback
+          }
           console.log("Product img:", imageUrl);
 
           return {
@@ -74,6 +100,7 @@ function DashboardProducts({ category, fetchCategories }) {
       console.error("Error fetching products:", error);
     }
   };
+
   const handleCreateProduct = async (event) => {
     event.preventDefault();
     try {
@@ -118,7 +145,6 @@ function DashboardProducts({ category, fetchCategories }) {
         });
       }
       fetchProducts();
-
       setNewProduct({
         nameEn: "",
         nameAr: "",
@@ -201,13 +227,16 @@ function DashboardProducts({ category, fetchCategories }) {
       console.error("Error updating product:", error);
     }
   };
+
   return (
     <>
       <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
         <CardHeader className="flex justify-between items-center pb-0">
           <div className="flex flex-col">
             <CardTitle>{t("totalProducts")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">2</CardDescription>
+            <CardDescription className="text-4xl font-bold">
+              {displayValue}
+            </CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -224,14 +253,14 @@ function DashboardProducts({ category, fetchCategories }) {
               <thead className="shadow-md rounded-xl">
                 <tr>
                   <th className="text-start p-2">{t("productId")}</th>
-                  <th className="text-start p-2">{t("productName")}</th>
-                  <th className="text-start p-2">Name in Arabic</th>
-                  <th className="text-start p-2">Description in Arabic</th>
-                  <th className="text-start p-2">Description in English</th>
-                  <th className="text-start p-2">{t("price")}</th>
-                  <th className="text-start p-2">{t("price")}</th>
-                  <th className="text-start p-2">quantity</th>
-                  <th className="text-start p-2">Image</th>
+                  <th className="text-start p-2">{t("enName")}</th>
+                  <th className="text-start p-2">{t("arName")}</th>
+                  <th className="text-start p-2">{t("arDesc")}</th>
+                  <th className="text-start p-2">{t("enDesc")}</th>
+                  <th className="text-start p-2">{t("price")} egb</th>
+                  <th className="text-start p-2">{t("price")} $</th>
+                  <th className="text-start p-2">{t("quantity")}</th>
+                  <th className="text-start p-2">{t("img")}</th>
                   <th className="text-start p-2">{t("category")}</th>
                   <th className="text-start p-2">{t("actions")}</th>
                 </tr>

@@ -3,7 +3,7 @@ import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import helmet from "helmet";
 import * as express from "express";
-import { join } from "path";
+import { join, resolve } from "path";
 
 async function bootstrap() {
   console.log("DATABASE_URL:", process.env.DATABASE_URL);
@@ -18,7 +18,11 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "https://alhalabi-website.vercel.app", // Production frontend
-      "http://localhost:5173",               // Local dev frontend
+      "http://localhost:5173", // Local dev frontend
+      "https://alhalapi.com",
+      "https://www.alhalapi.com",
+      "https://elhalapi.com",
+      "https://www.elhalapi.com",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "userType"],
@@ -32,18 +36,20 @@ async function bootstrap() {
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-  // Serve static product images if needed
-  const modelDir =
-    process.env.MODEL_STORAGE_PATH ||
-    join(__dirname, "..", "public", "products");
-  app.use("/products", express.static(modelDir));
+  // Products folder
+  const productsDir = resolve(__dirname, "..", "..", "public_html", "products");
+  app.use("/products", express.static(productsDir));
+
+  // Category folder
+  const categoryDir = resolve(__dirname, "..", "..", "public_html", "category");
+  app.use("/category", express.static(categoryDir));
 
   // Swagger setup for API documentation
   const config = new DocumentBuilder()
     .setTitle("Alhalabi API")
     .setDescription("The Alhalabi API description")
-    // .addServer("https://linen-loris-259739.hostingersite.com") // ← Hostinger domain
-    .addServer("http://168.231.76.141:3002")
+    .addServer("https://api.alhalapi.com")
+    .addServer(`http://localhost:5173`)
     .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();
@@ -54,8 +60,10 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   //  Use 0.0.0.0 to work on Hostinger/public server
-  await app.listen(3002, "0.0.0.0");
+  await app.listen(port, "0.0.0.0");
+  console.log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap()
-  .then(() => console.log(`Application is running on: http://localhost:${3002}`))
-  .catch((error) => console.error("Error during application startup:", error));
+
+bootstrap().catch((error) =>
+  console.error("Error during application startup:", error)
+);

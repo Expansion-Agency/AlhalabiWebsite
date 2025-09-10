@@ -7,7 +7,7 @@ function Footer() {
   const { t } = useTranslation();
   return (
     <div className="mt-5 p-5 shadow-md min-h-[17vh] bg-amber-950/5">
-      <h1 className="text-black/50 m-5">{t("alhalabi")}</h1>
+      <img className="w-40 m-4" src="assets/logo.png" alt="" />
       <div className="flex lg:flex-row flex-col items-center justify-center gap-5 lg:gap-50 py-2">
         <div className="flex flex-col h-36 gap-3">
           <h2 className="font-bold text-black/80 tracking-wider">

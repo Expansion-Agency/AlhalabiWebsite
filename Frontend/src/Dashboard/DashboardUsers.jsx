@@ -11,6 +11,12 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import {
+  animate,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 function DashboardUsers() {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
@@ -18,6 +24,19 @@ function DashboardUsers() {
   const [loading, setLoading] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [showCreateUser, setShowCreateUser] = useState(false);
+  const totalUsers = users.length;
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useMotionValueEvent(rounded, "change", (v) => {
+    setDisplayValue(v);
+  });
+
+  useEffect(() => {
+    const controls = animate(count, totalUsers, { duration: 1 });
+    return () => controls.stop();
+  }, [totalUsers]);
   const [newUser, setNewUser] = useState({
     email: "",
     password: "",
@@ -116,7 +135,7 @@ function DashboardUsers() {
           <div className="flex flex-col">
             <CardTitle>{t("totalUsers")}</CardTitle>
             <CardDescription className="text-4xl font-bold">
-              {users.length}
+              {displayValue}
             </CardDescription>
           </div>
         </CardHeader>
