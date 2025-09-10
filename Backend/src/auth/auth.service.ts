@@ -25,6 +25,14 @@ export class AuthService {
     private verficationProvider: Verification,
   ) {}
 
+   async validateOAuthLogin(profile: any): Promise<any> {
+    const user = {
+      email: profile.emails[0].value,
+      name: profile.displayName,
+      provider: profile.provider,
+    };
+    return user;
+  }
   async login(email: string, password: string, userType: string) {
     let user: Users | Admins | null = null;
     if (userType === Role.User.toString()) {
