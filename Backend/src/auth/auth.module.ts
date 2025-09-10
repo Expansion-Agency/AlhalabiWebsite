@@ -9,7 +9,8 @@ import { MailModule } from 'src/mail/mail.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import Verification from 'src/shared/utils/verfication/Verification';
 import { MailService } from 'src/mail/mail.service';
-
+import { GoogleStrategy } from './google.strategy';
+import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     UsersModule,
@@ -17,6 +18,7 @@ import { MailService } from 'src/mail/mail.service';
       global: true,
       secret: process.env.JWT_SECRET,
     }),
+    PassportModule,
     MailModule,
     ThrottlerModule.forRoot({
       throttlers: [
@@ -33,6 +35,7 @@ import { MailService } from 'src/mail/mail.service';
     AdminsService,
     Verification,
     MailService,
+    GoogleStrategy,
   ],
   controllers: [AuthController],
 })
