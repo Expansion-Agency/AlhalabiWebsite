@@ -164,7 +164,7 @@ function DashboardProducts({ category, fetchCategories }) {
   };
 
   const handleDelete = async (productId) => {
-    const confirmDelete = window.confirm(`${translations.deleteProd}`);
+    const confirmDelete = window.confirm(`${t.deleteProd}`);
     if (!confirmDelete) return;
     try {
       const token = localStorage.getItem("token");
@@ -266,16 +266,16 @@ function DashboardProducts({ category, fetchCategories }) {
                 </tr>
               </thead>
               <tbody>
-                {products.map((products) => (
-                  <tr key={products.id}>
-                    <td className="text-start p-2">{products.id}</td>
-                    <td className="text-start p-2">{products.name}</td>
-                    <td className="text-start p-2">{products.nameAr}</td>
-                    <td className="text-start p-2">{products.descriptionAr}</td>
-                    <td className="text-start p-2">{products.descriptionEn}</td>
-                    <td className="text-start p-2">{products.priceEgp}</td>
-                    <td className="text-start p-2">{products.priceUsd}</td>
-                    <td className="text-start p-2">{products.quantity}</td>
+                {products.map((product) => (
+                  <tr key={product.id}>
+                    <td className="text-start p-2">{product.id}</td>
+                    <td className="text-start p-2">{product.name}</td>
+                    <td className="text-start p-2">{product.nameAr}</td>
+                    <td className="text-start p-2">{product.descriptionAr}</td>
+                    <td className="text-start p-2">{product.descriptionEn}</td>
+                    <td className="text-start p-2">{product.priceEgp}</td>
+                    <td className="text-start p-2">{product.priceUsd}</td>
+                    <td className="text-start p-2">{product.quantity}</td>
                     <td className="text-start p-2">
                       <img
                         src={products.imageUrl}
