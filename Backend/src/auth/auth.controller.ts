@@ -23,20 +23,16 @@ import { JoiValidationPipe } from 'src/shared/utils/joiValidations';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-   @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // Redirect to Google login
-  }
 
-  @Get('google/redirect')
-  @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req: Request) {
-    return {
-      message: 'User Info from Google',
-      user: req.user,
-    };
-  }
+@Get('google/redirect')
+@UseGuards(AuthGuard('google'))
+googleAuthRedirect(@Req() req: Request) {
+  return {
+    message: 'User Info from Google',
+    user: req.user,
+  };
+}
+
   @ApiBody({ type: loginDto })
   @ApiOperation({ summary: 'User login' })
   @ApiHeader({
