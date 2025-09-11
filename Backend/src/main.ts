@@ -61,7 +61,7 @@ export async function createNestServer(adapter: ExpressAdapter) {
 if (require.main === module) {
   (async () => {
     const app = await createNestServer(new ExpressAdapter());
-    await app.listen(process.env.PORT || 3000, "0.0.0.0");
-    console.log(`Application is running on: http://localhost:${process.env.PORT || 3000}`);
+    await app.listen(process.env.PORT || 3002, "0.0.0.0");
+    console.log(`Application is running on: http://localhost:${process.env.PORT || 3002}`);
   })();
 }
