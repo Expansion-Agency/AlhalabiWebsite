@@ -3,22 +3,19 @@ import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import helmet from "helmet";
 import * as express from "express";
-import { join, resolve } from "path";
+import { resolve } from "path";
+import { ExpressAdapter } from "@nestjs/platform-express";
 
-async function bootstrap() {
-  console.log("DATABASE_URL:", process.env.DATABASE_URL);
-
-  const app = await NestFactory.create(AppModule, {
+export async function createNestServer(adapter: ExpressAdapter) {
+  const app = await NestFactory.create(AppModule, adapter, {
     logger: ["error", "warn", "log", "debug", "verbose"],
   });
 
-  const port = process.env.PORT || 3005;
-
-  //  Enable CORS for frontend access
+  // Enable CORS for frontend access
   app.enableCors({
     origin: [
-      "https://alhalabi-website.vercel.app", // Production frontend
-      "http://localhost:5173", // Local dev frontend
+      "https://alhalabi-website.vercel.app",
+      "http://localhost:5173",
       "https://alhalapi.com",
       "https://www.alhalapi.com",
       "https://elhalapi.com",
@@ -29,18 +26,17 @@ async function bootstrap() {
     credentials: true,
   });
 
-  //  Security headers
+  // Security headers
   app.use(helmet());
 
   // Body parsers
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-  // Products folder
+  // Static folders
   const productsDir = resolve(__dirname, "..", "..", "public_html", "products");
   app.use("/products", express.static(productsDir));
 
-  // Category folder
   const categoryDir = resolve(__dirname, "..", "..", "public_html", "category");
   app.use("/category", express.static(categoryDir));
 
@@ -50,7 +46,6 @@ async function bootstrap() {
     .setDescription("The Alhalabi API description")
     .addServer("https://api.alhalapi.com")
     .addServer(`http://localhost:5173`)
-    .addServer(`http://localhost:${port}`)
     .addBearerAuth()
     .build();
 
@@ -59,11 +54,14 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
 
-  //  Use 0.0.0.0 to work on Hostinger/public server
-  await app.listen(port, "0.0.0.0");
-  console.log(`Application is running on: http://localhost:${port}`);
+  return app;
 }
 
-bootstrap().catch((error) =>
-  console.error("Error during application startup:", error)
-);
+// Only listen locally (not on serverless)
+if (require.main === module) {
+  (async () => {
+    const app = await createNestServer(new ExpressAdapter());
+    await app.listen(process.env.PORT || 3005, "0.0.0.0");
+    console.log(`Application is running on: http://localhost:${process.env.PORT || 3005}`);
+  })();
+}

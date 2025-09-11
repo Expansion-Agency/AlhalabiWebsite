@@ -1,28 +1,12 @@
 {
   "version": 2,
-  "builds": [{ "src": "dist/main.ts", "use": "@vercel/node" }],
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/:path*",
-      "destination": "https://api.alhalapi.com/:path*",
-      "preserveExternalUrl": true
+      "src": "dist/main.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/category/(.*)",
-      "dest": "/category/$1",
-      "headers": {
-        "Cache-Control": "public,max-age=31536000,immutable"
-      }
-    },
-    {
-      "src": "/products/(.*)",
-      "dest": "/products/$1",
-      "headers": {
-        "Cache-Control": "public,max-age=31536000,immutable"
-      }
-    },
     {
       "src": "/(.*)",
       "dest": "dist/main.ts",
