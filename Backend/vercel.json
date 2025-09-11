@@ -5,17 +5,13 @@
     { "src": "build/**", "use": "@vercel/static" }
   ],
   "rewrites": [
-    {
-      "source": "/products(.*)",
-      "destination": "https://api.alhalapi.com/products$1"
-    },
-    {
-      "source": "/categories(.*)",
-      "destination": "https://api.alhalapi.com/categories$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/build/index.html"
-    }
-  ]
+  {
+    "source": "/products(.*)",
+    "destination": "https://api.alhalapi.com/products$1"
+  },
+  {
+    "source": "/categories(.*)",
+    "destination": "https://api.alhalapi.com/categories$1"
+  }
+]
 }
