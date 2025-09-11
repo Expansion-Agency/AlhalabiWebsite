@@ -40,7 +40,7 @@ function DashboardReviews() {
   }, []);
 
   const handleDelete = async (reviewId) => {
-    const confirmDelete = window.confirm(`Are you sure?`);
+    const confirmDelete = window.confirm(`${t.deleteRev}`);
     if (!confirmDelete) return;
     try {
       const token = localStorage.getItem("token");

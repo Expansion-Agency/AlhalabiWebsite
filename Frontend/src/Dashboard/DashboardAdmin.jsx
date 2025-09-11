@@ -79,7 +79,7 @@ function DashboardAdmin() {
 
   // Delete admin
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(`delete admin with id ${id}?`);
+    const confirmDelete = window.confirm(`${t.deleteAdmin}`);
     if (!confirmDelete) return;
     try {
       const token = localStorage.getItem("token"); // Get token from storage

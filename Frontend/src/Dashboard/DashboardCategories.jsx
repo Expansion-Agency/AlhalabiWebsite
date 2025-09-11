@@ -82,7 +82,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
   // Delete category
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(`delete category with id ${id}?`);
+    const confirmDelete = window.confirm(`${t.deleteCat}`);
     if (!confirmDelete) return;
     try {
       const token = localStorage.getItem("token"); // Get token from storage

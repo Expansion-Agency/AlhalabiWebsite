@@ -81,6 +81,7 @@ i18n.use(initReactI18next).init({
         deleteCat:"Are you sure you want to delete this category?",
         deleteUser:"Are you sure you want to delete this user?",
         deleteAdmin:"Are you sure you want to delete this admin?",
+        deleteRev:"Are you sure you want to delete this review?",
       },
     },
     ar: {
@@ -161,6 +162,7 @@ i18n.use(initReactI18next).init({
         deleteCat:"هل أنت متأكد أنك تريد حذف هذه الفئة؟",
         deleteUser:"هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
         deleteAdmin:"هل أنت متأكد أنك تريد حذف هذا المسؤول؟",
+        deleteRev:"هل أنت متأكد أنك تريد حذف هذه المراجعة؟",
       },
     },
   },
