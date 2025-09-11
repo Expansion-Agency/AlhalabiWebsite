@@ -286,19 +286,15 @@ function DashboardProducts({ category, fetchCategories }) {
                     <td className="text-start p-2">{products.categoryId}</td>
                     <td className="text-start flex gap-2 p-2">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditClick(products);
-                        }}
+                        onClick={() => 
+                          handleEditClick(products)
+                        }
                         className="text-blue-500 cursor-pointer"
                       >
                         {t("edit")}
                       </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(products.id);
-                        }}
+                        <button
+                        onClick={() => handleDelete(product.id)}
                         className="text-red-500 cursor-pointer"
                       >
                         {t("delete")}
