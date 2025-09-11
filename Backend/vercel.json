@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/:path*",
-      "destination": "https://api.alhalabi.com/:path*"
+      "destination": "https://api.alhalapi.com/:path*"
     }
   ]
 }
