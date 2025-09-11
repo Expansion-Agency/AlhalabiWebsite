@@ -9,7 +9,7 @@ function OtpPage() {
   const searchParams = new URLSearchParams(location.search);
   const email = searchParams.get("input");
   const from = searchParams.get("from");
-  const { translations } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const inputsRef = useRef(new Array(6).fill(null));
@@ -133,11 +133,11 @@ function OtpPage() {
   return (
     <div className="loginContainer">
       <div className="logintop">
-        <h1>{translations.verifyemail}</h1>
+        <h1>{t.verifyemail}</h1>
         <p>
-          {translations.code} {email}
+          {t.code} {email}
         </p>
-        <p>{translations.junk}</p>
+        <p>{t.junk}</p>
       </div>
       <div className="inputs">
         <div className="codeRow">
@@ -174,132 +174,3 @@ function OtpPage() {
 }
 
 export default OtpPage;
-// src/Pages/OtpPage.jsx
-/* import React, { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-
-function OtpPage() {
-  const [searchParams] = useSearchParams();
-  const input = searchParams.get("input");
-  const from = searchParams.get("from");
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      // 1. Verify OTP
-      const response = await axios.post(
-        "http://168.231.76.141:3002/auth/verifyotp",
-        { input, otp },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            userType: "USER",
-          },
-        }
-      );
-      sessionStorage.setItem("otp", otp);
-      // Assuming the response contains user data and a token
-      const { user, token } = response.data;
-
-      // Store user info in localStorage
-      localStorage.setItem("user", JSON.stringify(user)); // Save user details
-      localStorage.setItem("token", token); // Save authentication token
-
-      alert("OTP Verified Successfully!");
-      const storedData = JSON.parse(localStorage.getItem("signupData"));
-      if (storedData && from === "signup") {
-        // Step 2: Sign up the user
-        const signupData = JSON.parse(localStorage.getItem("signupData"));
-        await axios.post("http://168.231.76.141:3002/auth/signUp", signupData, {
-          headers: {
-            "Content-Type": "application/json",
-            userType: "USER",
-          },
-        });
-        alert("Registration successful! You can now log in.");
-        navigate("/login");
-      } else if (from === "forgot-password") {
-        // Step 2: Redirect to reset password page
-        navigate(`/reset-password?email=${encodeURIComponent(input)}`);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP or process failed.");
-    }
-  };
-
-  const sendOtp = async (email) => {
-    try {
-      await axios.post(
-        "http://168.231.76.141:3002/auth/sendotp",
-        { input: email },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            userType: "USER",
-          },
-        }
-      );
-      alert("OTP has been sent to your email!");
-    } catch (error) {
-      alert(
-        error.response?.data?.message || "Failed to send OTP. Please try again."
-      );
-    }
-  };
-
-  return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "2rem auto",
-        padding: "1rem",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-      }}
-    >
-      <h2>OTP Verification</h2>
-      <p>
-        Please enter the OTP sent to: <strong>{input}</strong>
-      </p>
-      <p>
-        Request from: <em>{from}</em>
-      </p>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Enter OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          style={{
-            padding: "0.5rem",
-            width: "100%",
-            marginBottom: "1rem",
-          }}
-        />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" style={{ padding: "0.5rem 1rem" }}>
-          Verify OTP
-        </button>
-      </form>
-
-      <button
-        type="button"
-        style={{ marginTop: "1rem" }}
-        onClick={() => sendOtp(input)}
-      >
-        Resend OTP
-      </button>
-    </div>
-  );
-}
-
-export default OtpPage;
-
-// Call this when the user submits their email during signup
- */

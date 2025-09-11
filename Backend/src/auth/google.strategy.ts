@@ -7,9 +7,9 @@ import { AuthService } from './auth.service';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly authService: AuthService) {
     super({
-      clientID: '1094475133342-d25473aatig1mgqn20fqhgrpvfkv8r57.apps.googleusercontent.com',
-      clientSecret: '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',
-      callbackURL: 'http://localhost:3005/auth/google/redirect',
+      clientID: '1094475133342-11ad2hi18n1f8d3usce8l2ia1kveh2ea.apps.googleusercontent.com',
+      clientSecret: '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',
+      callbackURL: 'https://api.alhalapi.com/auth/google/redirect',
       scope: ['email', 'profile'],
     });
   }
