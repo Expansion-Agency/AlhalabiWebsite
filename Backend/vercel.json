@@ -1,17 +1,9 @@
-
 {
   "version": 2,
-  "builds": [
-    { "src": "build/**", "use": "@vercel/static" }
-  ],
   "rewrites": [
-  {
-    "source": "/products(.*)",
-    "destination": "https://api.alhalapi.com/products$1"
-  },
-  {
-    "source": "/categories(.*)",
-    "destination": "https://api.alhalapi.com/categories$1"
-  }
-]
+    {
+      "source": "/:path*",
+      "destination": "https://api.alhalabi.com/:path*"
+    }
+  ]
 }
