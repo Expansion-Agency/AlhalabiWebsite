@@ -326,7 +326,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
               />
             </div>
           )}
-
+dddddddddddddddddddd
           <input
             type="file"
             accept="image/*"
