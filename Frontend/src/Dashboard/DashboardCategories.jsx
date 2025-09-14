@@ -15,7 +15,7 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
-
+console.log("hhhhhhhhhhhh");
 function DashboardCategories({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
