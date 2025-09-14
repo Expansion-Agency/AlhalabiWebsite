@@ -19,6 +19,7 @@ export class UsersService {
         "Email is not verified. Please verify OTP."
       );
     }
+
     const existingUser = await prisma.users.findFirst({
       where: {
         OR: [
@@ -119,7 +120,6 @@ export class UsersService {
   }
 
   async isVerified(input: string): Promise<boolean> {
-    // Check if the user already exists
     const user = await prisma.users.findUnique({ where: { email: input } });
     if (user) return true;
     const otpCodes = await prisma.otpCodes.findFirst({
@@ -131,5 +131,41 @@ export class UsersService {
     });
     if (!otpCodes) return false;
     return otpCodes.isVerified;
+  }
+
+  // ✅ Fixed: Create user from Google profile (for OAuth)
+  async createUserFromGoogle(data: {
+    email: string;
+    name: string;
+    provider: string;
+  }): Promise<Users> {
+    // Generate username from email (before '@')
+    const username = data.email.split("@")[0];
+
+    // Generate a random password and hash it
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    // Provide a default phone or a placeholder
+    const phone = "0000000000";
+
+    return await prisma.users.create({
+      data: {
+        email: data.email,
+        username,
+        password: hashedPassword,
+        phone,
+        name: data.name,
+        provider: data.provider,
+        isVerified: true,
+      },
+    });
+  }
+
+  // ✅ Helper to find user by email (if not already present)
+  async findByEmail(email: string): Promise<Users | null> {
+    return await prisma.users.findUnique({
+      where: { email },
+    });
   }
 }

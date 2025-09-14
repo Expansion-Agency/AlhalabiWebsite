@@ -15,6 +15,7 @@ export async function createNestServer(adapter: ExpressAdapter) {
   app.enableCors({
     origin: [
       "https://alhalabi-website.vercel.app",
+      "https://localhost:5173",
       "http://localhost:5173",
       "https://alhalapi.com",
       "https://www.alhalapi.com",

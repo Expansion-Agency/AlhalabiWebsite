@@ -57,6 +57,16 @@ function ProductView() {
     }
   };
 
+  const handleUpdateReview = async (reviewId, updatedReviewData) => {
+    try {
+      await axios.patch(`${API_URL}/reviews/${reviewId}`, updatedReviewData);
+      const updatedReviews = await axios.get(`${API_URL}/reviews`);
+      setReviews(updatedReviews.data);
+    } catch (err) {
+      console.error("Error updating review", err);
+    }
+  };
+
   if (loading) {
     return (
       <p className="text-center py-20 text-gray-600">Loading product...</p>

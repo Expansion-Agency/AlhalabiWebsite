@@ -7,12 +7,14 @@ import {
   UsePipes,
   Get,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
 import { loginDto, loginSchema } from './dto/login.dto';
 import { Role } from 'src/shared/enums/role.enum';
 import { signUpDto, signUpSchema } from './dto/signup.dto';
@@ -24,7 +26,10 @@ import { JoiValidationPipe } from 'src/shared/utils/joiValidations';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   // START GOOGLE LOGIN FLOW
   @Get('google')
@@ -33,14 +38,41 @@ export class AuthController {
     // Redirects to Google OAuth2 login page
   }
 
-  // HANDLE GOOGLE REDIRECT CALLBACK
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req: Request) {
-    return {
-      message: 'User Info from Google',
-      user: req.user,
-    };
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
+    const googleUser = req.user as any;
+
+    // Safely get email
+    const email = googleUser?.email || googleUser?.emails?.[0]?.value;
+
+    // Safely get name
+    const nameObj = googleUser?.name || {};
+    const displayName =
+      typeof nameObj === 'string'
+        ? nameObj
+        : nameObj?.formatted ||
+          nameObj?.fullName ||
+          `${nameObj?.givenName || ''} ${nameObj?.familyName || ''}`.trim();
+
+    // 1. Check if user exists in DB
+    let user = await this.usersService.findByEmail(email);
+    if (!user) {
+      // 2. If not exists, create user
+      user = await this.usersService.createUserFromGoogle({
+        email,
+        name: displayName,
+        provider: 'google',
+        // add other fields as needed
+      });
+    }
+
+    // 3. Generate JWT token
+    const token = await this.authService.generateJwt(user);
+
+    // 4. Redirect to frontend with token
+    const frontendURL = process.env.FRONTEND_URL || 'https://your-frontend.com';
+    return res.redirect(`${frontendURL}/login/success?token=${token}`);
   }
 
   @ApiBody({ type: loginDto })
@@ -53,15 +85,8 @@ export class AuthController {
   })
   @UsePipes(new JoiValidationPipe(loginSchema))
   @Post('login')
-  async login(
-    @Body() signInDto: loginDto,
-    @Headers('userType') userType: string,
-  ) {
-    const data = await this.authService.login(
-      signInDto.email,
-      signInDto.password,
-      userType,
-    );
+  async login(@Body() signInDto: loginDto, @Headers('userType') userType: string) {
+    const data = await this.authService.login(signInDto.email, signInDto.password, userType);
     return {
       statusCode: HttpStatus.OK,
       message: 'Login successful',
@@ -73,10 +98,7 @@ export class AuthController {
   @ApiBody({ type: signUpDto })
   @Post('signUp')
   @UsePipes(new JoiValidationPipe(signUpSchema))
-  async signUp(
-    @Body() signUpDto: signUpDto,
-    @Headers('userType') userType: Role,
-  ) {
+  async signUp(@Body() signUpDto: signUpDto, @Headers('userType') userType: Role) {
     const data = await this.authService.signUp(signUpDto, userType);
     return {
       statusCode: HttpStatus.CREATED,
@@ -96,10 +118,7 @@ export class AuthController {
       },
     },
   })
-  async sendOtp(
-    @Body() sendOtpDto: Record<string, any>,
-    @Headers('userType') userType: string,
-  ) {
+  async sendOtp(@Body() sendOtpDto: Record<string, any>, @Headers('userType') userType: string) {
     await this.authService.sendVerficationOtp(sendOtpDto.input, userType);
     return {
       statusCode: HttpStatus.OK,
@@ -111,21 +130,14 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        otp: {
-          type: 'string',
-        },
-        input: {
-          type: 'string',
-        },
+        otp: { type: 'string' },
+        input: { type: 'string' },
       },
     },
   })
   @Post('verifyotp')
   @ApiOperation({ summary: 'Verify the otp' })
-  async verifyOtp(
-    @Body() data: verifyTokenDto,
-    @Headers('userType') userType: string = 'USER',
-  ) {
+  async verifyOtp(@Body() data: verifyTokenDto, @Headers('userType') userType: string = 'USER') {
     await this.authService.verifyOtp(data.input, data.otp, userType);
     return {
       statusCode: HttpStatus.OK,
@@ -137,18 +149,13 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        input: {
-          type: 'string',
-        },
+        input: { type: 'string' },
       },
     },
   })
   @Post('forget')
   @ApiOperation({ summary: 'Send otp for forgot password' })
-  async forgetPassword(
-    @Body() data: Record<string, any>,
-    @Headers('userType') userType: string = 'USER',
-  ) {
+  async forgetPassword(@Body() data: Record<string, any>, @Headers('userType') userType: string = 'USER') {
     await this.authService.forgetPassword(data.input, userType);
     return {
       statusCode: HttpStatus.OK,
@@ -159,10 +166,7 @@ export class AuthController {
   @Post('reset')
   @ApiBody({ type: ResetPasswordDTO })
   @ApiOperation({ summary: 'Reset password' })
-  async resetPassword(
-    @Body() data: ResetPasswordDTO,
-    @Headers('userType') userType: string = 'USER',
-  ) {
+  async resetPassword(@Body() data: ResetPasswordDTO, @Headers('userType') userType: string = 'USER') {
     await this.authService.resetPassword(data, userType);
     return {
       statusCode: HttpStatus.OK,
@@ -175,24 +179,13 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        input: {
-          type: 'string',
-        },
-        otp: {
-          type: 'string',
-        },
+        input: { type: 'string' },
+        otp: { type: 'string' },
       },
     },
   })
-  async otpValid(
-    @Body() data: Record<string, any>,
-    @Headers('userType') userType: string = 'USER',
-  ) {
-    const { isValid } = await this.authService.isOtpValid(
-      data.input,
-      userType,
-      data.otp,
-    );
+  async otpValid(@Body() data: Record<string, any>, @Headers('userType') userType: string = 'USER') {
+    const { isValid } = await this.authService.isOtpValid(data.input, userType, data.otp);
     return {
       statusCode: HttpStatus.OK,
       message: 'OTP verified successfully',

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import prisma from '../shared/prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -13,8 +14,6 @@ import { Payload } from 'src/types';
 import { Users, Admins } from '@prisma/client';
 import Verification from 'src/shared/utils/verfication/Verification';
 import { ResetPasswordDTO } from './dto/resetPassword.dto';
-import {  InternalServerErrorException } from '@nestjs/common';
-
 
 @Injectable()
 export class AuthService {
@@ -22,10 +21,10 @@ export class AuthService {
     private jwtService: JwtService,
     private userService: UsersService,
     private adminService: AdminsService,
-    private verficationProvider: Verification,
+    private verificationProvider: Verification,
   ) {}
 
-   async validateOAuthLogin(profile: any): Promise<any> {
+  async validateOAuthLogin(profile: any): Promise<any> {
     const user = {
       email: profile.emails[0].value,
       name: profile.displayName,
@@ -33,6 +32,7 @@ export class AuthService {
     };
     return user;
   }
+
   async login(email: string, password: string, userType: string) {
     let user: Users | Admins | null = null;
     if (userType === Role.User.toString()) {
@@ -51,11 +51,11 @@ export class AuthService {
 
     if (user === null) throw new NotFoundException('Invalid email or password');
 
-    const isMatch = bcrypt.compareSync(password, user.password);
+    const isMatch = bcrypt.compareSync(password, (user as any).password);
 
     if (!isMatch) throw new NotFoundException('Invalid email or password');
 
-    if (user.deletedAt) throw new NotFoundException('User is deleted');
+    if ((user as any).deletedAt) throw new NotFoundException('User is deleted');
 
     const payload: Payload = {
       sub: user.id,
@@ -76,39 +76,34 @@ export class AuthService {
       }
       return await this.userService.create(user as any);
     }
+    // you might want to handle admin signup or other userTypes here
   }
 
+  async sendVerficationOtp(input: string, userType: string) {
+    try {
+      if (!input || !userType) {
+        throw new BadRequestException('Email/Phone and userType are required');
+      }
 
-// ...
-
-async sendVerficationOtp(input: string, userType: string) {
-  try {
-    if (!input || !userType) {
-      throw new BadRequestException('Email/Phone and userType are required');
+      await this.verificationProvider.sendVerificationCode(input, userType);
+      return { message: 'OTP sent successfully' };
+    } catch (error) {
+      console.error('OTP send error:', error);
+      throw new InternalServerErrorException('Failed to send OTP');
     }
-
-    await this.verficationProvider.sendVerificationCode(input, userType);
-    return { message: 'OTP sent successfully' };
-  } catch (error) {
-    console.error('OTP send error:', error);
-    throw new InternalServerErrorException('Failed to send OTP');
   }
-}
-
 
   async isOtpValid(input: string, userType: string, otp: string) {
-    const isValid = await this.verficationProvider.verify(input, otp, userType);
+    const isValid = await this.verificationProvider.verify(input, otp, userType);
     if (isValid) {
-      return {
-        isValid,
-      };
+      return { isValid };
     } else {
       throw new BadRequestException('Invalid OTP');
     }
   }
 
   async verifyOtp(input: string, otp: string, userType: string) {
-    const isValid = await this.verficationProvider.verify(input, otp, userType);
+    const isValid = await this.verificationProvider.verify(input, otp, userType);
     if (!isValid) {
       throw new BadRequestException('Invalid OTP');
     }
@@ -119,7 +114,7 @@ async sendVerficationOtp(input: string, userType: string) {
     if (userType == 'USER') {
       await this.userService.findOne(email);
     }
-    await this.verficationProvider.sendVerificationCodeForget(email, userType);
+    await this.verificationProvider.sendVerificationCodeForget(email, userType);
   }
 
   public async resetPassword(data: ResetPasswordDTO, userType: string) {
@@ -136,5 +131,42 @@ async sendVerficationOtp(input: string, userType: string) {
       const hashedPassword = await bcrypt.hash(data.newPassword, 10);
       await this.userService.updateUserPassword(user.id, hashedPassword);
     }
+  }
+
+  // ✅ Google OAuth user handler
+  async handleGoogleLogin(googleUser: { email: string; name: string; provider: string }) {
+    let user = await this.userService.findByEmail(googleUser.email);
+
+    if (!user) {
+      user = await this.userService.createUserFromGoogle({
+        email: googleUser.email,
+        name: googleUser.name,
+        provider: googleUser.provider,
+      });
+    }
+
+    const payload: Payload = {
+      sub: user.id,
+      role: Role.User,
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload);
+    return {
+      accessToken,
+      user,
+    };
+  }
+
+  // ✅ ADDED: generateJwt method so the controller can call authService.generateJwt(user)
+  async generateJwt(user: Users): Promise<string> {
+    if (!user) {
+      throw new NotFoundException('User not found for generating token');
+    }
+    const payload: Payload = {
+      sub: user.id,
+      role: Role.User,  // or you might want to pass user’s actual role
+    };
+    const token = await this.jwtService.signAsync(payload);
+    return token;
   }
 }

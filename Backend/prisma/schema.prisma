@@ -16,7 +16,8 @@ model Users {
   phone         String          @unique
   deletedAt     DateTime?
   isVerified    Boolean         @default(false)
-
+  name          String?
+  provider      String?
   // Add this line for the opposite relation
   reviews       Reviews[]       // A user can have many reviews
 }

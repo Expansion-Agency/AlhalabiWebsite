@@ -1,31 +1,31 @@
-// ProductReviews.jsx
-
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import ReactStars from "react-stars";
 
-function ProductReviews({ reviews, onAddReview, productId, onEditReview }) {
+function ProductReviews({ reviews = [], onAddReview = () => {}, productId, onEditReview }) {
   const { t } = useTranslation();
   const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(0);
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
-  const [editedRating, setEditedRating] = useState(0);
+  const [editedRating, setEditedRating] = useState(5);
+
   let user = null;
   try {
     const storedUser = localStorage.getItem("user");
-    user =
-      storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
+    user = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
   } catch (e) {
     console.error("Failed to parse user from localStorage:", e);
     user = null;
   }
   const username = user?.name || "Anonymous";
 
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+
   const handleEdit = (review) => {
     setEditingReviewId(review.id);
-    setEditedComment(review.comment);
-    setEditedRating(review.rating);
+    setEditedComment(typeof review.comment === "string" ? review.comment : "");
+    setEditedRating(typeof review.rating === "number" ? review.rating : 5);
   };
 
   const handleCancelEdit = () => {
@@ -34,19 +34,30 @@ function ProductReviews({ reviews, onAddReview, productId, onEditReview }) {
     setEditedRating(5);
   };
 
-  const handleSaveEdit = () => {
-    onEditReview(editingReviewId, {
-      comment: editedComment,
-      rating: editedRating,
-    });
-    setEditingReviewId(null);
-    setEditedComment("");
-    setEditedRating(0);
+  const handleSaveEdit = async () => {
+    if (!onEditReview) {
+      console.warn("onEditReview prop not provided");
+      return;
+    }
+
+    try {
+      await onEditReview(editingReviewId, {
+        comment: editedComment,
+        rating: editedRating,
+      });
+    } catch (err) {
+      console.error("Error saving edited review:", err);
+    } finally {
+      setEditingReviewId(null);
+      setEditedComment("");
+      setEditedRating(5);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newComment.trim() || newRating > 0) {
+      // call onAddReview safely
       onAddReview({
         id: Date.now(),
         user: username,
@@ -58,72 +69,86 @@ function ProductReviews({ reviews, onAddReview, productId, onEditReview }) {
       setNewRating(0);
     }
   };
-  console.log("Reviews:", reviews);
 
   return (
     <div className="reviews-section mt-8 mx-10 p-6 bg-white rounded shadow-md">
       <h2 className="text-2xl font-semibold mb-4">{t("reviews")}</h2>
-      {reviews.length === 0 && <p>{t("noReviews")}</p>}
-      {reviews.map((rev) => (
-        <div
-          key={rev.id}
-          className="border-b border-gray-200 py-2 mb-2 flex justify-between"
-        >
-          <p className="font-semibold">{rev.user}</p>
-          {editingReviewId === rev.id ? (
-            <>
-              <textarea
-                className="w-full p-2 border border-gray-300 rounded mb-2"
-                rows={3}
-                value={editedReview}
-                onChange={(e) => setEditedReview(e.target.value)}
-              />
-              <ReactStars
-                count={5}
-                value={editedRating}
-                onChange={setEditedRating}
-                size={24}
-                activeColor="#ffd700"
-              />
-              <div className="mt-2 flex gap-2">
-                <button
-                  onClick={handleSaveEdit}
-                  className="bg-green-600 text-white px-3 py-1 rounded"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancelEdit}
-                  className="bg-gray-400 text-white px-3 py-1 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="flex justify-between">
-              <div>
-                <p>{rev.comment}</p>
-                <ReactStars
-                  count={5}
-                  value={rev.rating}
-                  edit={false}
-                  size={24}
-                  color2={"#ffd700"}
-                />
-              </div>
-              {rev.user === username && (
-                <button
-                  onClick={() => handleEdit(rev)}
-                  className="text-blue-600 hover:underline"
-                >
-                  Edit
-                </button>
+
+      {safeReviews.length === 0 && <p>{t("noReviews")}</p>}
+
+      {safeReviews.map((rev) => {
+        // rev.user may be object or string
+        const revUserName =
+          typeof rev.user === "string"
+            ? rev.user
+            : rev.user?.name || rev.user?.username || "Anonymous";
+
+        return (
+          <div
+            key={rev.id}
+            className="border-b border-gray-200 py-2 mb-2 flex justify-between"
+          >
+            <div className="w-full">
+              <p className="font-semibold">{revUserName}</p>
+
+              {editingReviewId === rev.id ? (
+                <>
+                  <textarea
+                    className="w-full p-2 border border-gray-300 rounded mb-2"
+                    rows={3}
+                    value={editedComment}
+                    onChange={(e) => setEditedComment(e.target.value)}
+                  />
+                  <ReactStars
+                    count={5}
+                    value={editedRating}
+                    onChange={setEditedRating}
+                    size={24}
+                    activeColor="#ffd700"
+                  />
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={handleSaveEdit}
+                      className="bg-green-600 text-white px-3 py-1 rounded"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="bg-gray-400 text-white px-3 py-1 rounded"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-start justify-between">
+                  <div className="pr-4">
+                    <p>{rev.comment}</p>
+                    <ReactStars
+                      count={5}
+                      value={rev.rating}
+                      edit={false}
+                      size={24}
+                      color2={"#ffd700"}
+                    />
+                  </div>
+
+                  {revUserName === username && (
+                    <button
+                      onClick={() => handleEdit(rev)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        );
+      })}
+
       {/* New Review Form */}
       <form onSubmit={handleSubmit} className="mt-6">
         <h3 className="text-lg font-semibold mb-2">{t("writeReview")}</h3>
@@ -156,3 +181,4 @@ function ProductReviews({ reviews, onAddReview, productId, onEditReview }) {
 }
 
 export default ProductReviews;
+
