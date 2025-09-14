@@ -32,6 +32,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   const [updatedCategory, setUpdatedCategory] = useState({
     nameEn: "",
     nameAr: "",
+    imageFile: null,
   });
   const editModalRef = useRef(null);
   const totalCategories = category.length;
@@ -101,7 +102,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   // Open edit modal
   const handleEditClick = (category) => {
     setEditingCategory(category);
-    setUpdatedCategory({ nameEn: category.nameEn, nameAr: category.nameAr });
+    setUpdatedCategory({ nameEn: category.nameEn, nameAr: category.nameAr, imageFile: null });
     setTimeout(() => {
       editModalRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 200);
@@ -109,30 +110,40 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
   // Update category
   const handleUpdate = async () => {
-    if (!editingCategory) return;
-    try {
-      const token = localStorage.getItem("token");
+  if (!editingCategory) return;
+  try {
+    const token = localStorage.getItem("token");
 
-      const response = await axios.put(
-        `${API_URL}/category/${editingCategory.id}`,
-        { nameEn: updatedCategory.nameEn, nameAr: updatedCategory.nameAr }, // Send only the name as JSON
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    const formData = new FormData();
+    formData.append("nameEn", updatedCategory.nameEn);
+    formData.append("nameAr", updatedCategory.nameAr);
 
-      setCategory(
-        category.map((cat) =>
-          cat.id === editingCategory.id ? response.data : cat
-        )
-      );
-      setEditingCategory(null);
-    } catch (error) {
-      console.error("Error updating category:", error.response?.data || error);
+    if (updatedCategory.imageFile) {
+      formData.append("imageFile", updatedCategory.imageFile);
     }
-  };
+
+    const response = await axios.put(
+      `${API_URL}/category/${editingCategory.id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    setCategory(
+      category.map((cat) =>
+        cat.id === editingCategory.id ? response.data : cat
+      )
+    );
+    setEditingCategory(null);
+  } catch (error) {
+    console.error("Error updating category:", error.response?.data || error);
+  }
+};
+
 
   const handleFileChange = (e, type) => {
     const file = e.target.files[0];
@@ -278,6 +289,17 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
+	  <input
+	    type="file"
+	    placeholder={"Image"}
+            value={updatedCategory.imageFile}
+	    accept="image/*"
+	    onChange={(e) =>
+	      setUpdatedCategory({ ...updatedCategory, imageFile: e.target.files[0] })
+	    }
+	    className="border p-2 mb-2 w-full"
+	   />
+
           <button
             onClick={handleUpdate}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"

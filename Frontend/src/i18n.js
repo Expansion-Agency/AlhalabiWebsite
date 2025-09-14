@@ -12,6 +12,10 @@ i18n.use(initReactI18next).init({
         ourproducts: "Our Products",
         welcome: "Welcome to the site",
         aboutalhalabi: "About Alhalabi",
+        contact: "Contact",
+        ourlocation: "Our Location",
+        needhelp: "Need Help?",
+        help: "Contact us for assistance.",
         login: "Login",
         qlinks: "Quick Links",
         about: "About us",
@@ -93,6 +97,10 @@ i18n.use(initReactI18next).init({
         ourproducts: "منتجاتنا",
         welcome: "مرحبًا بك في الموقع",
         aboutalhalabi: "عن الحلبي",
+        contact: "تواصل",
+        ourlocation: "موقعنا",
+        needhelp: "تحتاج مساعدة؟",
+        help: "تواصل معنا للحصول على المساعدة.",
         login: "تسجيل الدخول",
         qlinks: "روابط سريعة",
         about: "معلومات عنا",
@@ -173,6 +181,12 @@ i18n.use(initReactI18next).init({
   interpolation: {
     escapeValue: false,
   },
-});
+}, (err, t) => {
+    if (err) {
+      console.error("i18n init failed:", err);
+    } else {
+      console.log("i18n initialized with language:", i18n.language);
+    }
+  });
 
 export default i18n;

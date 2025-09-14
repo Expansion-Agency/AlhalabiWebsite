@@ -7,7 +7,9 @@ import { BrowserRouter, RouterProvider } from "react-router-dom";
 import { motion } from "motion/react";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+   <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>
 );

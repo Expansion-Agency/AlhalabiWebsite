@@ -31,6 +31,8 @@ function App() {
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [i18n.language]);
 
+console.log("App.jsx rendered");
+
   return (
     <>
       <Routes>

@@ -25,6 +25,7 @@ import { RolesGuard } from "src/shared/guards/roles.guard";
 import { Role } from "src/shared/enums/role.enum";
 import { Roles } from "src/shared/decorators/roles.decorator";
 import { CreateCategoryDto } from "./dto/createCategory.dto";
+import { updateCategoryDto } from "./dto/updateCategory.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags("category")
@@ -58,20 +59,18 @@ export class CategoryController {
   }
 
   @ApiParam({ name: "id", required: true })
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: { nameEn: { type: "string" }, nameAr: { type: "string" } },
-    },
-  })
+  @ApiBody({ type: updateCategoryDto })
+  @ApiConsumes("multipart/form-data")
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @UseInterceptors(FileInterceptor("imageFile"))
   @Put(":id")
   async update(
     @Param("id", ParseIntPipe) id: number,
-    @Body() body: { nameEn: string; nameAr: string }
+    @Body() body: updateCategoryDto,
+    @UploadedFile() imageFile?: Express.Multer.File
   ) {
-    return await this.categoryService.update(id, body.nameEn, body.nameAr);
+    return await this.categoryService.update(id, body.nameEn, body.nameAr, imageFile);
   }
 
   @ApiParam({ name: "id", required: true })

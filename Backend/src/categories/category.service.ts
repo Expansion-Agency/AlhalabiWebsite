@@ -77,23 +77,45 @@ export class CategoryService {
     });
   }
 
-  async update(id: number, nameEn: string, nameAr: string) {
-    const category = await prisma.category.update({
-      where: {
-        id: id,
-      },
-      data: {
-        nameEn,
-        nameAr,
-      },
+async update(id: number, nameEn: string, nameAr: string, imageFile?: Express.Multer.File) {
+  let imagePath: string | undefined;
+
+  if (imageFile) {
+    const ftpClient = new Client();
+    const ftpConfig = {
+      host: process.env.FTP_HOST,
+      user: process.env.FTP_USER,
+      password: process.env.FTP_PASSWORD,
+      port: 21,
+    };
+    const remoteFilePath = `/public_html/category/${imageFile.originalname}`;
+
+    await new Promise((resolve, reject) => {
+      ftpClient.on("ready", () => {
+        ftpClient.put(imageFile.buffer, remoteFilePath, (err) => {
+          if (err) reject(err);
+          else resolve(null);
+          ftpClient.end();
+        });
+      });
+      ftpClient.on("error", reject);
+      ftpClient.connect(ftpConfig);
     });
 
-    if (!category) {
-      throw new NotFoundException("Category not found");
-    }
-
-    return category;
+    imagePath = `${process.env.FTP_PATH_C}${imageFile.originalname}`;
   }
+
+  const updatedCategory = await prisma.category.update({
+    where: { id },
+    data: {
+      nameEn,
+      nameAr,
+      ...(imagePath ? { imagePath } : {}), // update only if new file uploaded
+    },
+  });
+
+  return updatedCategory;
+}
 
   async delete(id: number) {
     const category = await prisma.category.update({
