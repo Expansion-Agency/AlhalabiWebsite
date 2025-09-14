@@ -21,6 +21,7 @@ import {
 function DashboardCategories({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
+  console.log(API_URL); // Debugging line to check categories prop
   const [editingCategory, setEditingCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [newCategory, setNewCategory] = useState({
