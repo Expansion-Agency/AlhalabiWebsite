@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -8,9 +8,6 @@ import {
   CardTitle,
 } from "../Components/ui/card";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import { useRef } from "react";
-import { useEffect } from "react";
 import axios from "axios";
 import {
   animate,
@@ -18,26 +15,20 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
+
 function DashboardProducts({ category, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
+
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showCreateProduct, setShowCreateProduct] = useState(false);
   const editModalRef = useRef(null);
+
   const totalProducts = products.length;
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => Math.round(latest));
   const [displayValue, setDisplayValue] = useState(0);
-
-  useMotionValueEvent(rounded, "change", (v) => {
-    setDisplayValue(v);
-  });
-
-  useEffect(() => {
-    const controls = animate(count, totalProducts, { duration: 1 });
-    return () => controls.stop();
-  }, [totalProducts]);
 
   const [newProduct, setNewProduct] = useState({
     nameEn: "",
@@ -59,58 +50,56 @@ function DashboardProducts({ category, fetchCategories }) {
     priceEgp: "",
     priceUsd: "",
     quantity: "",
+    categoryId: "",
+    imageFile: null,
   });
+
+  useMotionValueEvent(rounded, "change", (v) => setDisplayValue(v));
+
+  useEffect(() => {
+    const controls = animate(count, totalProducts, { duration: 1 });
+    return () => controls.stop();
+  }, [totalProducts]);
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API_URL}/products`);
+      console.log("Fetched products:", response.data);
       if (response.data && Array.isArray(response.data)) {
-        const productsWithImages = response.data.map((product) => {
+        const processed = response.data.map((product) => {
           const productImages = product.productImages || [];
-          let imageUrl = product.imageUrl; // 👈 keep API's imageUrl if available
-
+          let imageUrl = product.imageUrl;
           if (!imageUrl && productImages.length > 0) {
             const defaultImage =
               productImages.find((img) => img.isDefault) || productImages[0];
-            imageUrl = `${defaultImage.imagePath}`; // prepend API_URL if needed
+            imageUrl = defaultImage.imagePath;
           }
-
-          if (!imageUrl) {
-            imageUrl = "/default.png"; // fallback
-          }
-          console.log("Product img:", imageUrl);
-
           return {
             ...product,
-            imageUrl: imageUrl,
+            imageUrl: imageUrl || "/default.png",
           };
         });
-
-        console.log("Final Products with images:", productsWithImages);
-        setProducts(productsWithImages);
-      } else {
-        console.error(
-          "No products found or incorrect data format:",
-          response.data
-        );
+        setProducts(processed);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
 
-  const handleCreateProduct = async (event) => {
-    event.preventDefault();
+  const handleCreateProduct = async (e) => {
+    e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-
       if (!token) {
-        console.error("No token found! User is not authenticated.");
+        console.warn("No token stored");
         return;
       }
-      const productResponse = await axios.post(
+
+      const response = await axios.post(
         `${API_URL}/products`,
         {
           nameEn: newProduct.nameEn,
@@ -129,22 +118,28 @@ function DashboardProducts({ category, fetchCategories }) {
           },
         }
       );
-      const createdProduct = productResponse.data;
+      console.log("Create product response:", response.data);
 
       if (newProduct.imageFile) {
-        const imageFormData = new FormData();
-        imageFormData.append("imageFile", newProduct.imageFile);
-        imageFormData.append("isDefault", true);
-        imageFormData.append("productId", createdProduct.id);
+        const formData = new FormData();
+        formData.append("imageFile", newProduct.imageFile);
+        formData.append("isDefault", true);
+        formData.append("productId", response.data.id);
 
-        await axios.post(`${API_URL}/product-images`, imageFormData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const uploadRes = await axios.post(
+          `${API_URL}/product-images`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log("Image upload after create:", uploadRes.data);
       }
-      fetchProducts();
+
+      await fetchProducts();
       setNewProduct({
         nameEn: "",
         nameAr: "",
@@ -156,7 +151,6 @@ function DashboardProducts({ category, fetchCategories }) {
         categoryId: "",
         imageFile: null,
       });
-      console.log("Creating with categoryId:", newProduct.categoryId);
       setShowCreateProduct(false);
     } catch (error) {
       console.error("Error creating product:", error);
@@ -164,15 +158,13 @@ function DashboardProducts({ category, fetchCategories }) {
   };
 
   const handleDelete = async (productId) => {
-    const confirmDelete = window.confirm(`${t.deleteProd}`);
-    if (!confirmDelete) return;
+    if (!window.confirm(`${t("deleteProd")}`)) return;
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API_URL}/products/${productId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      setProducts(products.filter((product) => product.id !== productId));
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -185,137 +177,165 @@ function DashboardProducts({ category, fetchCategories }) {
       nameAr: product.nameAr,
       descriptionEn: product.descriptionEn,
       descriptionAr: product.descriptionAr,
-      priceEgp: Number(product.priceEgp),
-      priceUsd: Number(product.priceUsd),
-      quantity: Number(product.quantity),
-      categoryId: Number(product.categoryId) || null,
+      priceEgp: product.priceEgp,
+      priceUsd: product.priceUsd,
+      quantity: product.quantity,
+      categoryId: product.categoryId,
+      imageFile: null,
     });
     setTimeout(() => {
       editModalRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 200);
   };
 
-  const handleUpdate = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const formattedUpdatedProduct = {
-        nameEn: updatedProduct.nameEn,
-        nameAr: updatedProduct.nameAr,
-        descriptionEn: updatedProduct.descriptionEn,
-        descriptionAr: updatedProduct.descriptionAr,
-        priceEgp: updatedProduct.priceEgp,
-        priceUsd: updatedProduct.priceUsd,
-        quantity: updatedProduct.quantity,
-        categoryId: updatedProduct.categoryId
-          ? parseInt(updatedProduct.categoryId)
-          : null,
-      };
-      await axios.put(
-        `${API_URL}/products/${editingProduct.id}`,
-        formattedUpdatedProduct,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setEditingProduct(null);
-      fetchProducts();
-    } catch (error) {
-      console.error("Error updating product:", error);
+const handleUpdate = async (e) => {
+  e.preventDefault();
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No token stored");
+      return;
     }
-  };
+
+    const updatedData = {
+      nameEn: updatedProduct.nameEn,
+      nameAr: updatedProduct.nameAr,
+      descriptionEn: updatedProduct.descriptionEn,
+      descriptionAr: updatedProduct.descriptionAr,
+      priceEgp: Number(updatedProduct.priceEgp),
+      priceUsd: Number(updatedProduct.priceUsd),
+      quantity: Number(updatedProduct.quantity),
+      categoryId: Number(updatedProduct.categoryId),
+    };
+
+    // Update product details
+    await axios.put(`${API_URL}/products/${editingProduct.id}`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (updatedProduct.imageFile) {
+      // Upload new image
+      const formData = new FormData();
+      formData.append("imageFile", updatedProduct.imageFile);
+      formData.append("isDefault", true);
+      formData.append("productId", editingProduct.id);
+
+      await axios.post(`${API_URL}/product-images`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Update product image in state with blob URL for instant UI feedback
+      const updatedProductWithImage = {
+        ...editingProduct,
+        ...updatedData,
+        imageUrl: URL.createObjectURL(updatedProduct.imageFile),
+      };
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === editingProduct.id ? updatedProductWithImage : p))
+      );
+    } else {
+      // Just update product data in state
+      setProducts((prev) =>
+        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...updatedData } : p))
+      );
+    }
+
+    setEditingProduct(null);
+  } catch (error) {
+    console.error("Error updating product:", error.response || error);
+  }
+};
+
+
 
   return (
     <>
-      <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
-        <CardHeader className="flex justify-between items-center pb-0">
-          <div className="flex flex-col">
+      {/* Summary */}
+      <Card className="mx-3 lg:mx-10 my-10 shadow-lg">
+        <CardHeader className="flex justify-between items-center">
+          <div>
             <CardTitle>{t("totalProducts")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">
-              {displayValue}
-            </CardDescription>
+            <CardDescription className="text-4xl font-bold">{displayValue}</CardDescription>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowCreateProduct(!showCreateProduct)}
-              className="text-black shadow-md p-3 rounded-full cursor-pointer hover:shadow-lg hover:scale-102 transition-all ease duration-200"
-            >
-              {t("addProduct")}
-            </button>
-          </div>
+          <button
+            onClick={() => setShowCreateProduct(!showCreateProduct)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            {t("addProduct")}
+          </button>
         </CardHeader>
-        <CardContent className="flex items-center flex-1 pb-0 ">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full table-auto text-sm lg:text-base">
-              <thead className="shadow-md rounded-xl">
-                <tr>
-                  <th className="text-start p-2">{t("productId")}</th>
-                  <th className="text-start p-2">{t("enName")}</th>
-                  <th className="text-start p-2">{t("arName")}</th>
-                  <th className="text-start p-2">{t("arDesc")}</th>
-                  <th className="text-start p-2">{t("enDesc")}</th>
-                  <th className="text-start p-2">{t("price")} egb</th>
-                  <th className="text-start p-2">{t("price")} $</th>
-                  <th className="text-start p-2">{t("quantity")}</th>
-                  <th className="text-start p-2">{t("img")}</th>
-                  <th className="text-start p-2">{t("category")}</th>
-                  <th className="text-start p-2">{t("actions")}</th>
+
+        <CardContent className="overflow-x-auto">
+          <table className="w-full table-auto text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th>{t("productId")}</th>
+                <th>{t("enName")}</th>
+                <th>{t("arName")}</th>
+                <th>{t("enDesc")}</th>
+                <th>{t("arDesc")}</th>
+                <th>{t("price")} EGP</th>
+                <th>{t("price")} $</th>
+                <th>{t("quantity")}</th>
+                <th>{t("img")}</th>
+                <th>{t("category")}</th>
+                <th>{t("actions")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.id}</td>
+                  <td>{product.nameEn}</td>
+                  <td>{product.nameAr}</td>
+                  <td>{product.descriptionEn}</td>
+                  <td>{product.descriptionAr}</td>
+                  <td>{product.priceEgp}</td>
+                  <td>{product.priceUsd}</td>
+                  <td>{product.quantity}</td>
+                  <td>
+                    <img
+                      src={product.imageUrl}
+                      alt={product.nameEn}
+                      className="w-12 h-12 object-cover"
+                    />
+                  </td>
+                  <td>{product.categoryId}</td>
+                  <td className="flex gap-2">
+                    <button
+                      onClick={() => handleEditClick(product)}
+                      className="text-blue-600"
+                    >
+                      {t("edit")}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="text-red-600"
+                    >
+                      {t("delete")}
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <td className="text-start p-2">{product.id}</td>
-                    <td className="text-start p-2">{product.name}</td>
-                    <td className="text-start p-2">{product.nameAr}</td>
-                    <td className="text-start p-2">{product.descriptionAr}</td>
-                    <td className="text-start p-2">{product.descriptionEn}</td>
-                    <td className="text-start p-2">{product.priceEgp}</td>
-                    <td className="text-start p-2">{product.priceUsd}</td>
-                    <td className="text-start p-2">{product.quantity}</td>
-                    <td className="text-start p-2">
-                      <img
-                        src={products.imageUrl}
-                        alt={products.name}
-                        className="w-16 h-16 object-cover"
-                      />
-                    </td>
-                    <td className="text-start p-2">{products.categoryId}</td>
-                    <td className="text-start flex gap-2 p-2">
-                      <button
-                        onClick={() => 
-                          handleEditClick(products)
-                        }
-                        className="text-blue-500 cursor-pointer"
-                      >
-                        {t("edit")}
-                      </button>
-                        <button
-                        onClick={() => handleDelete(product.id)}
-                        className="text-red-500 cursor-pointer"
-                      >
-                        {t("delete")}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </CardContent>
-        <CardFooter className="flex-col gap-2 text-xs lg:text-sm">
-          <div className="leading-none text-muted-foreground">
-            Showing total Products
-          </div>
+        <CardFooter>
+          <p className="text-muted-foreground text-sm">Showing total products</p>
         </CardFooter>
       </Card>
+
       {showCreateProduct && (
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-2">{t("createProduct")}</h3>
-          <form onSubmit={handleCreateProduct}>
+        <div className="p-4 max-w-xl mx-auto bg-white rounded shadow">
+          <h3 className="text-lg font-semibold mb-4">{t("createProduct")}</h3>
+          <form onSubmit={handleCreateProduct} className="space-y-3">
             <input
               type="text"
               placeholder={t("productName")}
@@ -323,7 +343,8 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, nameEn: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <input
               type="text"
@@ -332,7 +353,8 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, nameAr: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <textarea
               placeholder={t("descriptionEn")}
@@ -340,7 +362,8 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, descriptionEn: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <textarea
               placeholder={t("descriptionAr")}
@@ -348,7 +371,8 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, descriptionAr: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <input
               type="number"
@@ -357,7 +381,10 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, priceEgp: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
+              min="0"
+              step="0.01"
             />
             <input
               type="number"
@@ -366,7 +393,10 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, priceUsd: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
+              min="0"
+              step="0.01"
             />
             <input
               type="number"
@@ -375,19 +405,24 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setNewProduct({ ...newProduct, quantity: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
+              min="0"
             />
             <select
               value={newProduct.categoryId || ""}
               onChange={(e) =>
                 setNewProduct({ ...newProduct, categoryId: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             >
-              <option value="">{t("selectCategory")}</option>
+              <option value="" disabled>
+                {t("selectCategory")}
+              </option>
               {category.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.nameEn} / {cat.nameAr}
+                  {cat.nameEn}
                 </option>
               ))}
             </select>
@@ -395,20 +430,36 @@ function DashboardProducts({ category, fetchCategories }) {
               type="file"
               accept="image/*"
               onChange={(e) =>
-                setNewProduct({ ...newProduct, imageFile: e.target.files[0] })
+                setNewProduct({
+                  ...newProduct,
+                  imageFile: e.target.files[0] || null,
+                })
               }
-              className="border p-2 mb-2 w-full"
             />
-            <button type="submit" className="bg-blue-500 text-white p-2">
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
               {t("create")}
+            </button>
+            <button
+              type="button"
+              className="ml-2 px-4 py-2 rounded border"
+              onClick={() => setShowCreateProduct(false)}
+            >
+              {t("cancel")}
             </button>
           </form>
         </div>
       )}
+
       {editingProduct && (
-        <div ref={editModalRef} className="p-4">
-          <h3 className="text-lg font-semibold mb-2">{t("editProduct")}</h3>
-          <form onSubmit={handleUpdate}>
+        <div
+          ref={editModalRef}
+          className="p-4 max-w-xl mx-auto bg-white rounded shadow mt-10"
+        >
+          <h3 className="text-lg font-semibold mb-4">{t("editProduct")}</h3>
+          <form onSubmit={handleUpdate} className="space-y-3">
             <input
               type="text"
               placeholder={t("productName")}
@@ -416,7 +467,8 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setUpdatedProduct({ ...updatedProduct, nameEn: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <input
               type="text"
@@ -425,7 +477,8 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setUpdatedProduct({ ...updatedProduct, nameAr: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <textarea
               placeholder={t("descriptionEn")}
@@ -436,7 +489,8 @@ function DashboardProducts({ category, fetchCategories }) {
                   descriptionEn: e.target.value,
                 })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <textarea
               placeholder={t("descriptionAr")}
@@ -447,58 +501,58 @@ function DashboardProducts({ category, fetchCategories }) {
                   descriptionAr: e.target.value,
                 })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             />
             <input
               type="number"
               placeholder={t("priceEgp")}
               value={updatedProduct.priceEgp}
               onChange={(e) =>
-                setUpdatedProduct({
-                  ...updatedProduct,
-                  priceEgp: e.target.value,
-                })
+                setUpdatedProduct({ ...updatedProduct, priceEgp: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
+              min="0"
+              step="0.01"
             />
             <input
               type="number"
               placeholder={t("priceUsd")}
               value={updatedProduct.priceUsd}
               onChange={(e) =>
-                setUpdatedProduct({
-                  ...updatedProduct,
-                  priceUsd: e.target.value,
-                })
+                setUpdatedProduct({ ...updatedProduct, priceUsd: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
+              min="0"
+              step="0.01"
             />
             <input
               type="number"
               placeholder={t("quantity")}
               value={updatedProduct.quantity}
               onChange={(e) =>
-                setUpdatedProduct({
-                  ...updatedProduct,
-                  quantity: e.target.value,
-                })
+                setUpdatedProduct({ ...updatedProduct, quantity: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
+              min="0"
             />
             <select
               value={updatedProduct.categoryId || ""}
               onChange={(e) =>
-                setUpdatedProduct({
-                  ...updatedProduct,
-                  categoryId: e.target.value,
-                })
+                setUpdatedProduct({ ...updatedProduct, categoryId: e.target.value })
               }
-              className="border p-2 mb-2 w-full"
+              className="border p-2 w-full"
+              required
             >
-              <option value="">{t("selectCategory")}</option>
+              <option value="" disabled>
+                {t("selectCategory")}
+              </option>
               {category.map((cat) => (
-                <option className="text-black" key={cat.id} value={cat.id}>
-                  {cat.nameEn} / {cat.nameAr}
+                <option key={cat.id} value={cat.id}>
+                  {cat.nameEn}
                 </option>
               ))}
             </select>
@@ -508,13 +562,22 @@ function DashboardProducts({ category, fetchCategories }) {
               onChange={(e) =>
                 setUpdatedProduct({
                   ...updatedProduct,
-                  imageFile: e.target.files[0],
+                  imageFile: e.target.files[0] || null,
                 })
               }
-              className="border p-2 mb-2 w-full"
             />
-            <button type="submit" className="bg-blue-500 text-white p-2">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
               {t("update")}
+            </button>
+            <button
+              type="button"
+              className="ml-2 px-4 py-2 rounded border"
+              onClick={() => setEditingProduct(null)}
+            >
+              {t("cancel")}
             </button>
           </form>
         </div>

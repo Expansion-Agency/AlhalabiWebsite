@@ -327,17 +327,17 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             </div>
           )}
           <input
-            type="file"
-            accept="image/*"
-            value={updatedCategory.imageFile}
-            onChange={(e) =>
-              setUpdatedCategory({
-                ...updatedCategory,
-                imageFile: e.target.files[0],
-              })
-            }
-            className="border p-2 mb-2 w-full"
-          />
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    setUpdatedCategory({
+      ...updatedCategory,
+      imageFile: e.target.files[0],
+    })
+  }
+  className="border p-2 mb-2 w-full"
+/>
+
 
           <button
             onClick={handleUpdate}
