@@ -71,7 +71,7 @@ export class AuthController {
     const token = await this.authService.generateJwt(user);
 
     // 4. Redirect to frontend with token
-    const frontendURL = process.env.FRONTEND_URL || 'https://your-frontend.com';
+    const frontendURL = process.env.FRONTEND_URL || 'https://www.alhalapi.com';
     return res.redirect(`${frontendURL}/login/success?token=${token}`);
   }
 
