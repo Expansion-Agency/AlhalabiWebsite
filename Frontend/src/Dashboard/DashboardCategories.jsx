@@ -15,18 +15,10 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
-console.log("hhhhhhhhhhhh");
+
 function DashboardCategories({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
-
-  // Setup Axios global token header (once)
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
-  }, []);
 
   const [editingCategory, setEditingCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
@@ -59,7 +51,14 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     return () => controls.stop();
   }, [totalCategories]);
 
-  // Create a new category
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+  }, []);
+
+  // Create category
   const handleCreateCategory = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -78,6 +77,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       const response = await axios.post(`${API_URL}/category`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -100,18 +100,18 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
     try {
       await axios.delete(`${API_URL}/category/${id}`);
-      setCategory(category.filter((category) => category.id !== id));
+      setCategory(category.filter((cat) => cat.id !== id));
     } catch (error) {
       console.error("Error deleting category:", error.response?.data || error);
     }
   };
 
-  // Open edit modal
-  const handleEditClick = (category) => {
-    setEditingCategory(category);
+  // Edit
+  const handleEditClick = (cat) => {
+    setEditingCategory(cat);
     setUpdatedCategory({
-      nameEn: category.nameEn,
-      nameAr: category.nameAr,
+      nameEn: cat.nameEn,
+      nameAr: cat.nameAr,
       imageFile: null,
     });
     setTimeout(() => {
@@ -122,6 +122,13 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   // Update category
   const handleUpdate = async () => {
     if (!editingCategory) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Authentication required. Please log in again.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("nameEn", updatedCategory.nameEn);
@@ -136,18 +143,19 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`, // 
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      setCategory(
-        category.map((cat) =>
-          cat.id === editingCategory.id ? response.data : cat
-        )
+      setCategory((prev) =>
+        prev.map((cat) => (cat.id === editingCategory.id ? response.data : cat))
       );
       setEditingCategory(null);
     } catch (error) {
+      if (error.response?.status === 401) {
+        alert("Unauthorized: Please log in again.");
+      }
       console.error("Error updating category:", error.response?.data || error);
     }
   };
@@ -227,7 +235,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         </CardFooter>
       </Card>
 
-      {/* Create Category Modal */}
+      {/* Create Modal */}
       {showCreateCategory && (
         <div className="bg-white shadow-lg rounded-lg p-6 mx-3 my-4 w-full max-w-md">
           <h3 className="text-lg font-semibold mb-2">{t("createCategory")}</h3>
@@ -253,7 +261,10 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             type="file"
             accept="image/*"
             onChange={(e) =>
-              setNewCategory({ ...newCategory, imageFile: e.target.files[0] })
+              setNewCategory({
+                ...newCategory,
+                imageFile: e.target.files[0],
+              })
             }
             className="border p-2 mb-2 w-full"
           />
@@ -272,7 +283,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         </div>
       )}
 
-      {/* Edit Category Modal */}
+      {/* Edit Modal */}
       {editingCategory && (
         <div
           ref={editModalRef}
@@ -284,7 +295,10 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             placeholder={t("categoryNameEn")}
             value={updatedCategory.nameEn}
             onChange={(e) =>
-              setUpdatedCategory({ ...updatedCategory, nameEn: e.target.value })
+              setUpdatedCategory({
+                ...updatedCategory,
+                nameEn: e.target.value,
+              })
             }
             className="border p-2 mb-2 w-full"
           />
@@ -293,10 +307,26 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             placeholder={t("categoryNameAr")}
             value={updatedCategory.nameAr}
             onChange={(e) =>
-              setUpdatedCategory({ ...updatedCategory, nameAr: e.target.value })
+              setUpdatedCategory({
+                ...updatedCategory,
+                nameAr: e.target.value,
+              })
             }
             className="border p-2 mb-2 w-full"
           />
+
+          {/* Show current image */}
+          {editingCategory?.imagePath && (
+            <div className="mb-2">
+              <p className="text-sm text-gray-600">Current image:</p>
+              <img
+                src={editingCategory.imagePath}
+                alt="Current"
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+            </div>
+          )}
+
           <input
             type="file"
             accept="image/*"
