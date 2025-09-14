@@ -330,6 +330,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
           <input
             type="file"
             accept="image/*"
+            value={updatedCategory.imageFile}
             onChange={(e) =>
               setUpdatedCategory({
                 ...updatedCategory,
