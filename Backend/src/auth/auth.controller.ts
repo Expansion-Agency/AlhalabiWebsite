@@ -67,12 +67,17 @@ export class AuthController {
       });
     }
 
-    // 3. Generate JWT token
-    const token = await this.authService.generateJwt(user);
+     const token = await this.authService.generateJwt(user);
 
-    // 4. Redirect to frontend with token
-    const frontendURL = process.env.FRONTEND_URL || 'https://alhalapi.com/';
-    return res.redirect(`${frontendURL}/login/success?token=${token}`);
+    // Return JSON with token and (optionally) the user info
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Login successful via Google OAuth',
+      data: {
+        user,
+        token,
+      },
+    });
   }
 
   @ApiBody({ type: loginDto })

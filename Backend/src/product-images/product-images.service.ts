@@ -27,7 +27,7 @@ export class ProductImagesService {
       password: process.env.FTP_PASSWORD,
       port: 21,
     };
-    const remoteFilePath = `/public_html/products/${imageFile.originalname}`;
+    const remoteFilePath = `/products/${imageFile.originalname}`;
     const exists = await prisma.products.findUnique({
       where: {
         id: productImage.productId,
