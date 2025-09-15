@@ -61,8 +61,8 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   }, []);
 
   const getFullImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith("http") ? path : `${API_URL}/${path.replace(/^\/+/, "")}`;
+    if (!path) return "";
+    return path.startsWith("http") ? path : `${API_URL}/${path}`;
   };
 
   const handleCreateCategory = async () => {
@@ -79,7 +79,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       if (newCategory.imageFile) {
         formData.append("imageFile", newCategory.imageFile);
       }
-      if (newCategory.parentId !== null) {
+      if (newCategory.parentId !== null && newCategory.parentId !== undefined) {
         formData.append("parentId", String(newCategory.parentId));
       }
 
@@ -96,15 +96,16 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
       setShowCreateCategory(false);
     } catch (error) {
-      console.error("Error creating category:", error.response?.data || error);
       if (error.response?.status === 401) {
         alert("Unauthorized: Please log in again.");
       }
+      console.error("Error creating category:", error.response?.data || error);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm(`${t.deleteCat}`)) return;
+    const confirmDelete = window.confirm(`${t.deleteCat}`);
+    if (!confirmDelete) return;
 
     try {
       await axios.delete(`${API_URL}/category/${id}`);
@@ -157,17 +158,16 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       );
 
       setCategory((prev) =>
-        prev.map((cat) =>
-          cat.id === editingCategory.id ? response.data : cat
-        )
+        prev.map((cat) => (cat.id === editingCategory.id ? response.data : cat))
       );
-      fetchCategories();
+
       setEditingCategory(null);
+      fetchCategories();
     } catch (error) {
-      console.error("Error updating category:", error.response?.data || error);
       if (error.response?.status === 401) {
         alert("Unauthorized: Please log in again.");
       }
+      console.error("Error updating category:", error.response?.data || error);
     }
   };
 
@@ -175,7 +175,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     <>
       <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
         <CardHeader className="flex justify-between items-center pb-0">
-          <div>
+          <div className="flex flex-col">
             <CardTitle>{t("totalCategories")}</CardTitle>
             <CardDescription className="text-4xl font-bold">
               {displayValue}
@@ -205,13 +205,13 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
               <tbody>
                 {category.map((cat) => (
                   <tr key={cat.id}>
-                    <td className="p-2">{cat.id}</td>
-                    <td className="p-2">{cat.nameEn}</td>
-                    <td className="p-2">{cat.nameAr}</td>
-                    <td className="p-2">
+                    <td className="text-start p-2">{cat.id}</td>
+                    <td className="text-start p-2">{cat.nameEn}</td>
+                    <td className="text-start p-2">{cat.nameAr}</td>
+                    <td className="text-start p-2">
                       {cat.parent?.nameEn || "-"}
                     </td>
-                    <td className="p-2">
+                    <td className="text-start p-2">
                       {cat.imagePath ? (
                         <img
                           src={getFullImageUrl(cat.imagePath)}
@@ -219,18 +219,24 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                           style={{ width: "50px", height: "50px", objectFit: "cover" }}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/placeholder.jpg"; // fallback image
+                            e.target.src = "/placeholder.jpg";
                           }}
                         />
                       ) : (
-                        <span>No image</span>
+                        <p>No image</p>
                       )}
                     </td>
-                    <td className="p-2 flex gap-2">
-                      <button onClick={() => handleEditClick(cat)} className="text-blue-500">
+                    <td className="text-start flex gap-2 p-2">
+                      <button
+                        onClick={() => handleEditClick(cat)}
+                        className="text-blue-500 cursor-pointer"
+                      >
                         {t("edit")}
                       </button>
-                      <button onClick={() => handleDelete(cat.id)} className="text-red-500">
+                      <button
+                        onClick={() => handleDelete(cat.id)}
+                        className="text-red-500 cursor-pointer"
+                      >
                         {t("delete")}
                       </button>
                     </td>
@@ -248,7 +254,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         </CardFooter>
       </Card>
 
-      {/* CREATE FORM */}
       {showCreateCategory && (
         <div className="bg-white shadow-lg rounded-lg p-6 mx-3 my-4 w-full max-w-md">
           <h3 className="text-lg font-semibold mb-2">{t("createCategory")}</h3>
@@ -257,7 +262,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             placeholder={t("categoryNameEn")}
             value={newCategory.nameEn}
             onChange={(e) =>
-                           setNewCategory({ ...newCategory, nameEn: e.target.value })
+              setNewCategory({ ...newCategory, nameEn: e.target.value })
             }
             className="border p-2 mb-2 w-full"
           />
@@ -270,7 +275,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
-
           <select
             value={newCategory.parentId !== null ? newCategory.parentId : ""}
             onChange={(e) =>
@@ -288,7 +292,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
               </option>
             ))}
           </select>
-
           <input
             type="file"
             accept="image/*"
@@ -300,7 +303,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
-
           <div className="flex gap-2">
             <button
               onClick={handleCreateCategory}
@@ -318,7 +320,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         </div>
       )}
 
-      {/* EDIT FORM */}
       {editingCategory && (
         <div
           ref={editModalRef}
@@ -349,7 +350,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
-
           <select
             value={updatedCategory.parentId !== null ? updatedCategory.parentId : ""}
             onChange={(e) =>
@@ -369,7 +369,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                 </option>
               ))}
           </select>
-
           {editingCategory?.imagePath && (
             <div className="mb-2">
               <p className="text-sm text-gray-600">Current image:</p>
@@ -384,7 +383,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
               />
             </div>
           )}
-
           <input
             type="file"
             accept="image/*"
@@ -396,7 +394,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
-
           <div className="flex gap-2">
             <button
               onClick={handleUpdate}
