@@ -14,6 +14,7 @@ import { Payload } from 'src/types';
 import { Users, Admins } from '@prisma/client';
 import Verification from 'src/shared/utils/verfication/Verification';
 import { ResetPasswordDTO } from './dto/resetPassword.dto';
+import { CreateUserDto } from 'src/users/dto/createUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,55 +37,54 @@ export class AuthService {
   async login(email: string, password: string, userType: string) {
     let user: Users | Admins | null = null;
     if (userType === Role.User.toString()) {
-      user = await prisma.users.findUnique({
-        where: {
-          email: email,
-        },
-      });
+      user = await prisma.users.findUnique({ where: { email } });
     } else if (userType === Role.Admin.toString()) {
-      user = await prisma.admins.findUnique({
-        where: {
-          email: email,
-        },
-      });
+      user = await prisma.admins.findUnique({ where: { email } });
     }
 
-    if (user === null) throw new NotFoundException('Invalid email or password');
+    if (!user) throw new NotFoundException('Invalid email or password');
 
-    const isMatch = bcrypt.compareSync(password, (user as any).password);
-
+    const isMatch = await bcrypt.compare(password, (user as any).password);
     if (!isMatch) throw new NotFoundException('Invalid email or password');
 
     if ((user as any).deletedAt) throw new NotFoundException('User is deleted');
 
-    const payload: Payload = {
-      sub: user.id,
-      role: userType,
-    };
-
+    const payload: Payload = { sub: user.id, role: userType };
     const accessToken = await this.jwtService.signAsync(payload);
-
-    return {
-      accessToken,
-    };
+    return { accessToken };
   }
 
-  async signUp(user: Record<string, any>, userType: string) {
-    if (userType === Role.User.toString()) {
-      if (!(await this.userService.isVerified(user.email))) {
-        throw new BadRequestException('Email is not verified');
-      }
-      return await this.userService.create(user as any);
+async signUp(user: CreateUserDto, userType: string) {
+  if (userType === Role.User.toString()) {
+    if (!(await this.userService.isVerified(user.email))) {
+      throw new BadRequestException('Email is not verified');
     }
-    // you might want to handle admin signup or other userTypes here
+
+    // Check if user already exists to prevent duplicates
+    const existingUser = await this.userService.findByEmail(user.email);
+    if (existingUser) {
+      throw new BadRequestException('User already exists');
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+
+    const createdUser = await this.userService.create({
+      ...user,
+      password: hashedPassword, // replace plain password with hashed one
+    });
+
+    return createdUser;
   }
 
+  throw new BadRequestException('Invalid user type for sign up');
+}
   async sendVerficationOtp(input: string, userType: string) {
-    try {
-      if (!input || !userType) {
-        throw new BadRequestException('Email/Phone and userType are required');
-      }
+    if (!input || !userType) {
+      throw new BadRequestException('Email/Phone and userType are required');
+    }
 
+    try {
       await this.verificationProvider.sendVerificationCode(input, userType);
       return { message: 'OTP sent successfully' };
     } catch (error) {
@@ -95,18 +95,13 @@ export class AuthService {
 
   async isOtpValid(input: string, userType: string, otp: string) {
     const isValid = await this.verificationProvider.verify(input, otp, userType);
-    if (isValid) {
-      return { isValid };
-    } else {
-      throw new BadRequestException('Invalid OTP');
-    }
+    if (!isValid) throw new BadRequestException('Invalid OTP');
+    return { isValid };
   }
 
   async verifyOtp(input: string, otp: string, userType: string) {
     const isValid = await this.verificationProvider.verify(input, otp, userType);
-    if (!isValid) {
-      throw new BadRequestException('Invalid OTP');
-    }
+    if (!isValid) throw new BadRequestException('Invalid OTP');
     return { message: 'OTP verified successfully' };
   }
 
@@ -121,19 +116,19 @@ export class AuthService {
     if (userType == 'USER') {
       const user = await this.userService.findOne(data.email);
       if (!user) throw new NotFoundException('User not found');
-      const isTheSame = await bcrypt.compare(data.newPassword, user.password);
-      if (isTheSame) {
-        throw new BadRequestException(
-          'New password cannot be same as old password',
-        );
+
+      const isSamePassword = await bcrypt.compare(data.newPassword, user.password);
+      if (isSamePassword) {
+        throw new BadRequestException('New password cannot be same as old password');
       }
+
       await this.verifyOtp(data.email, data.otp, userType);
+
       const hashedPassword = await bcrypt.hash(data.newPassword, 10);
       await this.userService.updateUserPassword(user.id, hashedPassword);
     }
   }
 
-  // ✅ Google OAuth user handler
   async handleGoogleLogin(googleUser: { email: string; name: string; provider: string }) {
     let user = await this.userService.findByEmail(googleUser.email);
 
@@ -145,27 +140,17 @@ export class AuthService {
       });
     }
 
-    const payload: Payload = {
-      sub: user.id,
-      role: Role.User,
-    };
-
+    const payload: Payload = { sub: user.id, role: Role.User };
     const accessToken = await this.jwtService.signAsync(payload);
-    return {
-      accessToken,
-      user,
-    };
+    return { accessToken, user };
   }
 
-  // ✅ ADDED: generateJwt method so the controller can call authService.generateJwt(user)
   async generateJwt(user: Users): Promise<string> {
     if (!user) {
       throw new NotFoundException('User not found for generating token');
     }
-    const payload: Payload = {
-      sub: user.id,
-      role: Role.User,  // or you might want to pass user’s actual role
-    };
+
+    const payload: Payload = { sub: user.id, role: Role.User };
     const token = await this.jwtService.signAsync(payload);
     return token;
   }

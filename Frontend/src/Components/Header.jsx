@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useTranslation } from "./i18n/TranslationProvider";
+import { useTranslation } from "../i18n/TranslationProvider";
 import { IoEarth } from "react-icons/io5";
 import { LuMenu } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";

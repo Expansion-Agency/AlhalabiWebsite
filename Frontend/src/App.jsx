@@ -73,7 +73,7 @@ function App() {
             </Layout>
           }
         />
-
+	<Route path="/auth/google" element={<GoogleAuthCallback />} />
         {/* New OTP Route */}
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/login" element={<Login userType="USER" />} />
