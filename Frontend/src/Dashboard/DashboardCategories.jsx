@@ -67,6 +67,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
   const handleCreateCategory = async () => {
     const token = localStorage.getItem("token");
+    console.log(token)
     if (!token) {
       alert("Authentication required. Please log in again.");
       return;
@@ -78,7 +79,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       formData.append("nameAr", newCategory.nameAr);
       if (newCategory.imageFile) {
         formData.append("imageFile", newCategory.imageFile);
-        console.log(newCategory.imageFile)
+        
       }
       if (newCategory.parentId !== null && newCategory.parentId !== undefined) {
         formData.append("parentId", String(newCategory.parentId));
