@@ -23,16 +23,20 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   const [editingCategory, setEditingCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
 
+  // Added parentId to newCategory state
   const [newCategory, setNewCategory] = useState({
     nameEn: "",
     nameAr: "",
     imageFile: null,
+    parentId: "",  // <-- new field
   });
 
+  // Added parentId to updatedCategory state
   const [updatedCategory, setUpdatedCategory] = useState({
     nameEn: "",
     nameAr: "",
     imageFile: null,
+    parentId: "",  // <-- new field
   });
 
   const editModalRef = useRef(null);
@@ -73,6 +77,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       if (newCategory.imageFile) {
         formData.append("imageFile", newCategory.imageFile);
       }
+      if(newCategory.parentId) {
+        formData.append("parentId", newCategory.parentId);
+      }
 
       const response = await axios.post(`${API_URL}/category`, formData, {
         headers: {
@@ -82,7 +89,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       });
 
       setCategory([...category, response.data]);
-      setNewCategory({ nameEn: "", nameAr: "", imageFile: null });
+      setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: "" });
       setShowCreateCategory(false);
       fetchCategories();
     } catch (error) {
@@ -113,6 +120,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       nameEn: cat.nameEn,
       nameAr: cat.nameAr,
       imageFile: null,
+      parentId: cat.parentId || "",  // <-- set current parentId if any
     });
     setTimeout(() => {
       editModalRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -135,6 +143,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       formData.append("nameAr", updatedCategory.nameAr);
       if (updatedCategory.imageFile) {
         formData.append("imageFile", updatedCategory.imageFile);
+      }
+      if(updatedCategory.parentId) {
+        formData.append("parentId", updatedCategory.parentId);
       }
 
       const response = await axios.put(
@@ -188,6 +199,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                   <th className="text-start p-2">{t("categoryName")}</th>
                   <th className="text-start p-2">Name in Arabic</th>
                   <th className="text-start p-2">{t("categoryPhoto")}</th>
+                  <th className="text-start p-2">Parent Category</th> {/* New */}
                   <th className="text-start p-2">{t("actions")}</th>
                 </tr>
               </thead>
@@ -201,12 +213,16 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                       {cat.imagePath ? (
                         <img
                           src={cat.imagePath}
-                          alt={cat.name}
+                          alt={cat.nameEn}
                           style={{ width: "50px", height: "50px" }}
                         />
                       ) : (
                         <p>No image</p>
                       )}
+                    </td>
+                    <td className="text-start p-2">
+                      {/* Show parent category name if found */}
+                      {category.find((c) => c.id === cat.parentId)?.nameEn || "-"}
                     </td>
                     <td className="text-start flex gap-2 p-2">
                       <button
@@ -257,6 +273,20 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
+          <select
+            value={newCategory.parentId}
+            onChange={(e) =>
+              setNewCategory({ ...newCategory, parentId: e.target.value })
+            }
+            className="border p-2 mb-2 w-full"
+          >
+            <option value="">{t("selectParentCategory") || "Select Parent Category"}</option>
+            {category.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.nameEn}
+              </option>
+            ))}
+          </select>
           <input
             type="file"
             accept="image/*"
@@ -314,6 +344,20 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
+          <select
+            value={updatedCategory.parentId}
+            onChange={(e) =>
+              setUpdatedCategory({ ...updatedCategory, parentId: e.target.value })
+            }
+            className="border p-2 mb-2 w-full"
+          >
+            <option value="">{t("selectParentCategory") || "Select Parent Category"}</option>
+            {category.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.nameEn}
+              </option>
+            ))}
+          </select>
 
           {/* Show current image */}
           {editingCategory?.imagePath && (
@@ -327,17 +371,16 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             </div>
           )}
           <input
-  type="file"
-  accept="image/*"
-  onChange={(e) =>
-    setUpdatedCategory({
-      ...updatedCategory,
-      imageFile: e.target.files[0],
-    })
-  }
-  className="border p-2 mb-2 w-full"
-/>
-
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setUpdatedCategory({
+                ...updatedCategory,
+                imageFile: e.target.files[0],
+              })
+            }
+            className="border p-2 mb-2 w-full"
+          />
 
           <button
             onClick={handleUpdate}

@@ -28,7 +28,7 @@ import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { Role } from 'src/shared/enums/role.enum';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import 'multer';
 @Controller('product-images')
 export class ProductImagesController {
   constructor(private readonly productImagesService: ProductImagesService) {}
