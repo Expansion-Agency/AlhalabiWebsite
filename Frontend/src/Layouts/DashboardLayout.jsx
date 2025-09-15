@@ -48,8 +48,8 @@ function DashboardLayout({ children }) {
         <DashboardHeader
           toggleMenuVisibility={toggleMenuVisibility}
           selectedLanguage={selectedLanguage}
-          handleLanguageChange={handleLanguageChange}
-        />
+/*           handleLanguageChange={handleLanguageChange}
+ */        />
         <main className="flex-grow">
           {React.cloneElement(children, {
             category,
@@ -63,8 +63,8 @@ function DashboardLayout({ children }) {
         isMenuVisible={isMenuVisible}
         toggleMenuVisibility={toggleMenuVisibility}
         selectedLanguage={selectedLanguage}
-        handleLanguageChange={handleLanguageChange}
-      />
+/*         handleLanguageChange={handleLanguageChange}
+ */      />
     </div>
   );
 }

@@ -54,8 +54,8 @@ function Layout({ children }) {
         <Header
           toggleMenuVisibility={toggleMenuVisibility}
           selectedLanguage={selectedLanguage}
-          handleLanguageChange={handleLanguageChange}
-        />
+/*           handleLanguageChange={handleLanguageChange}
+ */        />
         <main className="flex-grow">
           {React.cloneElement(children, {
             category,
@@ -65,16 +65,16 @@ function Layout({ children }) {
         </main>
         <Footer
           selectedLanguage={selectedLanguage}
-          handleLanguageChange={handleLanguageChange}
-        />
+/*           handleLanguageChange={handleLanguageChange}
+ */        />
       </div>
 
       <Menu
         isMenuVisible={isMenuVisible}
         toggleMenuVisibility={toggleMenuVisibility}
         selectedLanguage={selectedLanguage}
-        handleLanguageChange={handleLanguageChange}
-      />
+/*         handleLanguageChange={handleLanguageChange}
+ */      />
     </div>
   );
 }
