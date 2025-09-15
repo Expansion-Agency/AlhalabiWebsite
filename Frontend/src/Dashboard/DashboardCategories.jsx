@@ -78,6 +78,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       formData.append("nameAr", newCategory.nameAr);
       if (newCategory.imageFile) {
         formData.append("imageFile", newCategory.imageFile);
+        console.log(newCategory.imageFile)
       }
       if (newCategory.parentId !== null && newCategory.parentId !== undefined) {
         formData.append("parentId", String(newCategory.parentId));
@@ -92,7 +93,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
       setCategory((prev) => [...prev, response.data]);
       fetchCategories();
-console.log(fetchCategories)
+
 
       setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
       setShowCreateCategory(false);
