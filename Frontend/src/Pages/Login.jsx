@@ -29,6 +29,11 @@ function Login({ userType }) {
     i18n.changeLanguage(selectedLanguage);
   }, [i18n, selectedLanguage]); */
 
+  const handleGoogleLogin = () => {
+    // Redirect user to backend Google login endpoint
+    window.location.href = `${API_URL}/auth/google`;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -155,6 +160,7 @@ function Login({ userType }) {
           </div>
 	  <hr />
           <button 
+	      onClick={handleGoogleLogin}
               className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
 	              
           >
@@ -223,6 +229,7 @@ function Login({ userType }) {
         </div>
 	 <hr />
           <button
+	      onClick={handleGoogleLogin}
               className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
 
           >

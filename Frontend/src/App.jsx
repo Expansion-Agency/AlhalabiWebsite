@@ -12,7 +12,7 @@ import Resetpass from "./Pages/Resetpass";
 import Forgotpass from "./Pages/Forgotpass";
 import Profile from "./Pages/Profile";
 import OtpPage from "./Pages/OtpPage";
-
+import GoogleAuthCallback from "./pages/GoogleAuthCallback";
 import Layout from "./Layouts/Layout";
 import DashboardLayout from "./Layouts/DashboardLayout";
 
@@ -73,7 +73,7 @@ function App() {
             </Layout>
           }
         />
-	{/* <Route path="/auth/google" element={<GoogleAuthCallback />} /> */}
+	<Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
         {/* New OTP Route */}
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/login" element={<Login userType="USER" />} />
