@@ -3,149 +3,180 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UploadedFile,
-} from "@nestjs/common";
-import prisma from "src/shared/prisma/client";
-import { CreateCategoryDto } from "./dto/createCategory.dto";
-import Client from "ftp";
-import { Multer } from "multer";
+} from '@nestjs/common';
+import prisma from 'src/shared/prisma/client';
+import Client from 'ftp';
+import { Request } from 'express';
+import Busboy from 'busboy';
 
 @Injectable()
 export class CategoryService {
-  async create(
-    categoryDto: CreateCategoryDto,
-    @UploadedFile() imageFile: Express.Multer.File
-  ) {
-    if (!imageFile) {
-      throw new BadRequestException("No file uploaded");
-    }
+  private ftpConfig = {
+    host: process.env.FTP_HOST,
+    user: process.env.FTP_USER,
+    password: process.env.FTP_PASSWORD,
+    port: 21,
+  };
 
+  /**
+   * Uploads a buffer to FTP server
+   */
+  private async uploadToFTP(buffer: Buffer, filename: string): Promise<string> {
     const ftpClient = new Client();
-    const ftpConfig = {
-      host: process.env.FTP_HOST,
-      user: process.env.FTP_USER,
-      password: process.env.FTP_PASSWORD,
-      port: 21,
-    };
-    const remoteFilePath = `/public_html/category/${imageFile.originalname}`;
+    const remoteFilePath = `/public_html/category/${filename}`;
 
-    try {
-      await new Promise((resolve, reject) => {
-        ftpClient.on("ready", () => {
-          ftpClient.put(imageFile.buffer, remoteFilePath, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(null);
+    await new Promise<void>((resolve, reject) => {
+      ftpClient.on('ready', () => {
+        ftpClient.put(buffer, remoteFilePath, (err) => {
+          ftpClient.end();
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      ftpClient.on('error', reject);
+      ftpClient.connect(this.ftpConfig);
+    });
+
+    return `${process.env.FTP_PATH_C}${filename}`;
+  }
+
+  /**
+   * Handles multipart/form-data manually using Busboy
+   * If `id` is provided, it performs an update. Otherwise, it creates a new category.
+   */
+  async handleMultipartForm(req: Request, id?: number) {
+    return new Promise((resolve, reject) => {
+      const busboy = Busboy({ headers: req.headers });
+
+      let nameEn = '';
+      let nameAr = '';
+      let parentId: number | null = null;
+
+      let imageBuffer: Buffer | null = null;
+      let imageFilename = '';
+      const bufferChunks: Buffer[] = [];
+
+      busboy.on('file', (fieldname:string, file:NodeJS.ReadableStream, filename:string) => { imageFilename = filename;
+
+        file.on('data', (data:Buffer) => {
+          bufferChunks.push(data);
+        });
+
+        file.on('end', () => {
+          imageBuffer = Buffer.concat(bufferChunks);
+        });
+      });
+
+      busboy.on('field', (fieldname:string, val:string) => {
+        switch (fieldname) {
+          case 'nameEn':
+            nameEn = val;
+            break;
+          case 'nameAr':
+            nameAr = val;
+            break;
+          case 'parentId':
+            parentId = val ? parseInt(val) : null;
+            break;
+        }
+      });
+
+      busboy.on('finish', async () => {
+        try {
+          // Check required fields
+          if (!nameEn || !nameAr) {
+            throw new BadRequestException('Missing nameEn or nameAr');
+          }
+
+          // Validate parentId existence if provided
+          if (parentId) {
+            const parentExists = await prisma.category.findUnique({ where: { id: parentId } });
+            if (!parentExists) {
+              throw new BadRequestException(`Parent category with ID ${parentId} does not exist`);
             }
-            ftpClient.end();
-          });
-        });
+          }
 
-        ftpClient.on("error", (err) => {
-          reject(err);
-        });
+          // Upload image if provided
+          let imagePath: string | undefined;
+          if (imageBuffer && imageFilename) {
+            imagePath = await this.uploadToFTP(imageBuffer, imageFilename);
+          } else if (!id) {
+            throw new BadRequestException('Image file is required for category creation');
+          }
 
-        ftpClient.connect(ftpConfig);
+          if (id) {
+            // Update
+            const updated = await prisma.category.update({
+              where: { id },
+              data: {
+                nameEn,
+                nameAr,
+                parentId,
+                ...(imagePath ? { imagePath } : {}),
+              },
+            });
+
+            return resolve(updated);
+          } else {
+            // Create
+            const created = await prisma.category.create({
+              data: {
+                nameEn,
+                nameAr,
+                parentId,
+                imagePath: imagePath!,
+              },
+            });
+
+            return resolve(created);
+          }
+        } catch (error) {
+          return reject(error);
+        }
       });
 
-      const imagePath = `${process.env.FTP_PATH_C}${imageFile.originalname}`;
-
-      return await prisma.category.create({
-        data: {
-          nameEn: categoryDto.nameEn,
-          nameAr: categoryDto.nameAr,
-          imagePath: imagePath,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(
-        "Failed to upload file to FTP server"
-      );
-    }
+      req.pipe(busboy);
+    });
   }
 
   async findAll() {
     return await prisma.category.findMany({
-      where: {
-        deletedAt: null,
-      },
+      where: { deletedAt: null },
       include: {
         products: true,
+        children: true,
       },
     });
   }
 
-async update(id: number, nameEn: string, nameAr: string, imageFile?: Express.Multer.File) {
-  let imagePath: string | undefined;
-
-  if (imageFile) {
-    const ftpClient = new Client();
-    const ftpConfig = {
-      host: process.env.FTP_HOST,
-      user: process.env.FTP_USER,
-      password: process.env.FTP_PASSWORD,
-      port: 21,
-    };
-    const remoteFilePath = `/public_html/category/${imageFile.originalname}`;
-
-    await new Promise((resolve, reject) => {
-      ftpClient.on("ready", () => {
-        ftpClient.put(imageFile.buffer, remoteFilePath, (err) => {
-          if (err) reject(err);
-          else resolve(null);
-          ftpClient.end();
-        });
-      });
-      ftpClient.on("error", reject);
-      ftpClient.connect(ftpConfig);
+  async findOne(id: number) {
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        products: true,
+        children: true,
+        parent: true, // Optional: include parent for breadcrumb-style UI
+      },
     });
 
-    imagePath = `${process.env.FTP_PATH_C}${imageFile.originalname}`;
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return category;
   }
-
-  const updatedCategory = await prisma.category.update({
-    where: { id },
-    data: {
-      nameEn,
-      nameAr,
-      ...(imagePath ? { imagePath } : {}), // update only if new file uploaded
-    },
-  });
-
-  return updatedCategory;
-}
 
   async delete(id: number) {
     const category = await prisma.category.update({
-      where: {
-        id: id,
-      },
+      where: { id },
       data: {
         deletedAt: new Date(),
       },
     });
 
     if (!category) {
-      throw new NotFoundException("Category not found");
-    }
-
-    return category;
-  }
-
-  async findOne(id: number) {
-    const category = await prisma.category.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        products: true,
-      },
-    });
-
-    if (!category) {
-      throw new NotFoundException("Category not found");
+      throw new NotFoundException('Category not found');
     }
 
     return category;

@@ -6,79 +6,82 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  UploadedFile,
+  Req,
+  Res,
   UseGuards,
-  UseInterceptors,
-} from "@nestjs/common";
-import { Body } from "@nestjs/common";
-import { CategoryService } from "./category.service";
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { CategoryService } from './category.service';
 import {
   ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiTags,
-} from "@nestjs/swagger";
-import { AuthGuard } from "src/auth/guards/auth.guard";
-import { RolesGuard } from "src/shared/guards/roles.guard";
-import { Role } from "src/shared/enums/role.enum";
-import { Roles } from "src/shared/decorators/roles.decorator";
-import { CreateCategoryDto } from "./dto/createCategory.dto";
-import { updateCategoryDto } from "./dto/updateCategory.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
+} from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { Role } from 'src/shared/enums/role.enum';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
-@ApiTags("category")
+@ApiTags('category')
 @ApiBearerAuth()
-@Controller("category")
+@Controller('category')
 export class CategoryController {
   constructor(protected readonly categoryService: CategoryService) {}
 
-  @ApiOperation({ summary: "Create Category" })
-  @ApiConsumes("multipart/form-data")
+  @ApiOperation({ summary: 'Create Category (No Multer)' })
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
-  @UseInterceptors(FileInterceptor("imageFile"))
-  @ApiBody({ type: CreateCategoryDto })
   @Post()
-  async create(
-    @Body() createCategoryDto: CreateCategoryDto,
-    @UploadedFile() imageFile: Express.Multer.File
-  ) {
-    return await this.categoryService.create(createCategoryDto, imageFile);
+  async create(@Req() req: Request, @Res() res: Response) {
+    try {
+      const result = await this.categoryService.handleMultipartForm(req);
+      return res.status(201).json(result);
+    } catch (error:any) {
+      return res
+        .status(error.status || 500)
+        .json({ message: error.message || 'Internal Server Error' });
+    }
   }
 
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number) {
+  @ApiOperation({ summary: 'Get One Category by ID' })
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.categoryService.findOne(id);
   }
 
+  @ApiOperation({ summary: 'Get All Categories' })
   @Get()
   async findAll() {
     return await this.categoryService.findAll();
   }
 
-  @ApiParam({ name: "id", required: true })
-  @ApiBody({ type: updateCategoryDto })
-  @ApiConsumes("multipart/form-data")
-  @UseGuards(AuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Update Category (No Multer)' })
+  @ApiParam({ name: 'id', required: true })
   @Roles(Role.Admin)
-  @UseInterceptors(FileInterceptor("imageFile"))
-  @Put(":id")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Put(':id')
   async update(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() body: updateCategoryDto,
-    @UploadedFile() imageFile?: Express.Multer.File
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res() res: Response
   ) {
-    return await this.categoryService.update(id, body.nameEn, body.nameAr, imageFile);
+    try {
+      const result = await this.categoryService.handleMultipartForm(req, id);
+      return res.status(200).json(result);
+    } catch (error:any) {
+      return res
+        .status(error.status || 500)
+        .json({ message: error.message || 'Internal Server Error' });
+    }
   }
 
-  @ApiParam({ name: "id", required: true })
-  @UseGuards(AuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Soft Delete Category' })
+  @ApiParam({ name: 'id', required: true })
   @Roles(Role.Admin)
-  @ApiParam({ name: "id", required: true })
-  @Delete(":id")
-  async delete(@Param("id", ParseIntPipe) id: number) {
+  @UseGuards(AuthGuard, RolesGuard)
+  @Delete(':id')
+  async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.categoryService.delete(id);
   }
 }

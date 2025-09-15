@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import Joi from 'joi';
 
 export class CreateCategoryDto {
@@ -8,15 +8,9 @@ export class CreateCategoryDto {
   @ApiProperty({ description: 'Category name in Arabic' })
   nameAr: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
+  @ApiProperty({ type: 'string', format: 'binary' }) 
   imageFile: any;
-}
 
-export const createCategorySchema = Joi.object<CreateCategoryDto>().keys({
-  nameEn: Joi.string().required().messages({
-    'string.empty': 'Category name in English is required',
-  }),
-  nameAr: Joi.string().required().messages({
-    'string.empty': 'Category name in Arabic is required',
-  }),
-});
+  @ApiPropertyOptional({ description: 'Optional parent category ID (for subcategories)' })
+  parentId?: number;
+}

@@ -65,14 +65,19 @@ model productImages {
 }
 
 model Category {
-  id        Int        @id @default(autoincrement())
-  nameEn    String?
-  nameAr    String?
-  imagePath String
-  createdAt DateTime   @default(now())
-  deletedAt DateTime?
-  products  Products[]
+  id         Int          @id @default(autoincrement())
+  nameEn     String
+  nameAr     String
+  imagePath  String
+  parentId   Int?
+  parent     Category?    @relation("CategoryToSub", fields: [parentId], references: [id])
+  children   Category[]   @relation("CategoryToSub")
+  products   Products[]
+  deletedAt  DateTime?
+  createdAt  DateTime     @default(now()) // ✅ add this back
 }
+
+
 
 model Reviews {
   id        Int      @id @default(autoincrement())
