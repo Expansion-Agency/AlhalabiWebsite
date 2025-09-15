@@ -76,7 +76,8 @@ function Products() {
       ? rootCategories
       : getChildCategories(selectedCategory.id);
 
-  const showProductsInstead = selectedCategory && categoriesToShow.length === 0;
+  const showProductsInstead =
+    selectedCategory !== null && categoriesToShow.length === 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -121,7 +122,7 @@ function Products() {
       </div>
 
       {/* PRODUCTS GRID */}
-      {showProductsInstead && (
+      {(showProductsInstead || selectedCategory === null) && (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 lg:gap-8">
           {filteredProducts.map((product) => (
             <div
@@ -154,9 +155,14 @@ function Products() {
         </div>
       )}
 
-      {!showProductsInstead && categoriesToShow.length === 0 && (
-        <div className="text-center text-gray-500">{t("noProductsFound")}</div>
-      )}
+      {!showProductsInstead &&
+        selectedCategory !== null &&
+        categoriesToShow.length === 0 &&
+        filteredProducts.length === 0 && (
+          <div className="text-center text-gray-500">
+            {t("noProductsFound")}
+          </div>
+        )}
     </div>
   );
 }
