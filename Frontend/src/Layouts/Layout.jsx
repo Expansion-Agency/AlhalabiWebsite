@@ -15,16 +15,16 @@ function Layout({ children }) {
   const { i18n } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-  const handleLanguageChange = (event) => {
+/*   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
     localStorage.setItem("language", newLanguage);
     i18n.changeLanguage(newLanguage);
     setSelectedLanguage(newLanguage);
-  };
+  }; */
 
-  useEffect(() => {
+ /*  useEffect(() => {
     i18n.changeLanguage(selectedLanguage); // Make sure it's applied on mount
-  }, [i18n, selectedLanguage]);
+  }, [i18n, selectedLanguage]); */
 
   const toggleMenuVisibility = () => {
     setIsMenuVisible((prev) => !prev);

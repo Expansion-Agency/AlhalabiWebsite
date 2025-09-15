@@ -18,16 +18,16 @@ function Login({ userType }) {
   });
   const { i18n } = useTranslation();
 
-  const handleLanguageChange = (event) => {
+/*   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
     localStorage.setItem("language", newLanguage);
     i18n.changeLanguage(newLanguage);
     setSelectedLanguage(newLanguage);
-  };
+  }; */
 
-  useEffect(() => {
+/*   useEffect(() => {
     i18n.changeLanguage(selectedLanguage);
-  }, [i18n, selectedLanguage]);
+  }, [i18n, selectedLanguage]); */
 
   const handleLogin = async (e) => {
     e.preventDefault();
