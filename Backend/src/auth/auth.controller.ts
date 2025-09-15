@@ -69,15 +69,7 @@ export class AuthController {
 
      const token = await this.authService.generateJwt(user);
 
-    // Return JSON with token and (optionally) the user info
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      message: 'Login successful via Google OAuth',
-      data: {
-        user,
-        token,
-      },
-    });
+    return res.redirect(`https://alhalabi.com/auth/google/callback?token=${token}`);
   }
 
   @ApiBody({ type: loginDto })

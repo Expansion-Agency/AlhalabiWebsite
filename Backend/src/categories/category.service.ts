@@ -1,47 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import multer from 'multer';
 import prisma from '../shared/prisma/client';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Request } from 'express';
 
 @Injectable()
 export class CategoryService {
   constructor() {}
 
-  // Save image to disk (simulate basic multer handling)
-  private async saveImage(file: Express.Multer.File): Promise<string> {
-    const uploadDir = path.join(__dirname, '../../uploads/categories');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const fileName = `${Date.now()}-${file.originalname}`;
-    const filePath = path.join(uploadDir, fileName);
-    fs.writeFileSync(filePath, file.buffer);
-    return `/uploads/categories/${fileName}`;
-  }
-
+  // ✅ Use body-only (no files), and imagePath comes as a URL
   async handleMultipartForm(req: Request, categoryId?: number) {
     return new Promise<any>((resolve, reject) => {
       const storage = multer.memoryStorage();
-      const upload = multer({ storage }).single('imageFile');
+      const upload = multer({ storage }).none(); // ⛔️ No file field
 
       upload(req, null as any, async (err: any) => {
         if (err) return reject(err);
 
-        const body = req.body;
-        const imageFile = req.file;
-
-        const nameEn = body.nameEn;
-        const nameAr = body.nameAr;
-        const parentId = body.parentId ? Number(body.parentId) : null;
-
-        let imagePath: string | undefined;
-
-        if (imageFile) {
-          imagePath = await this.saveImage(imageFile);
-        }
+        const { nameEn, nameAr, parentId, imagePath } = req.body;
 
         try {
           if (categoryId) {
@@ -58,8 +33,8 @@ export class CategoryService {
               data: {
                 nameEn,
                 nameAr,
-                parentId,
-                ...(imagePath && { imagePath }),
+                parentId: parentId ? Number(parentId) : null,
+                imagePath: imagePath || existing.imagePath,
               },
             });
             return resolve(updated);
@@ -69,7 +44,7 @@ export class CategoryService {
               data: {
                 nameEn,
                 nameAr,
-                parentId,
+                parentId: parentId ? Number(parentId) : null,
                 imagePath: imagePath || '',
               },
             });
@@ -134,10 +109,11 @@ export class CategoryService {
     });
   }
 
+  // ✅ Convert old relative paths to full URLs
   private formatImagePath(path: string | null): string {
     if (!path) return '';
-return path.startsWith('http')
-  ? path
-  : `https://alhalapi.com${path.startsWith('/') ? '' : '/'}${path}`;
+    return path.startsWith('http')
+      ? path
+      : `https://alhalapi.com${path.startsWith('/') ? '' : '/'}${path}`;
   }
 }
