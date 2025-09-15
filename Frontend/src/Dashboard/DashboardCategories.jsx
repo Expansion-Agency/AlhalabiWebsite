@@ -30,12 +30,16 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     parentId: null,
   });
 
+  const [newImagePreview, setNewImagePreview] = useState(null);
+
   const [updatedCategory, setUpdatedCategory] = useState({
     nameEn: "",
     nameAr: "",
     imageFile: null,
     parentId: null,
   });
+
+  const [updatedImagePreview, setUpdatedImagePreview] = useState(null);
 
   const editModalRef = useRef(null);
 
@@ -65,13 +69,30 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     return path.startsWith("http") ? path : `${API_URL}/${path}`;
   };
 
+  // --- Image validation helper ---
+  const validateImageFile = (file) => {
+    if (!file) return true;
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const maxSizeMB = 5;
+    if (!validTypes.includes(file.type)) {
+      alert("Invalid file type. Please select an image file (jpg, png, gif, webp).");
+      return false;
+    }
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      alert(`File is too large. Max size is ${maxSizeMB}MB.`);
+      return false;
+    }
+    return true;
+  };
+
   const handleCreateCategory = async () => {
     const token = localStorage.getItem("token");
-    console.log(token)
     if (!token) {
       alert("Authentication required. Please log in again.");
       return;
     }
+
+    if (!validateImageFile(newCategory.imageFile)) return;
 
     try {
       const formData = new FormData();
@@ -79,7 +100,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       formData.append("nameAr", newCategory.nameAr);
       if (newCategory.imageFile) {
         formData.append("imageFile", newCategory.imageFile);
-        
       }
       if (newCategory.parentId !== null && newCategory.parentId !== undefined) {
         formData.append("parentId", String(newCategory.parentId));
@@ -95,8 +115,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       setCategory((prev) => [...prev, response.data]);
       fetchCategories();
 
-
+      // Clear inputs & preview after success
       setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
+      setNewImagePreview(null);
       setShowCreateCategory(false);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -126,6 +147,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       imageFile: null,
       parentId: cat.parentId ?? null,
     });
+    setUpdatedImagePreview(null);
     setTimeout(() => {
       editModalRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 200);
@@ -140,6 +162,8 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       return;
     }
 
+    if (!validateImageFile(updatedCategory.imageFile)) return;
+
     try {
       const formData = new FormData();
       formData.append("nameEn", updatedCategory.nameEn);
@@ -147,7 +171,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       if (updatedCategory.imageFile) {
         formData.append("imageFile", updatedCategory.imageFile);
       }
-      formData.append("parentId", updatedCategory.parentId ?? "");
+      if (updatedCategory.parentId !== null && updatedCategory.parentId !== undefined) {
+        formData.append("parentId", String(updatedCategory.parentId));
+      }
 
       const response = await axios.put(
         `${API_URL}/category/${editingCategory.id}`,
@@ -165,6 +191,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       );
 
       setEditingCategory(null);
+      setUpdatedImagePreview(null);
       fetchCategories();
     } catch (error) {
       if (error.response?.status === 401) {
@@ -180,9 +207,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         <CardHeader className="flex justify-between items-center pb-0">
           <div className="flex flex-col">
             <CardTitle>{t("totalCategories")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">
-              {displayValue}
-            </CardDescription>
+            <CardDescription className="text-4xl font-bold">{displayValue}</CardDescription>
           </div>
           <button
             onClick={() => setShowCreateCategory(!showCreateCategory)}
@@ -211,9 +236,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                     <td className="text-start p-2">{cat.id}</td>
                     <td className="text-start p-2">{cat.nameEn}</td>
                     <td className="text-start p-2">{cat.nameAr}</td>
-                    <td className="text-start p-2">
-                      {cat.parent?.nameEn || "-"}
-                    </td>
+                    <td className="text-start p-2">{cat.parent?.nameEn || "-"}</td>
                     <td className="text-start p-2">
                       {cat.imagePath ? (
                         <img
@@ -251,12 +274,11 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         </CardContent>
 
         <CardFooter className="flex-col gap-2 text-xs lg:text-sm">
-          <div className="leading-none text-muted-foreground">
-            Showing total Categories
-          </div>
+          <div className="leading-none text-muted-foreground">Showing total Categories</div>
         </CardFooter>
       </Card>
 
+      {/* Create Category Modal */}
       {showCreateCategory && (
         <div className="bg-white shadow-lg rounded-lg p-6 mx-3 my-4 w-full max-w-md">
           <h3 className="text-lg font-semibold mb-2">{t("createCategory")}</h3>
@@ -264,65 +286,71 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             type="text"
             placeholder={t("categoryNameEn")}
             value={newCategory.nameEn}
-            onChange={(e) =>
-              setNewCategory({ ...newCategory, nameEn: e.target.value })
-            }
+            onChange={(e) => setNewCategory({ ...newCategory, nameEn: e.target.value })}
             className="border p-2 mb-2 w-full"
           />
           <input
             type="text"
-            placeholder={t("categoryNameAr")}
+            placeholder="Name in Arabic"
             value={newCategory.nameAr}
-            onChange={(e) =>
-              setNewCategory({ ...newCategory, nameAr: e.target.value })
-            }
+            onChange={(e) => setNewCategory({ ...newCategory, nameAr: e.target.value })}
             className="border p-2 mb-2 w-full"
           />
-          <select
-            value={newCategory.parentId !== null ? newCategory.parentId : ""}
+          <input
+            type="number"
+            placeholder="Parent Category ID (optional)"
+            value={newCategory.parentId ?? ""}
             onChange={(e) =>
               setNewCategory({
                 ...newCategory,
-                parentId: e.target.value ? Number(e.target.value) : null,
+                parentId: e.target.value === "" ? null : Number(e.target.value),
               })
             }
             className="border p-2 mb-2 w-full"
-          >
-            <option value="">{t("noParent") || "No Parent"}</option>
-            {category.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.nameEn}
-              </option>
-            ))}
-          </select>
+          />
           <input
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setNewCategory({
-                ...newCategory,
-                imageFile: e.target.files[0],
-              })
-            }
-            className="border p-2 mb-2 w-full"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file && validateImageFile(file)) {
+                setNewCategory({ ...newCategory, imageFile: file });
+                setNewImagePreview(URL.createObjectURL(file));
+              } else {
+                // Invalid file reset input
+                e.target.value = "";
+                setNewCategory({ ...newCategory, imageFile: null });
+                setNewImagePreview(null);
+              }
+            }}
+            className="mb-2"
           />
-          <div className="flex gap-2">
+          {newImagePreview && (
+            <img
+              src={newImagePreview}
+              alt="Preview"
+              className="mb-2 w-32 h-32 object-cover rounded"
+            />
+          )}
+          <div className="flex justify-end gap-2">
             <button
-              onClick={handleCreateCategory}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+              onClick={() => {
+                setShowCreateCategory(false);
+                setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
+                setNewImagePreview(null);
+              }}
+              className="btn-cancel"
             >
-              {t("createCategory")}
+              Cancel
             </button>
-            <button
-              onClick={() => setShowCreateCategory(false)}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-            >
-              {t("cancel")}
+            <button onClick={handleCreateCategory} className="btn-primary">
+              {t("create")}
             </button>
           </div>
         </div>
       )}
 
+      {/* Edit Category Modal */}
       {editingCategory && (
         <div
           ref={editModalRef}
@@ -334,81 +362,80 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             placeholder={t("categoryNameEn")}
             value={updatedCategory.nameEn}
             onChange={(e) =>
-              setUpdatedCategory({
-                ...updatedCategory,
-                nameEn: e.target.value,
-              })
+              setUpdatedCategory({ ...updatedCategory, nameEn: e.target.value })
             }
             className="border p-2 mb-2 w-full"
           />
           <input
             type="text"
-            placeholder={t("categoryNameAr")}
+            placeholder="Name in Arabic"
             value={updatedCategory.nameAr}
+            onChange={(e) =>
+              setUpdatedCategory({ ...updatedCategory, nameAr: e.target.value })
+            }
+            className="border p-2 mb-2 w-full"
+          />
+          <input
+            type="number"
+            placeholder="Parent Category ID (optional)"
+            value={updatedCategory.parentId ?? ""}
             onChange={(e) =>
               setUpdatedCategory({
                 ...updatedCategory,
-                nameAr: e.target.value,
+                parentId: e.target.value === "" ? null : Number(e.target.value),
               })
             }
             className="border p-2 mb-2 w-full"
           />
-          <select
-            value={updatedCategory.parentId !== null ? updatedCategory.parentId : ""}
-            onChange={(e) =>
-              setUpdatedCategory({
-                ...updatedCategory,
-                parentId: e.target.value ? Number(e.target.value) : null,
-              })
-            }
-            className="border p-2 mb-2 w-full"
-          >
-            <option value="">{t("noParent") || "No Parent"}</option>
-            {category
-              .filter((cat) => cat.id !== editingCategory.id)
-              .map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nameEn}
-                </option>
-              ))}
-          </select>
-          {editingCategory?.imagePath && (
-            <div className="mb-2">
-              <p className="text-sm text-gray-600">Current image:</p>
-              <img
-                src={getFullImageUrl(editingCategory.imagePath)}
-                alt="Current"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/placeholder.jpg";
-                }}
-              />
-            </div>
-          )}
           <input
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setUpdatedCategory({
-                ...updatedCategory,
-                imageFile: e.target.files[0],
-              })
-            }
-            className="border p-2 mb-2 w-full"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file && validateImageFile(file)) {
+                setUpdatedCategory({ ...updatedCategory, imageFile: file });
+                setUpdatedImagePreview(URL.createObjectURL(file));
+              } else {
+                e.target.value = "";
+                setUpdatedCategory({ ...updatedCategory, imageFile: null });
+                setUpdatedImagePreview(null);
+              }
+            }}
+            className="mb-2"
           />
-          <div className="flex gap-2">
+          {/* Show preview: new image or existing */}
+          {updatedImagePreview ? (
+            <img
+              src={updatedImagePreview}
+              alt="Preview"
+              className="mb-2 w-32 h-32 object-cover rounded"
+            />
+          ) : editingCategory.imagePath ? (
+            <img
+              src={getFullImageUrl(editingCategory.imagePath)}
+              alt={editingCategory.nameEn}
+              className="mb-2 w-32 h-32 object-cover rounded"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/placeholder.jpg";
+              }}
+            />
+          ) : (
+            <p>No image available</p>
+          )}
+          <div className="flex justify-end gap-2">
             <button
-              onClick={handleUpdate}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+              onClick={() => {
+                setEditingCategory(null);
+                setUpdatedCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
+                setUpdatedImagePreview(null);
+              }}
+              className="btn-cancel"
             >
-              {t("updateCategory")}
+              Cancel
             </button>
-            <button
-              onClick={() => setEditingCategory(null)}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-            >
-              {t("cancel")}
+            <button onClick={handleUpdate} className="btn-primary">
+              {t("update")}
             </button>
           </div>
         </div>
