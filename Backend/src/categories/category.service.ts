@@ -1,59 +1,93 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import multer from 'multer';
 import prisma from '../shared/prisma/client';
+import * as fs from 'fs';
+import * as path from 'path';
 import { Request } from 'express';
 
 @Injectable()
 export class CategoryService {
   constructor() {}
 
+  // Save image to disk
+  private async saveImage(file: Express.Multer.File): Promise<string> {
+    const uploadDir = path.join(__dirname, '../../uploads/categories');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    const fileName = `${Date.now()}-${file.originalname}`;
+    const filePath = path.join(uploadDir, fileName);
+    fs.writeFileSync(filePath, file.buffer);
+    return `/uploads/categories/${fileName}`;
+  }
+
   async handleMultipartForm(req: Request, categoryId?: number) {
-    try {
-      const body = req.body;
+    return new Promise<any>((resolve, reject) => {
+      const storage = multer.memoryStorage();
+      const upload = multer({ storage }).single('imageFile');
 
-      const nameEn = body.nameEn;
-      const nameAr = body.nameAr;
-      const parentId = body.parentId ? Number(body.parentId) : null;
-      const imagePath = body.imagePath || '';  // Expect imagePath as string URL in the body
+      upload(req, null as any, async (err: any) => {
+        if (err) return reject(err);
 
-      if (categoryId) {
-        const existing = await prisma.category.findUnique({
-          where: { id: categoryId },
-        });
-        if (!existing) {
-          throw new NotFoundException('Category not found');
+        // Now req.body should be populated by multer
+        const body = req.body;
+
+        if (!body) {
+          return reject(new Error('Request body is missing'));
         }
 
-        const updated = await prisma.category.update({
-          where: { id: categoryId },
-          data: {
-            nameEn,
-            nameAr,
-            parentId,
-            imagePath,
-          },
-        });
-        return updated;
-      } else {
-        const created = await prisma.category.create({
-          data: {
-            nameEn,
-            nameAr,
-            parentId,
-            imagePath,
-          },
-        });
-        return created;
-      }
-    } catch (error) {
-      throw error;
-    }
+        const nameEn = body.nameEn;
+        const nameAr = body.nameAr;
+        const parentId = body.parentId ? Number(body.parentId) : null;
+
+        let imagePath: string | undefined;
+
+        if (req.file) {
+          imagePath = await this.saveImage(req.file);
+        }
+
+        try {
+          if (categoryId) {
+            // Update existing category
+            const existing = await prisma.category.findUnique({
+              where: { id: categoryId },
+            });
+            if (!existing) {
+              throw new NotFoundException('Category not found');
+            }
+
+            const updated = await prisma.category.update({
+              where: { id: categoryId },
+              data: {
+                nameEn,
+                nameAr,
+                parentId,
+                ...(imagePath && { imagePath }),
+              },
+            });
+            resolve(updated);
+          } else {
+            // Create new category
+            const created = await prisma.category.create({
+              data: {
+                nameEn,
+                nameAr,
+                parentId,
+                imagePath: imagePath || '',
+              },
+            });
+            resolve(created);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
   }
 
   async findAll() {
     const categories = await prisma.category.findMany({
-      include: {
-        parent: true,
-      },
+      include: { parent: true },
     });
 
     return categories.map((cat) => ({
@@ -71,9 +105,7 @@ export class CategoryService {
   async findOne(id: number) {
     const cat = await prisma.category.findUnique({
       where: { id },
-      include: {
-        parent: true,
-      },
+      include: { parent: true },
     });
 
     if (!cat) return null;
@@ -95,10 +127,7 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-
-    return prisma.category.delete({
-      where: { id },
-    });
+    return prisma.category.delete({ where: { id } });
   }
 
   private formatImagePath(path: string | null): string {
