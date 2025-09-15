@@ -156,9 +156,7 @@ function Login({ userType }) {
 	  <hr />
           <button 
               className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
-	      onClick={() => {
-                window.location.href = `${API_URL}/auth/google`;
-              }}            
+	              
           >
               {"Login with Google"}
           </button>
