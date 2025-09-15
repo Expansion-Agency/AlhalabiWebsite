@@ -163,8 +163,8 @@ function Login({ userType }) {
           <div className="mt-10 w-full flex justify-end">
             <LanguageDropdown
               selectedLanguage={selectedLanguage}
-              handleLanguageChange={handleLanguageChange}
-            />
+/*               handleLanguageChange={handleLanguageChange}
+ */            />
           </div>
         </div>
       </div>
