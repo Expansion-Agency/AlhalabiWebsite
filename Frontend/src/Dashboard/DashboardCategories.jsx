@@ -201,6 +201,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     }
   };
 
+  // Only categories that can be parents (e.g., all categories, or filter as needed)
+  const parentOptions = category.filter(cat => !cat.parentId); // or just use all categories
+
   return (
     <>
       <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
@@ -308,6 +311,23 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
+          <select
+            value={newCategory.parentId ?? ""}
+            onChange={e =>
+              setNewCategory({
+                ...newCategory,
+                parentId: e.target.value === "" ? null : Number(e.target.value),
+              })
+            }
+            className="border p-2 mb-2 w-full"
+          >
+            <option value="">No Parent</option>
+            {parentOptions.map(opt => (
+              <option key={opt.id} value={opt.id}>
+                {opt.nameEn}
+              </option>
+            ))}
+          </select>
           <input
             type="file"
             accept="image/*"
@@ -387,6 +407,23 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
+          <select
+            value={updatedCategory.parentId ?? ""}
+            onChange={e =>
+              setUpdatedCategory({
+                ...updatedCategory,
+                parentId: e.target.value === "" ? null : Number(e.target.value),
+              })
+            }
+            className="border p-2 mb-2 w-full"
+          >
+            <option value="">No Parent</option>
+            {parentOptions.map(opt => (
+              <option key={opt.id} value={opt.id}>
+                {opt.nameEn}
+              </option>
+            ))}
+          </select>
           <input
             type="file"
             accept="image/*"

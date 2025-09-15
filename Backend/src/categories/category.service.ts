@@ -11,14 +11,14 @@ export class CategoryService {
 
   // Save image to disk
   private async saveImage(file: Express.Multer.File): Promise<string> {
-    const uploadDir = path.join(__dirname, '../../uploads/categories');
+    const uploadDir = path.join(__dirname, 'https://alhalapi.com/category/');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     const fileName = `${Date.now()}-${file.originalname}`;
     const filePath = path.join(uploadDir, fileName);
     fs.writeFileSync(filePath, file.buffer);
-    return `/uploads/categories/${fileName}`;
+    return `https://alhalapi.com/category/${fileName}`;
   }
 
   async handleMultipartForm(req: Request, categoryId?: number) {
