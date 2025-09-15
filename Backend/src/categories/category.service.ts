@@ -4,6 +4,7 @@ import prisma from '../shared/prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Request } from 'express';
+
 @Injectable()
 export class CategoryService {
   constructor() {}
@@ -26,7 +27,7 @@ export class CategoryService {
       const storage = multer.memoryStorage();
       const upload = multer({ storage }).single('imageFile');
 
-      upload(req, null as any, async (err:any) => {
+      upload(req, null as any, async (err: any) => {
         if (err) return reject(err);
 
         const body = req.body;
@@ -69,7 +70,7 @@ export class CategoryService {
                 nameEn,
                 nameAr,
                 parentId,
-                imagePath: imagePath || "",
+                imagePath: imagePath || '',
               },
             });
             return resolve(created);
@@ -82,20 +83,44 @@ export class CategoryService {
   }
 
   async findAll() {
-    return prisma.category.findMany({
+    const categories = await prisma.category.findMany({
       include: {
         parent: true,
       },
     });
+
+    return categories.map((cat) => ({
+      ...cat,
+      imagePath: this.formatImagePath(cat.imagePath),
+      parent: cat.parent
+        ? {
+            ...cat.parent,
+            imagePath: this.formatImagePath(cat.parent.imagePath),
+          }
+        : null,
+    }));
   }
 
   async findOne(id: number) {
-    return prisma.category.findUnique({
+    const cat = await prisma.category.findUnique({
       where: { id },
       include: {
         parent: true,
       },
     });
+
+    if (!cat) return null;
+
+    return {
+      ...cat,
+      imagePath: this.formatImagePath(cat.imagePath),
+      parent: cat.parent
+        ? {
+            ...cat.parent,
+            imagePath: this.formatImagePath(cat.parent.imagePath),
+          }
+        : null,
+    };
   }
 
   async delete(id: number) {
@@ -107,5 +132,10 @@ export class CategoryService {
     return prisma.category.delete({
       where: { id },
     });
+  }
+
+  private formatImagePath(path: string | null): string {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `https://alhalapi.com${path}`;
   }
 }
