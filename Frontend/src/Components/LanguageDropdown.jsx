@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { IoEarth } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 
-const LanguageDropdown = ({ selectedLanguage, handleLanguageChange }) => {
+const LanguageDropdown = ({ selectedLanguage }) => {
   const { t } = useTranslation();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const langDropdownRef = useRef(null);
