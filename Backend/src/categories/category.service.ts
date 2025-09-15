@@ -136,6 +136,8 @@ export class CategoryService {
 
   private formatImagePath(path: string | null): string {
     if (!path) return '';
-    return path.startsWith('http') ? path : `https://alhalapi.com${path}`;
+return path.startsWith('http')
+  ? path
+  : `https://alhalapi.com${path.startsWith('/') ? '' : '/'}${path}`;
   }
 }

@@ -221,6 +221,13 @@ function Login({ userType }) {
             {t("register")}
           </p>
         </div>
+	 <hr />
+          <button
+              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+
+          >
+              {"Login with Google"}
+          </button>
         <div className="mt-6 w-full flex justify-end">
           <LanguageDropdown
             selectedLanguage={selectedLanguage}
