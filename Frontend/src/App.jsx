@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "./i18n/TranslationProvider";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
@@ -24,14 +24,11 @@ import DashboardReviews from "./Dashboard/DashboardReviews";
 import DashboardUsers from "./Dashboard/DashboardUsers";
 
 function App() {
-  const { i18n } = useTranslation();
+   const { t, setLang, lang } = useTranslation();
 
-  useEffect(() => {
-    const lang = i18n.language || "en";
+   useEffect(() => {
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  }, [i18n.language]);
-
-console.log("App.jsx rendered");
+  }, [lang]);
 
   return (
     <>

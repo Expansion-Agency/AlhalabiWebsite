@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./homewidget.css"; // Ensure you have the CSS file for styling
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "./i18n/TranslationProvider";
 
 const slides = [
   {
@@ -27,7 +27,7 @@ const slides = [
 const extendedSlides = slides;
 
 function HomeWidget() {
-  const { t, direction } = useTranslation();
+  const { t, setLang, lang } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning] = useState(true);
   const sliderRef = useRef(null);

@@ -1,13 +1,13 @@
 import React from "react";
 import HomeWidget from "../Components/HomeWidget";
 import HomeCategories from "../Components/HomeCategories";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../i18n/TranslationProvider";
 // import Reviews from "../Components/Reviews";
 import ParallaxText from "../Components/ParallaxText";
 import Reviews from "../Components/Reviews";
 
 function Home({ category, setCategory, fetchCategories }) {
-  const { t, i18n } = useTranslation();
+  const { t, setLang, lang } = useTranslation();
   return (
     <>
       <HomeWidget />

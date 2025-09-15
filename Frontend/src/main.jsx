@@ -2,14 +2,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import "./i18n";
+import { TranslationProvider } from "./i18n/TranslationProvider";
 import { BrowserRouter, RouterProvider } from "react-router-dom";
 import { motion } from "motion/react";
 
 createRoot(document.getElementById("root")).render(
    <StrictMode>
     <BrowserRouter>
-      <App />
+       <TranslationProvider>
+         <App />
+       </TranslationProvider>
     </BrowserRouter>
   </StrictMode>
 );
