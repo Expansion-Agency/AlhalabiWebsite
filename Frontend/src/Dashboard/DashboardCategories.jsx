@@ -92,6 +92,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
       setCategory((prev) => [...prev, response.data]);
       fetchCategories();
+console.log(fetchCategories)
 
       setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
       setShowCreateCategory(false);

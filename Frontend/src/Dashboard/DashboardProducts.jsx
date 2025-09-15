@@ -16,6 +16,7 @@ import {
   useTransform,
 } from "motion/react";
 
+
 function DashboardProducts({ category, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
