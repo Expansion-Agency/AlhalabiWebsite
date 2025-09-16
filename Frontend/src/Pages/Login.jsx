@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
@@ -18,19 +18,8 @@ function Login({ userType }) {
   });
   const { i18n } = useTranslation();
 
-/*   const handleLanguageChange = (event) => {
-    const newLanguage = event.target.value;
-    localStorage.setItem("language", newLanguage);
-    i18n.changeLanguage(newLanguage);
-    setSelectedLanguage(newLanguage);
-  }; */
-
-/*   useEffect(() => {
-    i18n.changeLanguage(selectedLanguage);
-  }, [i18n, selectedLanguage]); */
-
   const handleGoogleLogin = () => {
-    // Redirect user to backend Google login endpoint
+    // ✅ This triggers the NestJS backend's /auth/google route
     window.location.href = `${API_URL}/auth/google`;
   };
 
@@ -39,11 +28,6 @@ function Login({ userType }) {
     setError("");
 
     try {
-      console.log("Sending to API:", {
-        email,
-        password,
-        userType,
-      });
       const response = await axios.post(
         `${API_URL}/auth/login`,
         { email, password },
@@ -55,11 +39,10 @@ function Login({ userType }) {
           },
         }
       );
-      console.log("Access Token:", response.data.data.accessToken);
 
       const token = response.data.data.accessToken;
 
-      localStorage.setItem("token", response.data.data.accessToken);
+      localStorage.setItem("token", token);
       localStorage.setItem("userType", userType);
 
       if (userType !== "ADMIN") {
@@ -73,11 +56,7 @@ function Login({ userType }) {
         localStorage.setItem("userId", userId);
       }
 
-      if (userType === "ADMIN") {
-        navigate("/dashboard");
-      } else {
-        navigate("/");
-      }
+      navigate(userType === "ADMIN" ? "/dashboard" : "/");
     } catch (err) {
       console.error("Login Error:", err);
 
@@ -158,19 +137,15 @@ function Login({ userType }) {
               {t("register")}
             </p>
           </div>
-	  <hr />
-          <button 
-	      onClick={handleGoogleLogin}
-              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
-	              
+          <hr />
+          <button
+            onClick={handleGoogleLogin}
+            className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
           >
-              {"Login with Google"}
+            Login with Google
           </button>
           <div className="mt-10 w-full flex justify-end">
-            <LanguageDropdown
-              selectedLanguage={selectedLanguage}
-/*               handleLanguageChange={handleLanguageChange}
- */            />
+            <LanguageDropdown selectedLanguage={selectedLanguage} />
           </div>
         </div>
       </div>
@@ -227,19 +202,15 @@ function Login({ userType }) {
             {t("register")}
           </p>
         </div>
-	 <hr />
-          <button
-	      onClick={handleGoogleLogin}
-              className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
-
-          >
-              {"Login with Google"}
-          </button>
+        <hr />
+        <button
+          onClick={handleGoogleLogin}
+          className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+        >
+          Login with Google
+        </button>
         <div className="mt-6 w-full flex justify-end">
-          <LanguageDropdown
-            selectedLanguage={selectedLanguage}
-/*             handleLanguageChange={handleLanguageChange}
- */          />
+          <LanguageDropdown selectedLanguage={selectedLanguage} />
         </div>
       </div>
     </div>
