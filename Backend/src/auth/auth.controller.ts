@@ -40,36 +40,14 @@ export class AuthController {
 
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    const googleUser = req.user as any;
-
-    // Safely get email
-    const email = googleUser?.email || googleUser?.emails?.[0]?.value;
-
-    // Safely get name
-    const nameObj = googleUser?.name || {};
-    const displayName =
-      typeof nameObj === 'string'
-        ? nameObj
-        : nameObj?.formatted ||
-          nameObj?.fullName ||
-          `${nameObj?.givenName || ''} ${nameObj?.familyName || ''}`.trim();
-
-    // 1. Check if user exists in DB
-    let user = await this.usersService.findByEmail(email);
+  async googleRedirect(@Req() req: Request, @Res() res: Response) {
+    const user = req.user;
     if (!user) {
-      // 2. If not exists, create user
-      user = await this.usersService.createUserFromGoogle({
-        email,
-        name: displayName,
-        provider: 'google',
-        // add other fields as needed
-      });
+      return res.redirect('https://alhalapi.com/login?error=NoUser');
     }
-
-     const token = await this.authService.generateJwt(user);
-
-    return res.redirect('https://alhalapi.com/login?token=' + token);
+    const token = this.authService.createToken(user);
+    console.log("Generated Google JWT token:", token); // <-- Add this line
+    return res.redirect(`https://alhalapi.com/login?token=${token}`);
   }
 
   @ApiBody({ type: loginDto })

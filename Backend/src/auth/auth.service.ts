@@ -33,7 +33,10 @@ export class AuthService {
     };
     return user;
   }
-
+  createToken(user: any): string {
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    return this.jwtService.sign(payload);
+  }
   async login(email: string, password: string, userType: string) {
     let user: Users | Admins | null = null;
     if (userType === Role.User.toString()) {
@@ -54,31 +57,31 @@ export class AuthService {
     return { accessToken };
   }
 
-async signUp(user: CreateUserDto, userType: string) {
-  if (userType === Role.User.toString()) {
-    if (!(await this.userService.isVerified(user.email))) {
-      throw new BadRequestException('Email is not verified');
+  async signUp(user: CreateUserDto, userType: string) {
+    if (userType === Role.User.toString()) {
+      if (!(await this.userService.isVerified(user.email))) {
+        throw new BadRequestException('Email is not verified');
+      }
+
+      // Check if user already exists to prevent duplicates
+      const existingUser = await this.userService.findByEmail(user.email);
+      if (existingUser) {
+        throw new BadRequestException('User already exists');
+      }
+
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+
+      const createdUser = await this.userService.create({
+        ...user,
+        password: hashedPassword, // replace plain password with hashed one
+      });
+
+      return createdUser;
     }
 
-    // Check if user already exists to prevent duplicates
-    const existingUser = await this.userService.findByEmail(user.email);
-    if (existingUser) {
-      throw new BadRequestException('User already exists');
-    }
-
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-
-    const createdUser = await this.userService.create({
-      ...user,
-      password: hashedPassword, // replace plain password with hashed one
-    });
-
-    return createdUser;
+    throw new BadRequestException('Invalid user type for sign up');
   }
-
-  throw new BadRequestException('Invalid user type for sign up');
-}
   async sendVerficationOtp(input: string, userType: string) {
     if (!input || !userType) {
       throw new BadRequestException('Email/Phone and userType are required');

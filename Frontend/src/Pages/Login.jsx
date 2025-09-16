@@ -102,7 +102,7 @@ function Login({ userType }) {
       localStorage.setItem("token", token);
       // Optionally remove token from URL
       window.history.replaceState({}, document.title, "/");
-      navigate("/dashboard");
+      navigate("/");
     }
   }, [navigate]);
 
