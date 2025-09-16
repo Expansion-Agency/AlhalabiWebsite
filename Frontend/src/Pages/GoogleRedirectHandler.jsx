@@ -5,14 +5,13 @@ function GoogleRedirectHandler() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Example: parse token from URL and redirect
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (token) {
       localStorage.setItem("token", token);
       navigate("/dashboard");
     } else {
-      // Handle error or redirect to login
+      // If no token, redirect to login or show error
       navigate("/login");
     }
   }, [navigate]);

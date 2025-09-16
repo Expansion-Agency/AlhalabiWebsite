@@ -12,7 +12,6 @@ import Resetpass from "./Pages/Resetpass";
 import Forgotpass from "./Pages/Forgotpass";
 import Profile from "./Pages/Profile";
 import OtpPage from "./Pages/OtpPage";
-// import GoogleAuthCallback from "./Pages/GoogleAuthCallback";
 import GoogleRedirectHandler from "./Pages/GoogleRedirectHandler";
 import Layout from "./Layouts/Layout";
 import DashboardLayout from "./Layouts/DashboardLayout";
@@ -74,7 +73,6 @@ function App() {
             </Layout>
           }
         />
-	<Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
         <Route path="/auth/google/redirect" element={<GoogleRedirectHandler />} />
         {/* New OTP Route */}
         <Route path="/otp" element={<OtpPage />} />
