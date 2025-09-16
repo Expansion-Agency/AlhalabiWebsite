@@ -247,7 +247,7 @@ function Login({ userType }) {
         <hr />
         <button
           onClick={handleGoogleLogin}
-          className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+          className="bg-green-950  flex g-0 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
         >
            <FcGoogle className="text-xl" />
           Login with Google
