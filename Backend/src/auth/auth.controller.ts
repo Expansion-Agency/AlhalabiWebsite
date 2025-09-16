@@ -69,7 +69,7 @@ export class AuthController {
 
      const token = await this.authService.generateJwt(user);
 
-    return res.redirect(`https://alhalapi.com/login?token=${token}`);
+    return res.redirect(`https://alhalapi.com?token=${token}`);
   }
 
   @ApiBody({ type: loginDto })
