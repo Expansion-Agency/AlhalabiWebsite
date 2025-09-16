@@ -93,6 +93,15 @@ function Login({ userType }) {
     }
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate("/"); // or your homepage
+    }
+  }, []);
+
   return (
     <div className="relative flex flex-col h-screen text-amber-950">
       {/* Mobile Design: Background Image */}
