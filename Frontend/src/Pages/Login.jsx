@@ -97,11 +97,12 @@ function Login({ userType }) {
     // Check for token in URL (after Google login)
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    console.log("Google token from URL:", token); // <-- Add this line
     if (token) {
       localStorage.setItem("token", token);
       // Optionally remove token from URL
       window.history.replaceState({}, document.title, "/");
-      navigate("/"); // or your homepage route
+      navigate("/dashboard");
     }
   }, [navigate]);
 
