@@ -12,7 +12,7 @@ import Resetpass from "./Pages/Resetpass";
 import Forgotpass from "./Pages/Forgotpass";
 import Profile from "./Pages/Profile";
 import OtpPage from "./Pages/OtpPage";
-import GoogleAuthCallback from "./Pages/GoogleAuthCallback";
+// import GoogleAuthCallback from "./Pages/GoogleAuthCallback";
 import GoogleRedirectHandler from "./Pages/GoogleRedirectHandler";
 import Layout from "./Layouts/Layout";
 import DashboardLayout from "./Layouts/DashboardLayout";
