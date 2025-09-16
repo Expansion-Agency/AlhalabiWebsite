@@ -9,7 +9,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: '1094475133342-11ad2hi18n1f8d3usce8l2ia1kveh2ea.apps.googleusercontent.com',
       clientSecret: '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',
-      callbackURL: "https://alhalabi.com/products",
+      callbackURL: "https://alhalabi.com/auth/google/callback",
       scope: ['email', 'profile'],
     });
   }
