@@ -1,4 +1,4 @@
-// import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
@@ -104,13 +104,21 @@ function Login({ userType }) {
             <label className="block font-bold !mb-2" htmlFor="password">
               {t("password")}
             </label>
-            <input
-              className="bg-transparent !border !border-black/50 rounded-md !mb-1 !p-3 w-full"
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                className="bg-transparent !border !border-black/50 rounded-md !mb-1 !p-3 w-full pr-10"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-sm text-gray-600"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </span>
+            </div>
             <Link
               to={"/forgot-password"}
               className="block text-xs mb-5 text-right hover:text-red-700"
@@ -149,6 +157,7 @@ function Login({ userType }) {
           </div>
         </div>
       </div>
+
       {/* Mobile Design: Sign-in Form */}
       <div className="text-sm text-amber-950 relative mt-auto bg-white rounded-t-4xl shadow-lg p-10 sm:p-10 w-full mx-auto lg:hidden">
         <h2 className="text-center text-2xl lg:text-3xl font-bold mb-8 mt-2">
@@ -168,13 +177,21 @@ function Login({ userType }) {
           <label className="block font-bold !mb-2" htmlFor="password">
             {t("password")}
           </label>
-          <input
-            className="input bg-transparent !border !border-black/50 rounded-md !mb-1 !p-3 w-full"
-            type="password"
-            name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <input
+              className="input bg-transparent !border !border-black/50 rounded-md !mb-1 !p-3 w-full pr-10"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-sm text-gray-600"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </span>
+          </div>
           <Link
             to={"/forgot-password"}
             className="block text-xs !mb-5 text-right hover:text-red-600"
