@@ -54,23 +54,25 @@ function Login({ userType }) {
         headers: {
           "Content-Type": "application/json",
           accept: "*/*",
-          userType: userType,
+          userType: userType, // passed from props
         },
       }
     );
 
-    // get both token and role from backend
+    // destructure backend response
     const { accessToken, userType: role } = response.data.data;
 
+    // save in localStorage
     localStorage.setItem("token", accessToken);
     localStorage.setItem("userType", role);
 
     console.log("Access Token:", accessToken);
 
+    // fetch profile only if not admin
     if (role !== "ADMIN") {
       const profileResponse = await axios.get(`${API_URL}/users/profile`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // <-- use accessToken here
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -78,6 +80,7 @@ function Login({ userType }) {
       localStorage.setItem("userId", userId);
     }
 
+    // redirect depending on role
     if (role === "ADMIN") {
       navigate("/dashboard");
     } else {
@@ -95,6 +98,7 @@ function Login({ userType }) {
     }
   }
 };
+
 
 
   useEffect(() => {
