@@ -1,9 +1,8 @@
-// import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
 import axios from "axios";
-import { useState, useEffect } from "react";
 
 function Login({ userType }) {
   const navigate = useNavigate();
@@ -17,22 +16,26 @@ function Login({ userType }) {
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
   });
+
   const { i18n } = useTranslation();
 
-  // ✅ Handle Google login redirect with token
+  /*
+  const handleLanguageChange = (event) => {
+    const newLanguage = event.target.value;
+    localStorage.setItem("language", newLanguage);
+    i18n.changeLanguage(newLanguage);
+    setSelectedLanguage(newLanguage);
+  };
+  */
+
+  /*
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const token = query.get('token');
-    if (token) {
-      localStorage.setItem('token', token);
-      localStorage.setItem('userType', userType); // Optional
-      window.history.replaceState({}, document.title, window.location.pathname); // clean URL
-      navigate('/dashboard'); // Redirect after Google login
-    }
-  }, []);
+    i18n.changeLanguage(selectedLanguage);
+  }, [i18n, selectedLanguage]);
+  */
 
   const handleGoogleLogin = () => {
-    // ✅ Redirect to NestJS Google OAuth2 route
+    // Redirect user to backend Google login endpoint
     window.location.href = `${API_URL}/auth/google`;
   };
 
@@ -41,6 +44,8 @@ function Login({ userType }) {
     setError("");
 
     try {
+      console.log("Sending to API:", { email, password, userType });
+
       const response = await axios.post(
         `${API_URL}/auth/login`,
         { email, password },
@@ -53,9 +58,10 @@ function Login({ userType }) {
         }
       );
 
-      const token = response.data.data.accessToken;
+      console.log("Access Token:", response.data.data.accessToken);
 
-      localStorage.setItem("token", token);
+      const token = response.data.data.accessToken;
+      localStorage.setItem("token", response.data.data.accessToken);
       localStorage.setItem("userType", userType);
 
       if (userType !== "ADMIN") {
@@ -69,7 +75,11 @@ function Login({ userType }) {
         localStorage.setItem("userId", userId);
       }
 
-      navigate(userType === "ADMIN" ? "/dashboard" : "/");
+      if (userType === "ADMIN") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error("Login Error:", err);
 
@@ -93,13 +103,10 @@ function Login({ userType }) {
           alt=""
         />
       </div>
+
       <div className="hidden lg:flex">
         <div className="w-full relative z-5">
-          <img
-            className="w-full h-screen"
-            src="\assets\industrial.jpg"
-            alt=""
-          />
+          <img className="w-full h-screen" src="\assets\industrial.jpg" alt="" />
         </div>
         <div className="absolute z-10 bg-white flex flex-col items-center justify-center w-2/5 h-screen p-20">
           <h2 className="text-3xl font-bold mb-10">{t("login")}</h2>
@@ -162,6 +169,7 @@ function Login({ userType }) {
           </div>
         </div>
       </div>
+
       {/* Mobile Design: Sign-in Form */}
       <div className="text-sm text-amber-950 relative mt-auto bg-white rounded-t-4xl shadow-lg p-10 sm:p-10 w-full mx-auto lg:hidden">
         <h2 className="text-center text-2xl lg:text-3xl font-bold mb-8 mt-2">
