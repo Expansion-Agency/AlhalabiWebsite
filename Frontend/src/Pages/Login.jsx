@@ -166,18 +166,7 @@ function Login({ userType }) {
               {t("login")}
             </button>
           </form>
-          <div className="navto w-full flex gap-4 mt-1">
-            <h5>{t("noacc")}</h5>
-            <p
-              className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/signup");
-              }}
-            >
-              {t("register")}
-            </p>
-          </div>
+          
           <hr />
           {/* <button
             onClick={handleGoogleLogin}
@@ -192,6 +181,18 @@ function Login({ userType }) {
             <FcGoogle className="text-2xl bg-white rounded-full p-1" />
           Login with Google
         </button>
+        <div className="navto w-full flex gap-4 mt-1">
+            <h5>{t("noacc")}</h5>
+            <p
+              className="text-red-700 hover:text-red-600 cursor-pointer font-bold"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/signup");
+              }}
+            >
+              {t("register")}
+            </p>
+          </div>
           <div className="mt-10 w-full flex justify-end">
             <LanguageDropdown selectedLanguage={selectedLanguage} />
           </div>
@@ -238,7 +239,15 @@ function Login({ userType }) {
             {t("login")}
           </button>
         </form>
-        <div className="forgotpass w-full !mt-4"></div>
+        <hr />
+        <button
+          onClick={handleGoogleLogin}
+          className="bg-green-700 flex items-center justify-center gap-2 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+        >
+            <FcGoogle className="text-2xl bg-white rounded-full p-1" />
+          Login with Google
+        </button>
+           <div className="forgotpass w-full !mt-4"></div>
         <div className="navto w-full flex gap-4 !mt-1">
           <h5>{t("noacc")}</h5>
           <p
@@ -251,14 +260,6 @@ function Login({ userType }) {
             {t("register")}
           </p>
         </div>
-        <hr />
-        <button
-          onClick={handleGoogleLogin}
-          className="bg-green-700 flex items-center justify-center gap-2 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
-        >
-            <FcGoogle className="text-2xl bg-white rounded-full p-1" />
-          Login with Google
-        </button>
         <div className="mt-6 w-full flex justify-end">
           <LanguageDropdown selectedLanguage={selectedLanguage} />
         </div>
