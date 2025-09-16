@@ -94,13 +94,16 @@ function Login({ userType }) {
   };
 
   useEffect(() => {
+    // Check for token in URL (after Google login)
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (token) {
       localStorage.setItem("token", token);
-      navigate("/"); // or your homepage
+      // Optionally remove token from URL
+      window.history.replaceState({}, document.title, "/");
+      navigate("/"); // or your homepage route
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="relative flex flex-col h-screen text-amber-950">
