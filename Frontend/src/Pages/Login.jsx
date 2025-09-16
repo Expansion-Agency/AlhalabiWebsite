@@ -179,12 +179,19 @@ function Login({ userType }) {
             </p>
           </div>
           <hr />
-          <button
+          {/* <button
             onClick={handleGoogleLogin}
             className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
           >
             Login with Google
-          </button>
+          </button> */}
+           <button
+          onClick={handleGoogleLogin}
+          className="bg-green-700 flex items-center justify-center gap-2 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
+        >
+            <FcGoogle className="text-2xl bg-white rounded-full p-1" />
+          Login with Google
+        </button>
           <div className="mt-10 w-full flex justify-end">
             <LanguageDropdown selectedLanguage={selectedLanguage} />
           </div>
