@@ -15,7 +15,7 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
-
+import { normalizeProduct } from "../utils/normalizeProduct";
 
 function DashboardProducts({ category, fetchCategories }) {
   const { t } = useTranslation();
@@ -71,21 +71,10 @@ function DashboardProducts({ category, fetchCategories }) {
       const response = await axios.get(`${API_URL}/products`);
       console.log("Fetched products:", response.data);
       if (response.data && Array.isArray(response.data)) {
-        const processed = response.data.map((product) => {
-          const productImages = product.productImages || [];
-          let imageUrl = product.imageUrl;
-          if (!imageUrl && productImages.length > 0) {
-            const defaultImage =
-              productImages.find((img) => img.isDefault) || productImages[0];
-            imageUrl = defaultImage.imagePath;
-          }
-          return {
-            ...product,
-            imageUrl: imageUrl || "/default.png",
-          };
-        });
+        const processed = response.data.map((product) => normalizeProduct(product));
         setProducts(processed);
       }
+
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -217,6 +206,8 @@ const handleUpdate = async (e) => {
       },
     });
 
+    let refreshedProduct;
+
     if (updatedProduct.imageFile) {
       // Upload new image
       const formData = new FormData();
@@ -230,30 +221,21 @@ const handleUpdate = async (e) => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Update product image in state with blob URL for instant UI feedback
-      const updatedProductWithImage = {
-        ...editingProduct,
-        ...updatedData,
-        imageUrl: URL.createObjectURL(updatedProduct.imageFile),
-      };
-
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? updatedProductWithImage : p))
-      );
-    } else {
-      // Just update product data in state
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...updatedData } : p))
-      );
     }
+
+    // Always fetch fresh product data
+    const refreshed = await axios.get(`${API_URL}/products/${editingProduct.id}`);
+    refreshedProduct = normalizeProduct(refreshed.data);
+
+    setProducts((prev) =>
+      prev.map((p) => (p.id === editingProduct.id ? refreshedProduct : p))
+    );
 
     setEditingProduct(null);
   } catch (error) {
     console.error("Error updating product:", error.response || error);
   }
-};
-
+}; 
 
 
   return (

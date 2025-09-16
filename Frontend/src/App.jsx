@@ -74,6 +74,7 @@ function App() {
           }
         />
 	<Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+        <Route path="/auth/google/redirect" element={<GoogleRedirectHandler />} />
         {/* New OTP Route */}
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/login" element={<Login userType="USER" />} />

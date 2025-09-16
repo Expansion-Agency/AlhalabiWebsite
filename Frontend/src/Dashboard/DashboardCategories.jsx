@@ -242,20 +242,21 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                     <td className="text-start p-2">{cat.nameAr}</td>
                     <td className="text-start p-2">{cat.parent?.nameEn || "-"}</td>
                     <td className="text-start p-2">
-                      {cat.imagePath ? (
-                        <img
-                          src={getFullImageUrl(cat.imagePath)}
-                          alt={cat.nameEn}
-                          style={{ width: "50px", height: "50px", objectFit: "cover" }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholder.jpg";
-                          }}
-                        />
-                      ) : (
-                        <p>No image</p>
-                      )}
-                    </td>
+		      {cat.imageUrl ? (
+		        <img
+		          src={getFullImageUrl(cat.imageUrl)}
+		          alt={cat.nameEn}
+		          style={{ width: "50px", height: "50px", objectFit: "cover" }}
+		          onError={(e) => {
+		            e.target.onerror = null;
+		            e.target.src = "/placeholder.jpg";
+			  }}
+			/>
+		      ) : (
+			<p>No image</p>
+		      )}
+		    </td>
+
                     <td className="text-start flex gap-2 p-2">
                       <button
                         onClick={() => handleEditClick(cat)}
@@ -298,18 +299,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             placeholder="Name in Arabic"
             value={newCategory.nameAr}
             onChange={(e) => setNewCategory({ ...newCategory, nameAr: e.target.value })}
-            className="border p-2 mb-2 w-full"
-          />
-          <input
-            type="number"
-            placeholder="Parent Category ID (optional)"
-            value={newCategory.parentId ?? ""}
-            onChange={(e) =>
-              setNewCategory({
-                ...newCategory,
-                parentId: e.target.value === "" ? null : Number(e.target.value),
-              })
-            }
             className="border p-2 mb-2 w-full"
           />
           <select
@@ -396,18 +385,6 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             }
             className="border p-2 mb-2 w-full"
           />
-          <input
-            type="number"
-            placeholder="Parent Category ID (optional)"
-            value={updatedCategory.parentId ?? ""}
-            onChange={(e) =>
-              setUpdatedCategory({
-                ...updatedCategory,
-                parentId: e.target.value === "" ? null : Number(e.target.value),
-              })
-            }
-            className="border p-2 mb-2 w-full"
-          />
           <select
             value={updatedCategory.parentId ?? ""}
             onChange={e =>
@@ -448,9 +425,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
               alt="Preview"
               className="mb-2 w-32 h-32 object-cover rounded"
             />
-          ) : editingCategory.imagePath ? (
+          ) : editingCategory.imageUrl ? (
             <img
-              src={getFullImageUrl(editingCategory.imagePath)}
+              src={getFullImageUrl(editingCategory.imageUrl)}
               alt={editingCategory.nameEn}
               className="mb-2 w-32 h-32 object-cover rounded"
               onError={(e) => {
@@ -461,6 +438,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
           ) : (
             <p>No image available</p>
           )}
+
           <div className="flex justify-end gap-2">
             <button
               onClick={() => {

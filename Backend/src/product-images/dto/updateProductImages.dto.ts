@@ -5,10 +5,12 @@ export class updateProductImagesDto {
   @ApiProperty()
   isDefault: boolean;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
-  imageFile: any;
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  imageFile?: any;
 }
 
 export const updateProductImagesSchema = Joi.object<updateProductImagesDto>({
   isDefault: Joi.boolean().required(),
+  imageFile: Joi.any().optional(),
 });
+

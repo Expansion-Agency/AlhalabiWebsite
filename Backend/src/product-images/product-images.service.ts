@@ -56,6 +56,17 @@ export class ProductImagesService {
         ftpClient.connect(ftpConfig);
       });
 
+
+      // before creating new record
+      const existingDefault = await prisma.productImages.findFirst({
+        where: { productId: productImage.productId, isDefault: true, deletedAt: null },
+      });
+
+      if (existingDefault) {
+        // update existing default image instead of creating new
+        return await this.update(existingDefault.id, { isDefault: true }, imageFile);
+      }
+
       const imagePath = `${process.env.FTP_PATH}${imageFile.originalname}`;
 
       return await prisma.productImages.create({
