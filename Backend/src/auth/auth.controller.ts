@@ -38,7 +38,7 @@ export class AuthController {
     // Redirects to Google OAuth2 login page
   }
 
-  @Get('google/callback')
+  @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const googleUser = req.user as any;
