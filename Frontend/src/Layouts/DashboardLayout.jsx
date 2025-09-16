@@ -33,6 +33,7 @@ function DashboardLayout({ children }) {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${API_URL}/category`);
+      console.log("Fetched categories:", response.data);
       setCategory(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);

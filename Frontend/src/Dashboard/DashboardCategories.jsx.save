@@ -64,11 +64,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     }
   }, []);
 
-  const getFullImageUrl = (path) => {
-  if (!path) return "";
-  return path.startsWith("http") ? path : `${path.startsWith("/") ? API_URL : API_URL + "/"}${path}`;
-  };
-
+  
 
   // --- Image validation helper ---
   const validateImageFile = (file) => {

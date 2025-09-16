@@ -4,21 +4,36 @@ import prisma from '../shared/prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Request } from 'express';
+import Client from 'ftp';
 
 @Injectable()
 export class CategoryService {
-  constructor() {}
-
-  // Save image to disk
   private async saveImage(file: Express.Multer.File): Promise<string> {
-    const uploadDir = path.join(__dirname, 'https://alhalapi.com/category/');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    const fileName = `${Date.now()}-${file.originalname}`;
-    const filePath = path.join(uploadDir, fileName);
-    fs.writeFileSync(filePath, file.buffer);
-    return `https://alhalapi.com/category/${fileName}`;
+    const ftpClient = new Client();
+    const ftpConfig = {
+      host: process.env.FTP_HOST,
+      user: process.env.FTP_USER,
+      password: process.env.FTP_PASSWORD,
+      port: 21,
+    };
+
+    const timestamp = Date.now();
+    const fileName = `${timestamp}_${file.originalname}`;
+    const remotePath = `/public_html/category/${fileName}`;
+
+    await new Promise((resolve, reject) => {
+      ftpClient.on('ready', () => {
+        ftpClient.put(file.buffer, remotePath, (err) => {
+          ftpClient.end();
+          if (err) reject(err);
+          else resolve(null);
+        });
+      });
+      ftpClient.on('error', reject);
+      ftpClient.connect(ftpConfig);
+    });
+
+    return `${process.env.FTP_PATH_C}${fileName}`;
   }
 
   async handleMultipartForm(req: Request, categoryId?: number) {
@@ -131,9 +146,6 @@ export class CategoryService {
   }
 
   private formatImagePath(path: string | null): string {
-    if (!path) return '';
-    return path.startsWith('http')
-      ? path
-      : `https://alhalapi.com${path.startsWith('/') ? '' : '/'}${path}`;
+  return path || '';
   }
 }
