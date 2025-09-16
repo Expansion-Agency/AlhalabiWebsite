@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
 import axios from "axios";
-import { useState } from "react"; 
+import { useState, useEffect } from "react";
 
 function Login({ userType }) {
   const navigate = useNavigate();
@@ -19,8 +19,20 @@ function Login({ userType }) {
   });
   const { i18n } = useTranslation();
 
+  // ✅ Handle Google login redirect with token
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const token = query.get('token');
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('userType', userType); // Optional
+      window.history.replaceState({}, document.title, window.location.pathname); // clean URL
+      navigate('/dashboard'); // Redirect after Google login
+    }
+  }, []);
+
   const handleGoogleLogin = () => {
-    // ✅ This triggers the NestJS backend's /auth/google route
+    // ✅ Redirect to NestJS Google OAuth2 route
     window.location.href = `${API_URL}/auth/google`;
   };
 
