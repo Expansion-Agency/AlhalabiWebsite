@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
 import axios from "axios";
+import { FcGoogle } from "react-icons/fc";
 
 function Login({ userType }) {
   const navigate = useNavigate();
@@ -40,58 +41,61 @@ function Login({ userType }) {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      console.log("Sending to API:", { email, password, userType });
+  try {
+    console.log("Sending to API:", { email, password, userType });
 
-      const response = await axios.post(
-        `${API_URL}/auth/login`,
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            accept: "*/*",
-            userType: userType,
-          },
-        }
-      );
-
-      console.log("Access Token:", response.data.data.accessToken);
-
-      const token = response.data.data.accessToken;
-      localStorage.setItem("token", response.data.data.accessToken);
-      localStorage.setItem("userType", userType);
-
-      if (userType !== "ADMIN") {
-        const profileResponse = await axios.get(`${API_URL}/users/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const userId = profileResponse.data.data.id;
-        localStorage.setItem("userId", userId);
+    const response = await axios.post(
+      `${API_URL}/auth/login`,
+      { email, password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          accept: "*/*",
+          userType: userType,
+        },
       }
+    );
 
-      if (userType === "ADMIN") {
-        navigate("/dashboard");
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
-      console.error("Login Error:", err);
+    // get both token and role from backend
+    const { accessToken, userType: role } = response.data.data;
 
-      if (err.response) {
-        setError(err.response.data.message || "Invalid credentials");
-      } else if (err.request) {
-        setError("No response from server. Check your connection.");
-      } else {
-        setError("An error occurred. Please try again.");
-      }
+    localStorage.setItem("token", accessToken);
+    localStorage.setItem("userType", role);
+
+    console.log("Access Token:", accessToken);
+
+    if (role !== "ADMIN") {
+      const profileResponse = await axios.get(`${API_URL}/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // <-- use accessToken here
+        },
+      });
+
+      const userId = profileResponse.data.data.id;
+      localStorage.setItem("userId", userId);
     }
-  };
+
+    if (role === "ADMIN") {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
+  } catch (err) {
+    console.error("Login Error:", err);
+
+    if (err.response) {
+      setError(err.response.data.message || "Invalid credentials");
+    } else if (err.request) {
+      setError("No response from server. Check your connection.");
+    } else {
+      setError("An error occurred. Please try again.");
+    }
+  }
+};
+
 
   useEffect(() => {
     // Check for token in URL (after Google login)
@@ -241,6 +245,7 @@ function Login({ userType }) {
           onClick={handleGoogleLogin}
           className="bg-red-950 text-white font-bold py-3 rounded-lg w-full cursor-pointer"
         >
+           <FcGoogle className="text-xl" />
           Login with Google
         </button>
         <div className="mt-6 w-full flex justify-end">
