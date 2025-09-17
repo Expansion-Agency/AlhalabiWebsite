@@ -1,6 +1,8 @@
 {
-   "Translations": {
-        "alhalabi": "Alhalapi",
+        "language": "Language",
+  	"en": "English",
+  	"ar": "Arabic",
+	"alhalabi": "Alhalapi",
         "products": "Products",
         "contact": "Contact",
         "account": "My Account",
@@ -77,5 +79,4 @@
         "deleteUser":"Are you sure you want to delete this user?",
         "deleteAdmin":"Are you sure you want to delete this admin?",
         "deleteRev":"Are you sure you want to delete this review?"
-   }
 }

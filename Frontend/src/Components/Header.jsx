@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useTranslation } from "../i18n/TranslationProvider";
+import { useTranslation } from "../context/TranslationProvider";
 import { IoEarth } from "react-icons/io5";
 import { LuMenu } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,9 +8,7 @@ import { FaUserCircle } from "react-icons/fa";
 import LanguageDropdown from "./LanguageDropdown";
 
 function Header({
-  toggleMenuVisibility,
-  selectedLanguage,
-  handleLanguageChange,
+  toggleMenuVisibility
 }) {
   const { t, setLang, lang } = useTranslation();
   const navigate = useNavigate();
@@ -75,10 +73,7 @@ function Header({
       </div>
       <div className="flex items-center gap-4 text-sm text-amber-950/60">
         <button onClick={() => navigate("/dashboard")}>لوحة التحكم</button>
-        <LanguageDropdown
-          selectedLanguage={selectedLanguage}
-          handleLanguageChange={handleLanguageChange}
-        />
+        <LanguageDropdown/>
         <div
           onClick={() => navigate("/contact-us")}
           className="hidden lg:flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"

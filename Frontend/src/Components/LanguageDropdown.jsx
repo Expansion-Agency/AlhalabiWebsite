@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { IoEarth } from "react-icons/io5";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider.jsx";
 
-const LanguageDropdown = ({ selectedLanguage }) => {
-  const { t } = useTranslation();
+const LanguageDropdown = () => {
+  const { lang, setLang, t } = useTranslation();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const langDropdownRef = useRef(null);
 
@@ -24,8 +24,8 @@ const LanguageDropdown = ({ selectedLanguage }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectLanguage = (lang) => {
-    handleLanguageChange({ target: { value: lang } });
+  const selectLanguage = (selectedLang) => {
+    setLang(selectedLang);
     setShowLangDropdown(false);
   };
 
@@ -47,7 +47,7 @@ const LanguageDropdown = ({ selectedLanguage }) => {
               selectLanguage("en");
             }}
             className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-              selectedLanguage === "en" ? "font-semibold bg-gray-100" : ""
+              lang === "en" ? "font-semibold bg-gray-100" : ""
             }`}
           >
             {t("en")}
@@ -58,7 +58,7 @@ const LanguageDropdown = ({ selectedLanguage }) => {
               selectLanguage("ar");
             }}
             className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-              selectedLanguage === "ar" ? "font-semibold bg-gray-100" : ""
+              lang === "ar" ? "font-semibold bg-gray-100" : ""
             }`}
           >
             {t("ar")}
