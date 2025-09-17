@@ -8,14 +8,13 @@ import Reviews from "../Components/Reviews";
 
 function Home({ category, setCategory, fetchCategories }) {
   const { t, setLang, lang } = useTranslation();
-  console.log("HomeIntro:", t("HomeIntro"));
-  console.log("IntroCont:", t("IntroCont"));
+	
   return (
     <>
       <HomeWidget />
       <div className="w-screen overflow-hidden my-5">
         <ParallaxText baseVelocity={-5}>{t("HomeTitle")}</ParallaxText>
-      </div>
+      </div>{" "}
       <div className="text-center bg-amber-950/10 p-15">
         <h2 className="text-xl lg:text-3xl font-bold">{t("HomeIntro")}</h2>
         <p className="max-w-3xl mx-auto text-sm lg:text-lg mt-4">
