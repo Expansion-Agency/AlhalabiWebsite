@@ -115,8 +115,6 @@ function DashboardCategories({ categories, setCategories, fetchCategories }) {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      setCategory((prev) => [...prev, response.data]);
       fetchCategories();
 
       // Clear inputs & preview after success
