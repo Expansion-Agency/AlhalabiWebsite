@@ -71,7 +71,7 @@ function Login({ userType }) {
     console.log("Access Token:", userType);
 
     // fetch profile only if not admin
-    if (role !== "ADMIN") {
+    if (userType !== "ADMIN") {
       const profileResponse = await axios.get(`${API_URL}/users/profile`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -83,7 +83,7 @@ function Login({ userType }) {
     }
 
     // redirect depending on role
-    if (role === "ADMIN") {
+    if (userType === "ADMIN") {
       navigate("/dashboard");
     } else {
       navigate("/");
