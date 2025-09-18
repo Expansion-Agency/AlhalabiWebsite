@@ -18,22 +18,23 @@ function Login({ userType }) {
     return localStorage.getItem("language") || "en";
   });
 
-  const { i18n } = useTranslation();
+  // Using setLang from your custom provider
+  const { t, lang, setLang } = useTranslation();
 
-  /*
   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
-    localStorage.setItem("language", newLanguage);
-    i18n.changeLanguage(newLanguage);
-    setSelectedLanguage(newLanguage);
+    localStorage.setItem("language", newLanguage); // optional
+    setLang(newLanguage); // update context + <html lang>
+    setSelectedLanguage(newLanguage); // keep local state in sync if you still need it
   };
-  */
 
-  /*
   useEffect(() => {
-    i18n.changeLanguage(selectedLanguage);
-  }, [i18n, selectedLanguage]);
-  */
+    // sync when selectedLanguage changes
+    if (selectedLanguage) {
+      setLang(selectedLanguage);
+    }
+  }, [selectedLanguage, setLang]);
+
 
   const handleGoogleLogin = () => {
     // Redirect user to backend Google login endpoint
