@@ -1,6 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import { useTranslation } from "../context/TranslationProvider";
+=======
+<<<<<<< HEAD
+import { useTranslation } from "../context/TranslationProvider";
+=======
+import { useTranslation } from "./context/TranslationProvider";
+>>>>>>> 95c688a4c45aac076e575ace756da42058e4b160
+>>>>>>> 6a2de40f00b0ad3a37a31f83fad8e1407ee1d927
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
