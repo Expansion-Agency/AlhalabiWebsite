@@ -70,11 +70,11 @@ export class AuthService {
       }
 
       // Hash the password before saving
-      const hashedPassword = await bcrypt.hash(user.password, 10);
+      // const hashedPassword = await bcrypt.hash(user.password, 10);
 
       const createdUser = await this.userService.create({
         ...user,
-        password: hashedPassword, // replace plain password with hashed one
+        password: user.password, // replace plain password with hashed one
       });
 
       return createdUser;
