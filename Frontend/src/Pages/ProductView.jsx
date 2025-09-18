@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ProductReviews from "../Components/ProductReviews";
 import axios from "axios";
+import { useTranslation } from "../context/TranslationProvider";
 
 function ProductView() {
   const { state } = useLocation();
+  const { t, lang } = useTranslation();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [images, setImages] = useState([]);
@@ -35,7 +37,6 @@ function ProductView() {
           : revRes.data?.reviews || revRes.data?.data || [];
 
         setReviews(fetchedReviews);
-// console.log(fetchedReviews);
         setLoading(false);
       } catch (err) {
         console.error("Error loading product or reviews", err);
@@ -45,7 +46,6 @@ function ProductView() {
 
     fetchData();
   }, [productId]);
-
 
   const handleAddReview = async (newReviewData) => {
     try {
@@ -86,8 +86,6 @@ function ProductView() {
       </div>
     );
   }
-  // console.log("Product ID:", productId);
-
   return (
     <>
       <div className="max-w-5xl mx-auto px-4 py-12">
@@ -99,11 +97,16 @@ function ProductView() {
               className="w-full h-100 object-contain mb-8"
             />
           )}
-          <h1 className="text-2xl font-bold mb-5">{product.nameEn}</h1>
+          <h1 className="text-2xl font-bold mb-5">
+            {lang === "ar" ? product.nameAr : product.nameEn}
+          </h1>
           <p className="text-sm text-gray-600 mb-2">
-            Category: <strong>{category.nameEn}</strong>
+            Category:{" "}
+            <strong>{lang === "ar" ? category.nameAr : category.nameEn}</strong>
           </p>
-          <p className="text-gray-700">{product.descriptionEn}</p>
+          <p className="text-gray-700">
+            {lang === "ar" ? product.descriptionAr : product.descriptionEn}
+          </p>
         </div>
       </div>
 

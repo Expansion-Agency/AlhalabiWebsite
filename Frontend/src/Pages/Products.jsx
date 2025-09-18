@@ -5,7 +5,7 @@ import axios from "axios";
 
 function Products() {
   const API_URL = import.meta.env.VITE_API_URL;
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const navigate = useNavigate();
   const Location = useLocation();
 
@@ -20,7 +20,9 @@ function Products() {
       try {
         const response = await axios.get(`${API_URL}/products`);
         const processed = response.data.map((product) => {
-          const defaultImage = product.productImages?.find((img) => img.isDefault);
+          const defaultImage = product.productImages?.find(
+            (img) => img.isDefault
+          );
           return {
             ...product,
             imageUrl: defaultImage?.imagePath || "/path/to/default/image.jpg",
@@ -116,7 +118,7 @@ function Products() {
             onClick={() => handleCategoryClick(cat)}
             className="text-sm lg:text-base px-2 lg:px-4 py-2 rounded-full border bg-white text-gray-700 border-amber-950/10 hover:bg-orange-50/50 transition"
           >
-            {cat.nameEn}
+            {lang === "ar" ? cat.nameAr : cat.nameEn}
           </button>
         ))}
       </div>
@@ -145,10 +147,12 @@ function Products() {
                 className="mx-auto w-fit h-30 lg:h-60 object-cover"
               />
               <h3 className="lg:text-lg font-semibold text-gray-700 mt-2 mb-2 px-3">
-                {product.nameEn}
+                {lang === "ar" ? product.nameAr : product.nameEn}
               </h3>
               <p className="text-xs lg:text-sm text-gray-600 p-3">
-                {product.descriptionEn || product.descriptionAr}
+                {lang === "ar"
+                  ? product.descriptionAr || product.descriptionEn
+                  : product.descriptionEn || product.descriptionAr}{" "}
               </p>
             </div>
           ))}
