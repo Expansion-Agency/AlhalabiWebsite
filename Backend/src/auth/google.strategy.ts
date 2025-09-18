@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Profile } from 'passport-google-oauth20';
 import { BadRequestException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -27,27 +28,36 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 //   }
 // }
 
-validate(
-  accessToken: string,
-  refreshToken: string,
-  profile: Profile,
-  done: Function,
-) {
-  console.log('Google profile:', profile);
+async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+    done: Function,
+  ) {
+    try {
+      const email = profile.emails?.[0]?.value;
 
-const email = profile.emails?.[0]?.value;
+      if (!email) {
+        console.error('❌ No email returned from Google profile');
+        return done(new BadRequestException('Email is required'), false);
+      }
 
-if (!email) {
-  throw new BadRequestException('Email is required for Google login');
+      const user = await this.authService.handleGoogleLogin({
+        email,
+        name: profile.displayName,
+        provider: profile.provider,
+      });
+
+      if (!user) {
+        console.error('❌ AuthService did not return a user');
+        return done(new UnauthorizedException('Login failed'), false);
+      }
+
+      console.log('✅ Google login success:', user);
+      done(null, user);
+    } catch (error) {
+      console.error('❌ Error in GoogleStrategy.validate():', error);
+      return done(error, false);
+    }
+  }
 }
-
-const googleUser = {
-  email,  // now it's guaranteed to be a string
-  name: profile.displayName,
-  provider: 'google',
-};
-
-  this.authService.handleGoogleLogin(googleUser)
-    .then(user => done(null, user))
-    .catch(err => done(err, false));
-}}
