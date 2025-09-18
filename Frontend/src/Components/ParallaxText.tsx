@@ -18,8 +18,8 @@ interface ParallaxProps {
 }
 
 function ParallaxText({ children, baseVelocity = 100 }: ParallaxProps) {
-  const { i18n } = useTranslation();
-  const isRTL = i18n.language === "ar";
+  const { lang } = useTranslation();
+  const isRTL = lang === "ar";
   const repeatCount = isRTL ? 12 : 8;
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
