@@ -10,7 +10,6 @@ function Login({ userType }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL;
 
