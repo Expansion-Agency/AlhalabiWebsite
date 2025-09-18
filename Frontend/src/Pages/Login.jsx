@@ -62,6 +62,8 @@ function Login({ userType }) {
     // destructure backend response
     const { accessToken, userType: role } = response.data.data;
 
+    console.log("Role from backend:", role); // <-- Add this line
+
     // save in localStorage
     localStorage.setItem("token", accessToken);
     // localStorage.setItem("userType", role);
