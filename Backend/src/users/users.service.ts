@@ -134,34 +134,17 @@ export class UsersService {
   }
 
   // ✅ Fixed: Create user from Google profile (for OAuth)
-  async createUserFromGoogle(data: {
-    email: string;
-    name: string;
-    provider: string;
-  }): Promise<Users> {
-    // Generate username from email (before '@')
-    const username = data.email.split("@")[0];
-
-    // Generate a random password and hash it
-    const randomPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
-
-    // Provide a default phone or a placeholder
-    const phone = "0000000000";
-
-    return await prisma.users.create({
-      data: {
-        email: data.email,
-        username,
-        password: hashedPassword,
-        phone,
-        name: data.name,
-        provider: data.provider,
-        isVerified: true,
-      },
-    });
-  }
-
+ async createUserFromGoogle(data: { email: string; name: string; provider: string }) {
+  return await prisma.users.create({
+    data: {
+      email: data.email,
+      username: data.name,
+      password: "00000000",
+      phone: "0000000000",
+      provider: data.provider,
+    },
+  });
+}
   // ✅ Helper to find user by email (if not already present)
   async findByEmail(email: string): Promise<Users | null> {
     return await prisma.users.findUnique({
