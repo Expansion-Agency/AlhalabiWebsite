@@ -7,20 +7,14 @@ import { IoIosContact } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
 import LanguageDropdown from "./LanguageDropdown";
 
-function Header({
-  toggleMenuVisibility
-}) {
+function Header({ toggleMenuVisibility }) {
   const { t, setLang, lang } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <div className="flex justify-between items-center p-4 relative bg-amber-950/5">
       <Link to="/">
-        <img
-          className="w-25 md:w-40"
-          src="assets/logo.png"
-          alt="logo"
-        />
+        <img className="w-25 md:w-40" src="assets/logo.png" alt="logo" />
       </Link>
       <div className="hidden lg:flex items-center gap-10 text-amber-950/90 text-lg">
         <Link
@@ -29,41 +23,6 @@ function Header({
         >
           {t("aboutalhalabi")}
         </Link>
-
-        {/*  <div
-          onClick={toggleServDropdown}
-          className="relative flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"
-          ref={servDropdownRef}
-        >
-          <p>Services</p>
-          {showServDropdown && (
-            <div
-              className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md text-sm z-20 min-w-[120px]"
-              style={{ insetInlineEnd: 0 }}
-            >
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/Machines");
-                }}
-                className={`px-4 py-2 cursor-pointer hover:bg-gray-100 active:font-semibold active:bg-gray-100
-                }`}
-              >
-                Machines
-              </div>
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/spare-parts");
-                }}
-                className={`px-4 py-2 cursor-pointer hover:bg-gray-100 active:font-semibold active:bg-gray-100
-                }`}
-              >
-                Spare Parts
-              </div>
-            </div>
-          )}
-        </div> */}
         <Link
           to="/products"
           className="hover:text-amber-950/80 transform transition-colors duration-200"
@@ -72,8 +31,7 @@ function Header({
         </Link>
       </div>
       <div className="flex items-center gap-4 text-sm text-amber-950/60">
-        <button onClick={() => navigate("/dashboard")}>لوحة التحكم</button>
-        <LanguageDropdown/>
+        <LanguageDropdown />
         <div
           onClick={() => navigate("/contact-us")}
           className="hidden lg:flex items-center gap-1 cursor-pointer hover:text-amber-950/80 transform transition-colors duration-200"
