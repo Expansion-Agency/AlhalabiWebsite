@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageDropdown from "../Components/LanguageDropdown";
 import axios from "axios";
@@ -64,7 +64,7 @@ function Login({ userType }) {
 
     // save in localStorage
     localStorage.setItem("token", accessToken);
-    localStorage.setItem("userType", role);
+    // localStorage.setItem("userType", role);
 
     console.log("Access Token:", accessToken);
 
