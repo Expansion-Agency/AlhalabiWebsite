@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 import Menu from "../Components/Menu";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "./context/TranslationProvider";
 import axios from "axios";
 
 function Layout({ children }) {
@@ -12,7 +12,7 @@ function Layout({ children }) {
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
   });
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
 /*   const handleLanguageChange = (event) => {
