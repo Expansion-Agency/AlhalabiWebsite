@@ -16,7 +16,7 @@ import {
   useTransform,
 } from "motion/react";
 
-function DashboardCategories({ category, setCategory, fetchCategories }) {
+function DashboardCategories({ categories, setCategories, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -43,7 +43,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
   const editModalRef = useRef(null);
 
-  const totalCategories = category.length;
+  const totalCategories = Array.isArray(categories) ? categories.length : 0;
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => Math.round(latest));
   const [displayValue, setDisplayValue] = useState(0);
@@ -65,10 +65,11 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   }, []);
 
   const getFullImageUrl = (path) => {
-  if (!path) return "";
-  return path.startsWith("http") ? path : `${path.startsWith("/") ? API_URL : API_URL + "/"}${path}`;
+    if (!path) return "";
+    return path.startsWith("http")
+      ? path
+      : `${path.startsWith("/") ? API_URL : API_URL + "/"}${path}`;
   };
-
 
   // --- Image validation helper ---
   const validateImageFile = (file) => {
@@ -76,7 +77,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
     const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     const maxSizeMB = 5;
     if (!validTypes.includes(file.type)) {
-      alert("Invalid file type. Please select an image file (jpg, png, gif, webp).");
+      alert(
+        "Invalid file type. Please select an image file (jpg, png, gif, webp)."
+      );
       return false;
     }
     if (file.size > maxSizeMB * 1024 * 1024) {
@@ -117,7 +120,12 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       fetchCategories();
 
       // Clear inputs & preview after success
-      setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
+      setNewCategory({
+        nameEn: "",
+        nameAr: "",
+        imageFile: null,
+        parentId: null,
+      });
       setNewImagePreview(null);
       setShowCreateCategory(false);
     } catch (error) {
@@ -134,7 +142,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
 
     try {
       await axios.delete(`${API_URL}/category/${id}`);
-      setCategory((prev) => prev.filter((cat) => cat.id !== id));
+      setCategories((prev) => prev.filter((cat) => cat.id !== id));
     } catch (error) {
       console.error("Error deleting category:", error.response?.data || error);
     }
@@ -172,7 +180,10 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
       if (updatedCategory.imageFile) {
         formData.append("imageFile", updatedCategory.imageFile);
       }
-      if (updatedCategory.parentId !== null && updatedCategory.parentId !== undefined) {
+      if (
+        updatedCategory.parentId !== null &&
+        updatedCategory.parentId !== undefined
+      ) {
         formData.append("parentId", String(updatedCategory.parentId));
       }
 
@@ -187,7 +198,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         }
       );
 
-      setCategory((prev) =>
+      setCategories((prev) =>
         prev.map((cat) => (cat.id === editingCategory.id ? response.data : cat))
       );
 
@@ -203,7 +214,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
   };
 
   // Only categories that can be parents (e.g., all categories, or filter as needed)
-  const parentOptions = category.filter(cat => !cat.parentId); // or just use all categories
+  const parentOptions = (categories || []).filter((cat) => !cat.parentId); // or just use all categories
 
   return (
     <>
@@ -211,7 +222,9 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
         <CardHeader className="flex justify-between items-center pb-0">
           <div className="flex flex-col">
             <CardTitle>{t("totalCategories")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">{displayValue}</CardDescription>
+            <CardDescription className="text-4xl font-bold">
+              {displayValue}
+            </CardDescription>
           </div>
           <button
             onClick={() => setShowCreateCategory(!showCreateCategory)}
@@ -235,51 +248,60 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
                 </tr>
               </thead>
               <tbody>
-                {category.map((cat) => (
-                  <tr key={cat.id}>
-                    <td className="text-start p-2">{cat.id}</td>
-                    <td className="text-start p-2">{cat.nameEn}</td>
-                    <td className="text-start p-2">{cat.nameAr}</td>
-                    <td className="text-start p-2">{cat.parent?.nameEn || "-"}</td>
-                    <td className="text-start p-2">
-		      {cat.imageUrl ? (
-		        <img
-		          src={getFullImageUrl(cat.imageUrl)}
-		          alt={cat.nameEn}
-		          style={{ width: "50px", height: "50px", objectFit: "cover" }}
-		          onError={(e) => {
-		            e.target.onerror = null;
-		            e.target.src = "/placeholder.jpg";
-			  }}
-			/>
-		      ) : (
-			<p>No image</p>
-		      )}
-		    </td>
+                {categories &&
+                  categories.map((cat) => (
+                    <tr key={cat.id}>
+                      <td className="text-start p-2">{cat.id}</td>
+                      <td className="text-start p-2">{cat.nameEn}</td>
+                      <td className="text-start p-2">{cat.nameAr}</td>
+                      <td className="text-start p-2">
+                        {cat.parent?.nameEn || "-"}
+                      </td>
+                      <td className="text-start p-2">
+                        {cat.imagePath ? (
+                          <img
+                            src={getFullImageUrl(cat.imagePath)}
+                            alt={cat.nameEn}
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                            }}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/placeholder.jpg";
+                            }}
+                          />
+                        ) : (
+                          <p>No image</p>
+                        )}
+                      </td>
 
-                    <td className="text-start flex gap-2 p-2">
-                      <button
-                        onClick={() => handleEditClick(cat)}
-                        className="text-blue-500 cursor-pointer"
-                      >
-                        {t("edit")}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(cat.id)}
-                        className="text-red-500 cursor-pointer"
-                      >
-                        {t("delete")}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      <td className="text-start flex gap-2 p-2">
+                        <button
+                          onClick={() => handleEditClick(cat)}
+                          className="text-blue-500 cursor-pointer"
+                        >
+                          {t("edit")}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(cat.id)}
+                          className="text-red-500 cursor-pointer"
+                        >
+                          {t("delete")}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
         </CardContent>
 
         <CardFooter className="flex-col gap-2 text-xs lg:text-sm">
-          <div className="leading-none text-muted-foreground">Showing total Categories</div>
+          <div className="leading-none text-muted-foreground">
+            Showing total Categories
+          </div>
         </CardFooter>
       </Card>
 
@@ -291,19 +313,23 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             type="text"
             placeholder={t("categoryNameEn")}
             value={newCategory.nameEn}
-            onChange={(e) => setNewCategory({ ...newCategory, nameEn: e.target.value })}
+            onChange={(e) =>
+              setNewCategory({ ...newCategory, nameEn: e.target.value })
+            }
             className="border p-2 mb-2 w-full"
           />
           <input
             type="text"
             placeholder="Name in Arabic"
             value={newCategory.nameAr}
-            onChange={(e) => setNewCategory({ ...newCategory, nameAr: e.target.value })}
+            onChange={(e) =>
+              setNewCategory({ ...newCategory, nameAr: e.target.value })
+            }
             className="border p-2 mb-2 w-full"
           />
           <select
             value={newCategory.parentId ?? ""}
-            onChange={e =>
+            onChange={(e) =>
               setNewCategory({
                 ...newCategory,
                 parentId: e.target.value === "" ? null : Number(e.target.value),
@@ -312,7 +338,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             className="border p-2 mb-2 w-full"
           >
             <option value="">No Parent</option>
-            {parentOptions.map(opt => (
+            {parentOptions.map((opt) => (
               <option key={opt.id} value={opt.id}>
                 {opt.nameEn}
               </option>
@@ -346,7 +372,12 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             <button
               onClick={() => {
                 setShowCreateCategory(false);
-                setNewCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
+                setNewCategory({
+                  nameEn: "",
+                  nameAr: "",
+                  imageFile: null,
+                  parentId: null,
+                });
                 setNewImagePreview(null);
               }}
               className="btn-cancel"
@@ -387,7 +418,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
           />
           <select
             value={updatedCategory.parentId ?? ""}
-            onChange={e =>
+            onChange={(e) =>
               setUpdatedCategory({
                 ...updatedCategory,
                 parentId: e.target.value === "" ? null : Number(e.target.value),
@@ -396,7 +427,7 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             className="border p-2 mb-2 w-full"
           >
             <option value="">No Parent</option>
-            {parentOptions.map(opt => (
+            {parentOptions.map((opt) => (
               <option key={opt.id} value={opt.id}>
                 {opt.nameEn}
               </option>
@@ -443,7 +474,12 @@ function DashboardCategories({ category, setCategory, fetchCategories }) {
             <button
               onClick={() => {
                 setEditingCategory(null);
-                setUpdatedCategory({ nameEn: "", nameAr: "", imageFile: null, parentId: null });
+                setUpdatedCategory({
+                  nameEn: "",
+                  nameAr: "",
+                  imageFile: null,
+                  parentId: null,
+                });
                 setUpdatedImagePreview(null);
               }}
               className="btn-cancel"
