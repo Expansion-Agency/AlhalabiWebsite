@@ -8,9 +8,6 @@ import axios from "axios";
 function Layout({ children }) {
   const API_URL = import.meta.env.VITE_API_URL;
   const [category, setCategory] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState(() => {
-    return localStorage.getItem("language") || "en";
-  });
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const { t, lang, setLang } = useTranslation();
 
