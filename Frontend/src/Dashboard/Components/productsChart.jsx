@@ -69,7 +69,7 @@ export default function ProductsPerCategoryChart({
       console.error("Error fetching products:", error);
     }
   };
-  const productCounts = category
+  const productCounts = (category || [])
     .filter((cat) => cat !== "All")
     .map((cat) => {
       const count = products.filter((p) => p.categoryId === cat.id).length;
