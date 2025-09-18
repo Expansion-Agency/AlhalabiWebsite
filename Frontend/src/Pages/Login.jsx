@@ -68,7 +68,7 @@ function Login({ userType }) {
     localStorage.setItem("token", accessToken);
     // localStorage.setItem("userType", role);
 
-    console.log("Access Token:", accessToken);
+    console.log("Access Token:", userType);
 
     // fetch profile only if not admin
     if (role !== "ADMIN") {
