@@ -58,16 +58,30 @@ export class AuthController {
     required: false,
     schema: { enum: Object.values(Role) },
   })
-  @UsePipes(new JoiValidationPipe(loginSchema))
+  // @UsePipes(new JoiValidationPipe(loginSchema))
+  // @Post('login')
+  // async login(@Body() signInDto: loginDto, @Headers('userType') userType: string) {
+  //   const data = await this.authService.login(signInDto.email, signInDto.password, userType);
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     message: 'Login successful',
+  //     data,
+  //   };
+  // }
   @Post('login')
-  async login(@Body() signInDto: loginDto, @Headers('userType') userType: string) {
-    const data = await this.authService.login(signInDto.email, signInDto.password, userType);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Login successful',
-      data,
-    };
-  }
+async login(@Body() signInDto: loginDto) {
+  const data = await this.authService.login(
+    signInDto.email,
+    signInDto.password,
+    Role.User.toString()
+  );
+
+  return {
+    statusCode: HttpStatus.OK,
+    message: 'Login successful',
+    data,
+  };
+}
 
   @ApiOperation({ summary: 'User signUp' })
   @ApiBody({ type: signUpDto })
