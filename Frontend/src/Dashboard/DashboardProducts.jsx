@@ -17,7 +17,7 @@ import {
 } from "motion/react";
 import { normalizeProduct } from "../utils/normalizeProduct";
 
-function DashboardProducts({ category, fetchCategories }) {
+function DashboardProducts({ categories, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -412,7 +412,7 @@ function DashboardProducts({ category, fetchCategories }) {
               <option value="" disabled>
                 {t("selectCategory")}
               </option>
-              {category.map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.nameEn}
                 </option>
@@ -554,7 +554,7 @@ function DashboardProducts({ category, fetchCategories }) {
               <option value="" disabled>
                 {t("selectCategory")}
               </option>
-              {category.map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.nameEn}
                 </option>
