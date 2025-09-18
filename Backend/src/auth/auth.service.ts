@@ -47,8 +47,11 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('Invalid email or password');
 
-    const isMatch = await bcrypt.compare(password, (user as any).password);
-    if (!isMatch) throw new UnauthorizedException('Invalid email or password');
+console.log('Plain password:', password);
+console.log('Stored hash:', (user as any).password);
+
+const isMatch = await bcrypt.compare(password, (user as any).password);
+console.log('Password match:', isMatch);    if (!isMatch) throw new UnauthorizedException('Invalid email or password');
 
     if ((user as any).deletedAt) throw new UnauthorizedException('User is deleted');
 
