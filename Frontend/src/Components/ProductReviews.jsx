@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import ReactStars from "react-stars";
 
 function ProductReviews({ reviews = [], onAddReview = () => {}, productId, onEditReview }) {

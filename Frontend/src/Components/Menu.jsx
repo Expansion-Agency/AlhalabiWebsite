@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { IoCloseOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 

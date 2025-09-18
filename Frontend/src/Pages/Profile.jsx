@@ -1,5 +1,5 @@
 import React, { act, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import axios from "axios";

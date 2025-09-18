@@ -1,15 +1,13 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../../context/TranslationProvider";
 import { Link, NavLink } from "react-router-dom";
 import LanguageDropdown from "../../Components/LanguageDropdown";
 
 function Menu({
   isMenuVisible,
   toggleMenuVisibility,
-  selectedLanguage,
-  handleLanguageChange,
 }) {
-  const { t } = useTranslation();
+  const { t, lang, setLang } = useTranslation();
   const handleLinkClick = () => {
     if (window.innerWidth < 1024) {
       toggleMenuVisibility();
@@ -19,7 +17,7 @@ function Menu({
     <div
       className={`fixed bg-amber-950/10 text-amber-950 p-5 w-full h-full lg:w-1/5 z-40 overflow-y-auto lg:border-2 border-amber-950/10 ${
         isMenuVisible ? "block top-0" : "hidden"
-      } ${selectedLanguage === "ar" ? "left-0" : "right-0"}`}
+      } ${lang === "ar" ? "left-0" : "right-0"}`}
       style={{ backgroundColor: "rgb(237, 234, 222)" }}
     >
       <hr className="lg:hidden mt-20 mb-5 border-1 border-amber-950/10" />
@@ -83,10 +81,7 @@ function Menu({
         <hr className="my-6 opacity-30" />
       </div>
       <div className="flex flex-col items-end">
-        <LanguageDropdown
-          selectedLanguage={selectedLanguage}
-          handleLanguageChange={handleLanguageChange}
-        />
+        <LanguageDropdown/>
       </div>
     </div>
   );

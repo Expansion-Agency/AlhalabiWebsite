@@ -2,7 +2,7 @@ import React from "react";
 import { ChartLineDotsColors } from "./Components/VisitorsChart";
 import Component from "./Components/productsChart";
 import TotalUsersCard from "./Components/UsersCard";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 
 function DashboardHome({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();

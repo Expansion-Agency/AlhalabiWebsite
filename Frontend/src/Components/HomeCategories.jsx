@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "./context/TranslationProvider";
+import { useTranslation } from "../context/TranslationProvider";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";

@@ -10,8 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../Components/ui/card";
-import { t } from "i18next";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import axios from "axios";
 
 function DashboardReviews() {
