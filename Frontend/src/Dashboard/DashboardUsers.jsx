@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../Components/ui/card";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";

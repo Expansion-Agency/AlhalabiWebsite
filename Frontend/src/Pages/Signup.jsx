@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { Link, useNavigate } from "react-router-dom";
 
 function Signup({ userType }) {

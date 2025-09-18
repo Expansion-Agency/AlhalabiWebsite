@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../../context/TranslationProvider";
 import { LuMenu } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
 

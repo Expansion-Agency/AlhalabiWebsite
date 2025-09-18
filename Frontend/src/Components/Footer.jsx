@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { Link } from "react-router-dom";
 import { LiaCopyrightSolid } from "react-icons/lia";
 

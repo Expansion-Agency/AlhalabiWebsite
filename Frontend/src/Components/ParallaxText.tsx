@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { wrap } from "../../node_modules/@motionone/utils";
 import type { MotionValue } from "framer-motion";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 
 interface ParallaxProps {
   children: string;

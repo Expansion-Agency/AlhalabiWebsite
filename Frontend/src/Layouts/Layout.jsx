@@ -1,34 +1,21 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 import Menu from "../Components/Menu";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import axios from "axios";
 
 function Layout({ children }) {
   const API_URL = import.meta.env.VITE_API_URL;
   const [category, setCategory] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState(() => {
-    return localStorage.getItem("language") || "en";
-  });
-  const { i18n } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-/*   const handleLanguageChange = (event) => {
-    const newLanguage = event.target.value;
-    localStorage.setItem("language", newLanguage);
-    i18n.changeLanguage(newLanguage);
-    setSelectedLanguage(newLanguage);
-  }; */
-
- /*  useEffect(() => {
-    i18n.changeLanguage(selectedLanguage); // Make sure it's applied on mount
-  }, [i18n, selectedLanguage]); */
+  const { lang, setLang } = useTranslation();
 
   const toggleMenuVisibility = () => {
     setIsMenuVisible((prev) => !prev);
   };
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${API_URL}/category`);
@@ -51,11 +38,8 @@ function Layout({ children }) {
             : ""
         }`}
       >
-        <Header
-          toggleMenuVisibility={toggleMenuVisibility}
-          selectedLanguage={selectedLanguage}
-/*           handleLanguageChange={handleLanguageChange}
- */        />
+        <Header toggleMenuVisibility={toggleMenuVisibility} />
+
         <main className="flex-grow">
           {React.cloneElement(children, {
             category,
@@ -63,20 +47,17 @@ function Layout({ children }) {
             fetchCategories,
           })}
         </main>
-        <Footer
-          selectedLanguage={selectedLanguage}
-/*           handleLanguageChange={handleLanguageChange}
- */        />
+
+        <Footer />
       </div>
 
       <Menu
         isMenuVisible={isMenuVisible}
         toggleMenuVisibility={toggleMenuVisibility}
-        selectedLanguage={selectedLanguage}
-/*         handleLanguageChange={handleLanguageChange}
- */      />
+      />
     </div>
   );
 }
 
 export default Layout;
+

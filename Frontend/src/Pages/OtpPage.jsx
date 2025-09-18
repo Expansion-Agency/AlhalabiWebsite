@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 
 function OtpPage() {
   const API_URL = import.meta.env.VITE_API_URL;

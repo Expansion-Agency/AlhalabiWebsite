@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../context/TranslationProvider";
 import { FaSquareFacebook } from "react-icons/fa6";
 import { GrInstagram } from "react-icons/gr";
 import { AiFillTikTok } from "react-icons/ai";
