@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
+  UnauthorizedException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import prisma from '../shared/prisma/client';
@@ -45,12 +45,12 @@ export class AuthService {
       user = await prisma.admins.findUnique({ where: { email } });
     }
 
-    if (!user) throw new NotFoundException('Invalid email or password');
+    if (!user) throw new UnauthorizedException('Invalid email or password');
 
     const isMatch = await bcrypt.compare(password, (user as any).password);
-    if (!isMatch) throw new NotFoundException('Invalid email or password');
+    if (!isMatch) throw new UnauthorizedException('Invalid email or password');
 
-    if ((user as any).deletedAt) throw new NotFoundException('User is deleted');
+    if ((user as any).deletedAt) throw new UnauthorizedException('User is deleted');
 
     const payload: Payload = { sub: user.id, role: userType };
     const accessToken = await this.jwtService.signAsync(payload);
@@ -118,7 +118,7 @@ export class AuthService {
   public async resetPassword(data: ResetPasswordDTO, userType: string) {
     if (userType == 'USER') {
       const user = await this.userService.findOne(data.email);
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) throw new UnauthorizedException('User not found');
 
       const isSamePassword = await bcrypt.compare(data.newPassword, user.password);
       if (isSamePassword) {
@@ -150,7 +150,7 @@ export class AuthService {
 
   async generateJwt(user: Users): Promise<string> {
     if (!user) {
-      throw new NotFoundException('User not found for generating token');
+      throw new UnauthorizedException('User not found for generating token');
     }
 
     const payload: Payload = { sub: user.id, role: Role.User };
