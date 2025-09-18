@@ -2,7 +2,6 @@ import React from "react";
 import HomeWidget from "../Components/HomeWidget";
 import HomeCategories from "../Components/HomeCategories";
 import { useTranslation } from "../context/TranslationProvider";
-// import Reviews from "../Components/Reviews";
 import ParallaxText from "../Components/ParallaxText";
 import Reviews from "../Components/Reviews";
 
