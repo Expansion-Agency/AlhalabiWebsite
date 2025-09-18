@@ -71,10 +71,11 @@ function DashboardProducts({ category, fetchCategories }) {
       const response = await axios.get(`${API_URL}/products`);
       console.log("Fetched products:", response.data);
       if (response.data && Array.isArray(response.data)) {
-        const processed = response.data.map((product) => normalizeProduct(product));
+        const processed = response.data.map((product) =>
+          normalizeProduct(product)
+        );
         setProducts(processed);
       }
-
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -178,65 +179,66 @@ function DashboardProducts({ category, fetchCategories }) {
     }, 200);
   };
 
-const handleUpdate = async (e) => {
-  e.preventDefault();
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No token stored");
-      return;
-    }
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("No token stored");
+        return;
+      }
 
-    const updatedData = {
-      nameEn: updatedProduct.nameEn,
-      nameAr: updatedProduct.nameAr,
-      descriptionEn: updatedProduct.descriptionEn,
-      descriptionAr: updatedProduct.descriptionAr,
-      priceEgp: Number(updatedProduct.priceEgp),
-      priceUsd: Number(updatedProduct.priceUsd),
-      quantity: Number(updatedProduct.quantity),
-      categoryId: Number(updatedProduct.categoryId),
-    };
+      const updatedData = {
+        nameEn: updatedProduct.nameEn,
+        nameAr: updatedProduct.nameAr,
+        descriptionEn: updatedProduct.descriptionEn,
+        descriptionAr: updatedProduct.descriptionAr,
+        priceEgp: Number(updatedProduct.priceEgp),
+        priceUsd: Number(updatedProduct.priceUsd),
+        quantity: Number(updatedProduct.quantity),
+        categoryId: Number(updatedProduct.categoryId),
+      };
 
-    // Update product details
-    await axios.put(`${API_URL}/products/${editingProduct.id}`, updatedData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    let refreshedProduct;
-
-    if (updatedProduct.imageFile) {
-      // Upload new image
-      const formData = new FormData();
-      formData.append("imageFile", updatedProduct.imageFile);
-      formData.append("isDefault", true);
-      formData.append("productId", editingProduct.id);
-
-      await axios.post(`${API_URL}/product-images`, formData, {
+      // Update product details
+      await axios.put(`${API_URL}/products/${editingProduct.id}`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       });
+
+      let refreshedProduct;
+
+      if (updatedProduct.imageFile) {
+        // Upload new image
+        const formData = new FormData();
+        formData.append("imageFile", updatedProduct.imageFile);
+        formData.append("isDefault", true);
+        formData.append("productId", editingProduct.id);
+
+        await axios.post(`${API_URL}/product-images`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
+      // Always fetch fresh product data
+      const refreshed = await axios.get(
+        `${API_URL}/products/${editingProduct.id}`
+      );
+      refreshedProduct = normalizeProduct(refreshed.data);
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === editingProduct.id ? refreshedProduct : p))
+      );
+
+      setEditingProduct(null);
+    } catch (error) {
+      console.error("Error updating product:", error.response || error);
     }
-
-    // Always fetch fresh product data
-    const refreshed = await axios.get(`${API_URL}/products/${editingProduct.id}`);
-    refreshedProduct = normalizeProduct(refreshed.data);
-
-    setProducts((prev) =>
-      prev.map((p) => (p.id === editingProduct.id ? refreshedProduct : p))
-    );
-
-    setEditingProduct(null);
-  } catch (error) {
-    console.error("Error updating product:", error.response || error);
-  }
-}; 
-
+  };
 
   return (
     <>
@@ -245,7 +247,9 @@ const handleUpdate = async (e) => {
         <CardHeader className="flex justify-between items-center">
           <div>
             <CardTitle>{t("totalProducts")}</CardTitle>
-            <CardDescription className="text-4xl font-bold">{displayValue}</CardDescription>
+            <CardDescription className="text-4xl font-bold">
+              {displayValue}
+            </CardDescription>
           </div>
           <button
             onClick={() => setShowCreateProduct(!showCreateProduct)}
@@ -273,7 +277,7 @@ const handleUpdate = async (e) => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {(products || []).map((product) => (
                 <tr key={product.id}>
                   <td>{product.id}</td>
                   <td>{product.nameEn}</td>
@@ -287,6 +291,9 @@ const handleUpdate = async (e) => {
                     <img
                       src={product.imageUrl}
                       alt={product.nameEn}
+                      onLoad={(e) =>
+                        console.log("Rendered Image URL:", e.target.src)
+                      }
                       className="w-12 h-12 object-cover"
                     />
                   </td>
@@ -311,7 +318,9 @@ const handleUpdate = async (e) => {
           </table>
         </CardContent>
         <CardFooter>
-          <p className="text-muted-foreground text-sm">Showing total products</p>
+          <p className="text-muted-foreground text-sm">
+            Showing total products
+          </p>
         </CardFooter>
       </Card>
 
@@ -492,7 +501,10 @@ const handleUpdate = async (e) => {
               placeholder={t("priceEgp")}
               value={updatedProduct.priceEgp}
               onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, priceEgp: e.target.value })
+                setUpdatedProduct({
+                  ...updatedProduct,
+                  priceEgp: e.target.value,
+                })
               }
               className="border p-2 w-full"
               required
@@ -504,7 +516,10 @@ const handleUpdate = async (e) => {
               placeholder={t("priceUsd")}
               value={updatedProduct.priceUsd}
               onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, priceUsd: e.target.value })
+                setUpdatedProduct({
+                  ...updatedProduct,
+                  priceUsd: e.target.value,
+                })
               }
               className="border p-2 w-full"
               required
@@ -516,7 +531,10 @@ const handleUpdate = async (e) => {
               placeholder={t("quantity")}
               value={updatedProduct.quantity}
               onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, quantity: e.target.value })
+                setUpdatedProduct({
+                  ...updatedProduct,
+                  quantity: e.target.value,
+                })
               }
               className="border p-2 w-full"
               required
@@ -525,7 +543,10 @@ const handleUpdate = async (e) => {
             <select
               value={updatedProduct.categoryId || ""}
               onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, categoryId: e.target.value })
+                setUpdatedProduct({
+                  ...updatedProduct,
+                  categoryId: e.target.value,
+                })
               }
               className="border p-2 w-full"
               required
