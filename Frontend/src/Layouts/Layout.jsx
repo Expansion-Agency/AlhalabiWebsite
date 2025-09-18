@@ -2,26 +2,17 @@ import React, { useEffect, useState } from "react";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 import Menu from "../Components/Menu";
-<<<<<<< HEAD
 import { useTranslation } from "../context/TranslationProvider";
-=======
-import { useTranslation } from "./context/TranslationProvider";
->>>>>>> 95c688a4c45aac076e575ace756da42058e4b160
 import axios from "axios";
 
 function Layout({ children }) {
   const API_URL = import.meta.env.VITE_API_URL;
   const [category, setCategory] = useState([]);
-<<<<<<< HEAD
-=======
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
   });
-  const { t } = useTranslation();
->>>>>>> 95c688a4c45aac076e575ace756da42058e4b160
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-
-  const { lang, setLang } = useTranslation();
+  const { t, lang, setLang } = useTranslation();
 
   const toggleMenuVisibility = () => {
     setIsMenuVisible((prev) => !prev);
@@ -71,4 +62,3 @@ function Layout({ children }) {
 }
 
 export default Layout;
-
