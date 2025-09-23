@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { ChartLineDotsColors } from "./Components/VisitorsChart";
 import Component from "./Components/productsChart";
 import TotalUsersCard from "./Components/UsersCard";
