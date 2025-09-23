@@ -62,9 +62,9 @@ function DashboardUsers() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Users API Response:", response.data); // Debugging line
+      console.log("Users API Response:", response.data.data); // Debugging line
 
-      setUsers(Array.isArray(response.data) ? response.data : []);
+      setUsers(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
       console.error("Error fetching users:", error);
       setUsers([]);
@@ -128,6 +128,7 @@ function DashboardUsers() {
       console.error("Error deleting user:", error);
     }
   };
+console.log("Users state at render:", users);
   return (
     <>
       <Card className="flex flex-col mx-3 lg:mx-10 my-10 shadow-lg hover:shadow-xl transition-shadow duration-300 lg:w-fit">
