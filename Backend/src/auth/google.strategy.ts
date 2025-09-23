@@ -47,6 +47,7 @@ async validate(
         name: profile.displayName,
         provider: profile.provider,
       });
+      console.log('handleGoogleLogin returned:', user);
 
       if (!user) {
         console.error('❌ AuthService did not return a user');
