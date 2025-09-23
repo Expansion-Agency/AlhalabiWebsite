@@ -42,9 +42,6 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleRedirect(@Req() req: Request, @Res() res: Response) {
     const user = req.user;
-    if (!user) {
-      return res.redirect('https://alhalapi.com/login?error=NoUser');
-    }
     const token = this.authService.createToken(user);
     console.log("Generated Google JWT token:", token); // <-- Add this line
     return res.redirect(`https://alhalapi.com/login?token=${token}`);
