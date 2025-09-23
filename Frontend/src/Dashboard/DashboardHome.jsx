@@ -11,8 +11,16 @@ function DashboardHome({ category, setCategory, fetchCategories }) {
   const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No authentication token found.");
+      return;
+    }
+
     axios
-      .get(`${API_URL}/users`)
+      .get(`${API_URL}/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((res) => {
         if (res.data?.data) {
           setUserCount(res.data.data.length);
@@ -22,6 +30,7 @@ function DashboardHome({ category, setCategory, fetchCategories }) {
         console.error("Error fetching users:", err);
       });
   }, [API_URL]);
+
 
   return (
     <div className="flex flex-col p-10">
