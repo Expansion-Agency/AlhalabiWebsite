@@ -140,7 +140,7 @@ export class UsersService {
       email: data.email,
       username: data.name,
       password: "00000000",
-      phone: "0000000000",
+      phone: "",
       provider: data.provider,
     },
   });

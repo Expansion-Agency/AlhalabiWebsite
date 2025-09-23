@@ -7,6 +7,20 @@ import { useTranslation } from "../context/TranslationProvider";
 function DashboardHome({ category, setCategory, fetchCategories }) {
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL;
+  const [userCount, setUserCount] = useState(0);
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/users`)
+      .then((res) => {
+        if (res.data?.data) {
+          setUserCount(res.data.data.length);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching users:", err);
+      });
+  }, [API_URL]);
 
   return (
     <div className="flex flex-col p-10">
@@ -15,7 +29,7 @@ function DashboardHome({ category, setCategory, fetchCategories }) {
       </h2>
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex flex-col gap-4">
-          <TotalUsersCard />
+          <TotalUsersCard count={userCount} />
           <Component
             category={category}
             setCategory={setCategory}

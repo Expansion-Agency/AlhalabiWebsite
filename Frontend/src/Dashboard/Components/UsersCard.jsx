@@ -12,15 +12,15 @@ import {
 } from "../../Components/ui/card";
 import { useTranslation } from "../../context/TranslationProvider";
 
-export default function TotalUsersCard() {
+export default function TotalUsersCard({ count: targetCount = 0 }) {
   const { t } = useTranslation();
   const count = useMotionValue(0);
   const rounded = useTransform(() => Math.round(count.get()));
 
   useEffect(() => {
-    const controls = animate(count, 200, { duration: 5 });
+    const controls = animate(count, targetCount, { duration: 2 });
     return () => controls.stop();
-  }, []);
+  }, [targetCount]);
   return (
     <Card className="flex flex-col w-full max-w-sm shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="items-center pb-0">
